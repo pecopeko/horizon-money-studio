@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "github-actions-workflow-supplychain-auditor",
+  "title": "GitHub Actions Workflow Supply-Chain Security Auditor",
+  "description": "Audit .github/workflows YAML for unpinned third-party actions (non-40-hex SHA), pull_request_target untrusted PR head checkouts, script injection via github.event.*, write-all or missing permissions, and curl|sh pipes.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

@@ -4,7 +4,7 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
 
 ## Live Shipped Outputs Across All 7 Tracks
 
-- **Track 1 — Apify Store PPE Actor Suite (`16` Actors, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
+- **Track 1 — Apify Store PPE Actor Suite (`18` Actors, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
   - `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   - `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
   - `japan-corporate-ir-press-extractor` (`filing_extracted` @ `$0.003`)
@@ -21,7 +21,9 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - `oss-sbom-copyleft-license-auditor` (`manifest_audited` @ `$0.003`)
   - `jp-appi-privacy-gaibusoshin-auditor` (`policy_audited` @ `$0.003`)
   - `openapi-agent-tool-readiness-auditor` (`spec_audited` @ `$0.003`)
-- **Track 2 — Zero-Backend Japanese B2B Micro-SaaS (`7` Live Web Apps + Releases)**:
+  - `jp-withholding-tax-shiharai-auditor` (`payment_audited` @ `$0.002`)
+  - `github-actions-workflow-supplychain-auditor` (`workflow_audited` @ `$0.003`)
+- **Track 2 — Zero-Backend Japanese B2B Micro-SaaS (`8` Live Web Apps + Releases)**:
   - **KUROGATE（黒門）**: https://pecopeko.github.io/kurogate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip))
   - **YAKKIGATE（薬影）**: https://pecopeko.github.io/yakkigate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/yakkigate/releases/download/v1.0.0/yakkigate-chrome-extension-v1.0.0.zip))
   - **ZENGINGATE（全銀門）**: https://pecopeko.github.io/zengingate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip))
@@ -29,6 +31,7 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - **TOKUSHOGATE（特商門）**: https://pecopeko.github.io/tokushogate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/tokushogate/releases/download/v1.0.0/tokushogate-offline-kit-v1.0.0.zip))
   - **DENCHOGATE（電帳門）**: https://pecopeko.github.io/denchogate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/denchogate/releases/download/v1.0.0/denchogate-offline-kit-v1.0.0.zip))
   - **KOJINGATE（個情門）**: https://pecopeko.github.io/kojingate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/kojingate/releases/download/v1.0.0/kojingate-offline-kit-v1.0.0.zip))
+  - **GENSENGATE（源泉門）**: https://pecopeko.github.io/gensengate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/gensengate/releases/download/v1.0.0/gensengate-offline-kit-v1.0.0.zip))
 - **Track 3 — Live OSS Cash/Sponsor Pull Requests (`8` Open PRs)**:
   - `tscircuit/cli#5654`: https://github.com/tscircuit/cli/pull/5858
   - `tscircuit/core#5677`: https://github.com/tscircuit/core/pull/5680
@@ -43,17 +46,17 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - `Pruned18` + 3-tier conviction scaling (`800k / 1.6M / 2.4M JPY`): `+2,646,201 JPY` (`Sharpe 2.501`) vs Uniform Control `+2,100,950 JPY` (`Sharpe 2.328`) -> `+545,251 JPY` edge (`tracks/track4_m2m_colab/M2M_ACTIONABLE_ALPHA_PATCH_PROPOSAL.md`)
   - Real Panel AFML Report: `tracks/track4_m2m_colab/REAL_PANEL_AFML_AUDIT_REPORT.md`
 - **Track 5 — Direct Digital Sales (`Zenn` + `BOOTH` Pro Suite)**:
-  - **Zenn Content Repo (`¥2,400` 6-chapter book + 3 free articles)**: https://github.com/pecopeko/zenn-content
-  - **BOOTH Pro Suite Bundle Release (`v1.0.0-pro-kit`)**: https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit (CLI upgraded for 7-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI batch auditing)
+  - **Zenn Content Repo (`¥2,400` 6-chapter book + 4 free articles)**: https://github.com/pecopeko/zenn-content
+  - **BOOTH Pro Suite Bundle Release (`v1.0.0-pro-kit`)**: https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit (CLI upgraded for 8-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding batch auditing)
 - **Track 6 — Solidity Smart Contract Audit Pre-Screener & Live Triage**:
-  - `src/makemoney/scouts/solidity_audit_scanner.py` + `tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` (`11` contest repos: `sherlock-audit/2026-07-tare`, `Cyfrin/battlechain-safe-harbor-contracts`, `code-423n4/2026-04-monetrix`, `sherlock-audit/2025-07-malda`, `sherlock-audit/2025-06-notional-exponent`, `sherlock-audit/2026-01-fluid-dex-v2`, `sherlock-audit/2025-07-oku-trade-order-types`, `sherlock-audit/2025-07-cap`, `sherlock-audit/2025-07-mellow-flexible-vaults`, `sherlock-audit/2025-07-debank`, `sherlock-audit/2025-05-yearn-ybold`)
+  - `src/makemoney/scouts/solidity_audit_scanner.py` + `tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` (`13` contest repos: `sherlock-audit/2026-07-tare`, `Cyfrin/battlechain-safe-harbor-contracts`, `code-423n4/2026-04-monetrix`, `sherlock-audit/2025-07-malda`, `sherlock-audit/2025-06-notional-exponent`, `sherlock-audit/2026-01-fluid-dex-v2`, `sherlock-audit/2025-07-oku-trade-order-types`, `sherlock-audit/2025-07-cap`, `sherlock-audit/2025-07-mellow-flexible-vaults`, `sherlock-audit/2025-07-debank`, `sherlock-audit/2025-05-yearn-ybold`, `sherlock-audit/2025-06-symbiotic-relay`, `sherlock-audit/2025-07-allbridge-core-yield`)
 - **Track 7 — Fast-Cash Freelance Automation Deliverables & Playbook**:
-  - `tracks/track7_freelance_kit/deliverables/{dirty_csv_to_zengin120.py,polite_feed_price_diff.py,folder_pii_vault_sanitizer.py,dencho_folder_renamer_indexer.py}` + `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (Proposals 案A–案D)
+  - `tracks/track7_freelance_kit/deliverables/{dirty_csv_to_zengin120.py,polite_feed_price_diff.py,folder_pii_vault_sanitizer.py,dencho_folder_renamer_indexer.py,shiharai_chosho_csv_aggregator.py}` + `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (Proposals 案A–案E)
 
 ## Local Verification
 
 ```bash
 .venv/bin/pytest -v
-node --test tracks/track2_micro_saas/kurogate/test/engine.test.mjs tracks/track2_micro_saas/yakkigate/test/yakki-engine.test.mjs tracks/track2_micro_saas/zengingate/test/zengin-engine.test.mjs tracks/track2_micro_saas/keiyakugate/test/keiyaku-engine.test.mjs tracks/track2_micro_saas/tokushogate/test/tokusho-engine.test.mjs tracks/track2_micro_saas/denchogate/test/dencho-engine.test.mjs tracks/track2_micro_saas/kojingate/test/kojin-engine.test.mjs
+node --test tracks/track2_micro_saas/kurogate/test/engine.test.mjs tracks/track2_micro_saas/yakkigate/test/yakki-engine.test.mjs tracks/track2_micro_saas/zengingate/test/zengin-engine.test.mjs tracks/track2_micro_saas/keiyakugate/test/keiyaku-engine.test.mjs tracks/track2_micro_saas/tokushogate/test/tokusho-engine.test.mjs tracks/track2_micro_saas/denchogate/test/dencho-engine.test.mjs tracks/track2_micro_saas/kojingate/test/kojin-engine.test.mjs tracks/track2_micro_saas/gensengate/test/gensen-engine.test.mjs
 .venv/bin/python scripts/run_studio_scan.py
 ```

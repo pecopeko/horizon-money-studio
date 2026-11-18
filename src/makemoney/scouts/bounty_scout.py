@@ -29,6 +29,7 @@ HONEYPOT_ORGS: frozenset[str] = frozenset(
         "ies-boilerroom",
         "zhangjiayang6835-cyber",
         "wholetroutmedia",
+        "relayhop",
     }
 )
 
@@ -212,6 +213,37 @@ def _normalize_search_query(query: str) -> str:
     return " ".join(part for part in parts if part)
 
 
+def _pulls_match_issue(
+    pulls: list[Any],
+    issue_number: int,
+    title_issue_re: re.Pattern[str],
+    body_issue_re: re.Pattern[str],
+    branch_issue_re: re.Pattern[str],
+    normalized_terms: tuple[str, ...],
+) -> bool:
+    """Return True if any PR dict in pulls matches issue_number or normalized_terms."""
+    for pr in pulls:
+        if not isinstance(pr, dict):
+            continue
+        title = str(pr.get("title") or "")
+        body = str(pr.get("body") or "")
+        head = pr.get("head")
+        head_ref = str(head.get("ref") or "") if isinstance(head, dict) else ""
+
+        if issue_number > 0 and (
+            title_issue_re.search(title)
+            or body_issue_re.search(body)
+            or branch_issue_re.search(head_ref)
+        ):
+            return True
+
+        if normalized_terms:
+            combined = f"{title}\n{body}\n{head_ref}".lower()
+            if any(term in combined for term in normalized_terms):
+                return True
+    return False
+
+
 def has_competing_open_pr(
     repo_full_name: str,
     issue_number: int,
@@ -219,6 +251,7 @@ def has_competing_open_pr(
     timeout_sec: float = 15.0,
     client: httpx.Client | None = None,
     max_pages: int = 4,
+    preloaded_pulls: list[dict[str, Any]] | None = None,
 ) -> bool:
     """Return True if any open PR in repo references the issue number or topic in title, body, or head branch."""
     if issue_number <= 0 and not topic_terms:
@@ -236,6 +269,23 @@ def has_competing_open_pr(
     )
     normalized_terms = tuple(term.strip().lower() for term in topic_terms if term and term.strip())
 
+    if preloaded_pulls is not None:
+        return _pulls_match_issue(
+            preloaded_pulls,
+            issue_number,
+            title_issue_re,
+            body_issue_re,
+            branch_issue_re,
+            normalized_terms,
+        )
+
+    existing_keys = {hk.lower() for hk in client.headers.keys()} if client is not None else set()
+    req_headers = (
+        {k: v for k, v in _build_github_headers().items() if k.lower() not in existing_keys}
+        if client is not None
+        else {}
+    )
+
     page_limit = max(1, max_pages)
     for page in range(1, page_limit + 1):
         params: dict[str, int | str] = {"state": "open", "per_page": 100}
@@ -246,6 +296,7 @@ def has_competing_open_pr(
             resp = client.get(
                 f"https://api.github.com/repos/{repo_full_name}/pulls",
                 params=params,
+                headers=req_headers,
             )
             resp.raise_for_status()
             pulls = resp.json()
@@ -261,25 +312,15 @@ def has_competing_open_pr(
         if not isinstance(pulls, list) or not pulls:
             return False
 
-        for pr in pulls:
-            if not isinstance(pr, dict):
-                continue
-            title = str(pr.get("title") or "")
-            body = str(pr.get("body") or "")
-            head = pr.get("head")
-            head_ref = str(head.get("ref") or "") if isinstance(head, dict) else ""
-
-            if issue_number > 0 and (
-                title_issue_re.search(title)
-                or body_issue_re.search(body)
-                or branch_issue_re.search(head_ref)
-            ):
-                return True
-
-            if normalized_terms:
-                combined = f"{title}\n{body}\n{head_ref}".lower()
-                if any(term in combined for term in normalized_terms):
-                    return True
+        if _pulls_match_issue(
+            pulls,
+            issue_number,
+            title_issue_re,
+            body_issue_re,
+            branch_issue_re,
+            normalized_terms,
+        ):
+            return True
 
         if len(pulls) < 100:
             break

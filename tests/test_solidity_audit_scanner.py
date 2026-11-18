@@ -123,3 +123,22 @@ def test_ignores_typed_interface_call_but_flags_raw_call() -> None:
     assert len(call_findings) == 1
     assert call_findings[0].line_number == 8
 
+
+def test_ignores_external_total_assets_and_flags_zero_slippage() -> None:
+    src = """
+    pragma solidity ^0.8.20;
+    contract AccountantHelper {
+        function readVault(IVault vault) external returns (uint256) {
+            uint256 tvl = vault.totalAssets();
+            swapRouter.exactInputSingle(Params({ amountOutMinimum: 0 }));
+            return tvl;
+        }
+    }
+    """
+    findings = scan_solidity_source(src, "src/AccountantHelper.sol")
+    rule_ids = [f.rule_id for f in findings]
+    assert "SOL-ERC4626-06" not in rule_ids
+    assert rule_ids == ["SOL-SLIPPAGE-07"]
+    assert findings[0].line_number == 6
+
+

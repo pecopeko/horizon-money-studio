@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-withholding-tax-shiharai-auditor",
+  "title": "Japan Withholding Tax (10.21%/20.42%), Gross-Up & Invoice 50% Cliff Auditor",
+  "description": "Calculate Japan Art. 204 withholding tax, gross-up pre-tax base from net target, NTA No. 6929 VAT bundling warnings, post-2026-10 50% Qualified Invoice deduction cliff impact, and Shiharai-Chosho flags.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

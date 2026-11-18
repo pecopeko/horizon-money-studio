@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GENSENGATE 源泉門 | 源泉徴収(10.21%/20.42%)・グロスアップ逆算・2026年10月インボイス50%＆支払調書台帳</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで報酬の源泉徴収税額（所得税法第204条・No.6929税抜き区分判定）、手取り目標グロスアップ逆算、2026年10月インボイス経過措置50%負担試算、年間支払調書集計CSVを生成します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">源泉</span>
+        <div>
+          <h1>GENSENGATE <span class="title-sub">源泉門</span></h1>
+          <p class="subtitle">報酬源泉徴収（10.21%／20.42%）・手取り逆算・2026年10月インボイス50%負担＆支払調書（年5万円超）ローカル計算台帳</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル計算</span>
+        <span class="trust-pill" data-ui="badge">国税庁 No.6929 / Mod-9 準拠</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 単発報酬の源泉・インボイス負担検算</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-1m" class="btn-secondary" data-ui="btn">100万円超サンプル</button>
+            <button type="button" id="btn-sample-noinv" class="btn-secondary" data-ui="btn">免税事業者サンプル</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            入力金額（円）
+            <input id="input-amount" type="number" min="0" step="1" value="110000" />
+          </label>
+          <label>
+            適格請求書T番号（任意）
+            <input id="input-tnum" type="text" value="T7000012050002" />
+          </label>
+          <label>
+            支払先の区分
+            <select id="sel-payee-type">
+              <option value="individual" selected>個人（フリーランス・士業）</option>
+              <option value="corporation">法人（204条源泉不要）</option>
+            </select>
+          </label>
+          <label>
+            業務カテゴリ
+            <select id="sel-category">
+              <option value="standard" selected>一般報酬（原稿・デザイン・IT顧問等）</option>
+              <option value="judicial_scrivener">司法書士・土地家屋調査士（1万円控除）</option>
+            </select>
+          </label>
+          <label>
+            入力金額の税込／税抜
+            <select id="sel-tax-inc">
+              <option value="included" selected>税込総額を入力</option>
+              <option value="excluded">税抜本体価格を入力</option>
+            </select>
+          </label>
+          <label>
+            インボイス経過措置期間
+            <select id="sel-period">
+              <option value="post_2026_10" selected>2026年10月〜（控除50%・非控除損50%）</option>
+              <option value="pre_2026_10">〜2026年9月（控除80%・非控除損20%）</option>
+              <option value="post_2029_10">2029年10月〜（控除0%・非控除損100%）</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="run-bar">
+          <label class="checkbox-inline">
+            <input type="checkbox" id="chk-separated" checked />
+            <span>請求書に本体価額と消費税額が明確区分されている（No.6929適用）</span>
+          </label>
+          <button type="button" id="btn-calc" class="btn-primary" data-ui="btn">源泉税・手取りを計算</button>
+        </div>
+
+        <hr class="spacer-rule" data-ui="rule" />
+
+        <div class="panel-head">
+          <h2>2. 手取り希望額からのグロスアップ逆算</h2>
+        </div>
+        <div class="grossup-row">
+          <label>
+            支払先に残したい手取り振込額（円）
+            <input id="input-target-net" type="number" min="0" step="1" value="100000" />
+          </label>
+          <button type="button" id="btn-grossup" class="btn-secondary" data-ui="btn">請求本体額を逆算</button>
+        </div>
+        <div id="grossup-result" class="notice-box" data-ui="notice">
+          目標手取りを入力して「請求本体額を逆算」を押すと、1円単位で整合する契約本体金額と消費税額を算出します。
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>3. 計算結果・警告サマリー</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">計算待ち</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">源泉徴収税額（納付額）</span>
+            <strong id="metric-withholding" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">差引 銀行振込額</span>
+            <strong id="metric-net" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">非インボイス実質負担増</span>
+            <strong id="metric-unrecoverable" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <div id="single-breakdown" class="breakdown-box" data-ui="notice">
+          左欄の条件で「源泉税・手取りを計算」すると詳細内訳が表示されます。
+        </div>
+
+        <div id="warnings-box" class="warnings-list"></div>
+
+        <div class="draft-head">
+          <h3>4. 年間『支払調書』（年5万円超）CSV台帳集計</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-aggregate" class="btn-secondary" data-ui="btn">台帳を集計</button>
+            <button type="button" id="btn-download-csv" class="btn-secondary" data-ui="btn">支払調書CSV保存</button>
+          </div>
+        </div>
+        <label class="field-block">
+          取引明細CSV（支払先名称,T番号,税込支払額,税抜区分有無）
+          <textarea id="input-ledger-rows" rows="5"></textarea>
+        </label>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>支払先</th>
+                <th>T番号検算</th>
+                <th>年間支払総額</th>
+                <th>源泉累計</th>
+                <th>調書判定</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-tbody">
+              <tr><td colspan="5" class="muted-cell">「台帳を集計」を押すと支払先別の要提出判定を表示します。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>GENSENGATE 源泉門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・税務申告の最終確認は税理士または所轄税務署へご確認ください）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

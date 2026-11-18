@@ -166,10 +166,24 @@ _Showing top 40 of 42 deterministic pattern hits._
 
 ## Repository: `https://github.com/sherlock-audit/2025-05-yearn-ybold.git`
 - Non-test/non-interface `.sol` files scanned: `7`
-- Candidate pattern hits: `3`
+- Candidate pattern hits: `2` (re-scanned after `SOL-ERC4626-06` non-vault `vault.totalAssets()` filter; removed `Accountant.sol` false positive)
 
 | Rule ID | Severity | File | Line | Snippet |
 |---|---|---|---:|---|
 | `SOL-PRECISION-01` | Medium | `yv3-liquityv2-sp-strategy/src/Strategy.sol` | 241 | `AUCTION.setStartingPrice(_available * _price / WAD * _bufferPercentage / WAD / WAD);` |
-| `SOL-ERC4626-06` | High | `yv3-liquityv2-sp-strategy/src/periphery/Accountant.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
 | `SOL-PRECISION-01` | Medium | `yv3-liquityv2-sp-strategy/src/periphery/StrategyAprOracle.sol` | 115 | `return _weightedInterestRate / _totalDebt * _totalDebt / uint256(int256(_stabilityPoolDeposits) + _delta)` |
+
+## Repository: `https://github.com/sherlock-audit/2025-06-symbiotic-relay.git`
+- Non-test/non-interface `.sol` files scanned: `48`
+- Candidate pattern hits: `4`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-CALL-05` | Medium | `middleware-sdk/script/integration/SymbioticInit.sol` | 111 | `to.call{value: give}("");` |
+| `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 88 | `(success, response) = slasher.call(` |
+| `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 96 | `(success, response) = slasher.call(` |
+| `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 129 | `(success, response) = slasher.call(abi.encodeCall(IVetoSlasher.executeSlash, (slashIndex, hints)));` |
+
+## Repository: `https://github.com/sherlock-audit/2025-07-allbridge-core-yield.git`
+- Non-test/non-interface `.sol` files scanned: `3`
+- Candidate pattern hits: `0` (clean on static rules across `3` contracts; substituted after `code-423n4/2026-04-k2` & `2026-02-jupiter-lend` returned `0` `.sol` files)

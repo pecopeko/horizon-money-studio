@@ -23,11 +23,12 @@ class SolidityFinding:
 
 _DIV_BEFORE_MUL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_\.]*\s*/\s*[A-Za-z0-9_\.\(\)]+\s*\)?\s*\*\s*[A-Za-z_][A-Za-z0-9_\.]*")
 _TX_ORIGIN_RE = re.compile(r"\btx\.origin\b")
-_ERC4626_HEADER_RE = re.compile(r"\b(ERC4626|totalAssets\s*\(|convertToShares\s*\()")
+_ERC4626_HEADER_RE = re.compile(r"\b(?:ERC4626(?:Upgradeable)?\b|function\s+convertToShares\s*\()")
 _ERC4626_OFFSET_RE = re.compile(r"(_decimalsOffset|virtualAssets|virtualShares|1e\d+)")
 _ORACLE_CALL_RE = re.compile(r"latestRoundData\s*\(")
 _TRANSFER_FROM_RE = re.compile(r"\.safeTransferFrom\(|\.transferFrom\(")
 _UNCHECKED_LOW_LEVEL_RE = re.compile(r"\.call\s*(?:\{[^}]*\})?\s*\(")
+_ZERO_SLIPPAGE_RE = re.compile(r"\b(?:amountOutMinimum|amountOutMin|minAmountOut|minOut|minSharesOut)\s*[:=]\s*0\b")
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -168,6 +169,18 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         rationale="Ignoring low-level .call success bool silently swallows failed ETH/contract execution.",
                     )
                 )
+        if _ZERO_SLIPPAGE_RE.search(stripped):
+            findings.append(
+                SolidityFinding(
+                    rule_id="SOL-SLIPPAGE-07",
+                    severity="High",
+                    title="Hardcoded zero slippage protection in swap/liquidity call",
+                    file_path=file_path,
+                    line_number=idx,
+                    snippet=stripped[:140],
+                    rationale="Hardcoding minimum output/shares to zero exposes swaps and vault withdrawals to MEV sandwich attacks.",
+                )
+            )
 
     is_concrete_or_abstract_contract = bool(
         re.search(r"\b(?:abstract\s+)?contract\s+[A-Za-z_]", joined)

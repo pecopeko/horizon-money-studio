@@ -439,3 +439,26 @@ def test_has_cross_repo_timeline_open_pr_with_mock_transport() -> None:
     with httpx.Client(transport=httpx.MockTransport(closed_only_handler)) as client:
         assert has_cross_repo_timeline_open_pr("tscircuit/tscircuit", 1000, client=client) is False
 
+
+def test_wave7_relayhop_honeypot_and_preloaded_pulls_zero_network() -> None:
+    assert "relayhop" in HONEYPOT_ORGS
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/relayhop/sn-monetization-runtime",
+                "title": "[radar] SN open bounty",
+                "labels": ["bounty"],
+            }
+        )
+        is True
+    )
+
+    sample_pulls = [
+        {"title": "Unrelated docs tweak", "body": "", "head": {"ref": "docs/readme"}},
+        {"title": "fix: resolve edge case", "body": "Fixes #777", "head": {"ref": "fix/777"}},
+    ]
+    # Uses preloaded_pulls without passing or creating network calls.
+    assert has_competing_open_pr("org/repo", 777, preloaded_pulls=sample_pulls) is True
+    assert has_competing_open_pr("org/repo", 888, preloaded_pulls=sample_pulls) is False
+
+

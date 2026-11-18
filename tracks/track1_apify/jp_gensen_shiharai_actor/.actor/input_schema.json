@@ -1,0 +1,24 @@
+{
+  "title": "Japan Withholding Tax & Shiharai-Chosho Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Vendor Payment Records or Net Targets to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "amount_yen": 110000,
+          "tax_included_on_invoice": true,
+          "tax_excluded_specified": true,
+          "invoice_id": "T7000012050002",
+          "payee_type": "individual",
+          "category": "standard",
+          "period": "post_2026_10"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

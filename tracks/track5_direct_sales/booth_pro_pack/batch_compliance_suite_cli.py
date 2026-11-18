@@ -17,6 +17,7 @@ from typing import Any
 from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_jp_business_text
 from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
+from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
 from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
@@ -36,8 +37,9 @@ def run_offline_compliance_audit(
     dencho_column: str = "dencho_record",
     privacy_column: str = "privacy_text",
     scripts_column: str = "script_tags_text",
+    fee_column: str = "fee_yen",
 ) -> dict[str, Any]:
-    """Audit rows across PII, Yakki/Keihyo, Invoice Mod-9, Zengin kana, Contract, Tokushoho, Dencho-ho, and APPI."""
+    """Audit rows across 8 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -47,6 +49,7 @@ def run_offline_compliance_audit(
     tokusho_flagged = 0
     dencho_noncompliant = 0
     appi_flagged = 0
+    gensen_audited = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -82,6 +85,22 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_fee = str(row.get(fee_column) or "").replace(",", "").strip()
+        gensen_res = (
+            calculate_gensen_item(
+                int(float(raw_fee)),
+                invoice_id=raw_id,
+                has_valid_invoice=bool(id_res and id_res["valid"]) if raw_id else False,
+                tax_included_on_invoice=True,
+                tax_excluded_specified=str(row.get("tax_excluded_specified") or "").strip().lower() in {"1", "true", "yes"},
+                payee_type=str(row.get("payee_type") or "individual").strip().lower() or "individual",
+                category=str(row.get("fee_category") or "standard").strip() or "standard",
+                period="post_2026_10",
+            )
+            if raw_fee
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -96,6 +115,8 @@ def run_offline_compliance_audit(
             dencho_noncompliant += 1
         if appi_res and appi_res["status"] != "pass":
             appi_flagged += 1
+        if gensen_res is not None:
+            gensen_audited += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -115,6 +136,8 @@ def run_offline_compliance_audit(
             row_entry["dencho_check"] = dencho_res
         if appi_res is not None:
             row_entry["appi_audit"] = appi_res
+        if gensen_res is not None:
+            row_entry["gensen_check"] = gensen_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -128,6 +151,7 @@ def run_offline_compliance_audit(
         "tokusho_flagged_rows": tokusho_flagged,
         "dencho_noncompliant_rows": dencho_noncompliant,
         "appi_flagged_rows": appi_flagged,
+        "gensen_audited_rows": gensen_audited,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
