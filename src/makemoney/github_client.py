@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import time
 from typing import Any
 
 import httpx
@@ -59,8 +60,19 @@ def github_api_request(
         headers["Authorization"] = f"Bearer {token}"
 
     url = path if path.startswith("https://") else f"{GITHUB_API_BASE}{path}"
+    backoffs = (0.6, 1.4)
+    resp: httpx.Response | None = None
     with httpx.Client(timeout=timeout_sec, headers=headers) as client:
-        resp = client.request(method.upper(), url, json=payload, params=params)
+        for attempt in range(len(backoffs) + 1):
+            try:
+                resp = client.request(method.upper(), url, json=payload, params=params)
+                break
+            except httpx.TransportError:
+                if attempt >= len(backoffs):
+                    raise
+                time.sleep(backoffs[attempt])
+
+        assert resp is not None
         if resp.status_code >= 400:
             try:
                 err_body = resp.json()

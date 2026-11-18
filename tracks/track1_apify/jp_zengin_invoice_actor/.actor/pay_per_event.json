@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "record_validated": {
+        "eventTitle": "Record Validated",
+        "eventDescription": "Charged per Invoice ID, Zengin name, or 120-byte line validated.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.001
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.02,
+  "isPPEPlatformUsagePaidByUser": false
+}

@@ -1,0 +1,25 @@
+{
+  "title": "JP Invoice & Zengin Validator Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "identifiers": {
+      "title": "Invoice / Corporate IDs",
+      "type": "array",
+      "editor": "stringList",
+      "default": ["T7000012050002", "T8000012050002"]
+    },
+    "zenginNames": {
+      "title": "Payee Names to Normalize",
+      "type": "array",
+      "editor": "stringList",
+      "default": ["株式会社ぎょうせいきかく"]
+    },
+    "zenginLines": {
+      "title": "Zengin 120-Byte Lines to Check",
+      "type": "array",
+      "editor": "stringList",
+      "default": []
+    }
+  }
+}

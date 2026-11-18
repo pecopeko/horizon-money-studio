@@ -1,0 +1,24 @@
+{
+  "title": "Shopify Public Catalog Extractor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "storeUrl": {
+      "title": "Shopify Store Base URL",
+      "type": "string",
+      "editor": "textfield",
+      "default": "https://shop.example.org"
+    },
+    "collection": {
+      "title": "Collection Handle (optional)",
+      "type": "string",
+      "editor": "textfield"
+    },
+    "maxPages": {
+      "title": "Max Pages (250 products/page)",
+      "type": "integer",
+      "default": 3
+    }
+  },
+  "required": ["storeUrl"]
+}

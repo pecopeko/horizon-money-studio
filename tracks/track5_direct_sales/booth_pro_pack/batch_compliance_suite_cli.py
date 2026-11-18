@@ -1,0 +1,123 @@
+"""Offline B2B Compliance Suite CLI (PII + Yakki/Keihyo + Qualified Invoice/Zengin).
+
+Bundled inside BOOTH / Gumroad Japan B2B Compliance Pro Suite v1.0.0.
+Runs 100% offline with zero network calls and emits SHA-256 signed audit reports.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_jp_business_text
+from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
+from tracks.track1_apify.jp_zengin_invoice_actor.main import (
+    to_zengin_halfwidth,
+    verify_corporate_or_invoice_id,
+)
+
+
+def run_offline_compliance_audit(
+    rows: list[dict[str, str]],
+    text_column: str = "text",
+    id_column: str = "invoice_id",
+    payee_column: str = "payee_name",
+) -> dict[str, Any]:
+    """Audit rows across PII redaction, Yakki/Keihyo rules, Invoice Mod-9, and Zengin kana."""
+    guard = ComplianceGuardEngine()
+    audited_rows: list[dict[str, Any]] = []
+    pii_total = 0
+    yakki_flagged = 0
+    invalid_ids = 0
+
+    for idx, row in enumerate(rows, 1):
+        raw_text = str(row.get(text_column) or "")
+        normalized_text = normalize_jp_business_text(raw_text) if raw_text else ""
+        pii_res = guard.redact(normalized_text) if normalized_text else None
+        yakki_res = audit_ad_copy_item(raw_text) if raw_text else None
+
+        raw_id = str(row.get(id_column) or "").strip()
+        id_res = verify_corporate_or_invoice_id(raw_id) if raw_id else None
+
+        raw_payee = str(row.get(payee_column) or "").strip()
+        kana_res = to_zengin_halfwidth(raw_payee) if raw_payee else None
+
+        finding_cnt = len(pii_res.findings) if pii_res else 0
+        pii_total += finding_cnt
+        if yakki_res and yakki_res["findings_count"] > 0:
+            yakki_flagged += 1
+        if id_res and not id_res["valid"]:
+            invalid_ids += 1
+
+        audited_rows.append(
+            {
+                "row": idx,
+                "redacted_text": pii_res.redacted_text if pii_res else "",
+                "pii_count": finding_cnt,
+                "injection_risk_score": pii_res.injection_risk_score if pii_res else 0.0,
+                "yakki_risk_score": yakki_res["risk_score"] if yakki_res else 0,
+                "yakki_label": yakki_res["predicted_label"] if yakki_res else "compliant",
+                "invoice_check": id_res,
+                "zengin_payee": kana_res,
+            }
+        )
+
+    payload: dict[str, Any] = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "network_calls": 0,
+        "total_rows": len(audited_rows),
+        "total_pii_masked": pii_total,
+        "yakki_flagged_rows": yakki_flagged,
+        "invalid_invoice_ids": invalid_ids,
+        "rows": audited_rows,
+    }
+    digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+    payload["sha256_integrity_digest"] = digest
+    return payload
+
+
+def audit_csv_file(input_csv: str | Path, output_json: str | Path, output_md: str | Path | None = None) -> dict[str, Any]:
+    """Read input UTF-8 CSV, audit offline, and write SHA-256 signed JSON (+ optional Markdown) report."""
+    in_path = Path(input_csv)
+    with in_path.open("r", encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    report = run_offline_compliance_audit(rows)
+
+    out_json_path = Path(output_json)
+    out_json_path.parent.mkdir(parents=True, exist_ok=True)
+    out_json_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    if output_md is not None:
+        md_path = Path(output_md)
+        md_path.parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "# 日本B2Bコンプライアンス一括監査証明書（オフライン生成）",
+            "",
+            f"- 監査時刻 (UTC): `{report['generated_utc']}`",
+            "- 外部通信: `0 回`（完全ローカル実行）",
+            f"- 審査行数: `{report['total_rows']}` 件 / PIIマスク件数: `{report['total_pii_masked']}` / 広告NG行: `{report['yakki_flagged_rows']}` / T番号不整合: `{report['invalid_invoice_ids']}`",
+            f"- SHA-256 改ざん検証ハッシュ: `{report['sha256_integrity_digest']}`",
+            "",
+        ]
+        md_path.write_text("\n".join(lines), encoding="utf-8")
+
+    return report
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Offline Japanese B2B Compliance Suite CLI")
+    parser.add_argument("--input", required=True, help="Input CSV path (columns: text, invoice_id, payee_name)")
+    parser.add_argument("--json-out", required=True, help="Output JSON audit report path")
+    parser.add_argument("--md-out", default="", help="Optional Markdown certificate path")
+    args = parser.parse_args()
+    res = audit_csv_file(args.input, args.json_out, args.md_out or None)
+    print(f"Audited {res['total_rows']} rows offline. SHA256={res['sha256_integrity_digest']}")
+
+
+if __name__ == "__main__":
+    main()

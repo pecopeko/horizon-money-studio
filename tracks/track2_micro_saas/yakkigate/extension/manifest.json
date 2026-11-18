@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "YAKKIGATE（薬影）ローカル薬機法・景表法チェッカー",
+  "short_name": "YAKKIGATE",
+  "version": "1.0.0",
+  "description": "選択テキストや貼付原稿の薬機法・景品表示法・ステマ規制リスクを完全オフラインでチェック（通信ゼロ）。",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "YAKKIGATE ローカル監査"
+  }
+}

@@ -46,6 +46,23 @@
   - `bun test --timeout 30000 tests/utils/schematic/schematic-component-outline-color.test.tsx tests/components/primitive-components/schematic-rect.test.tsx tests/components/primitive-components/schematic-line.test.tsx tests/components/primitive-components/schematic-circle.test.tsx tests/components/primitive-components/schematic-arc.test.tsx tests/components/primitive-components/port-sch-stem-length.test.tsx`: **6 pass, 0 fail** (33 `expect()` calls)
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
+### 4. `tscircuit/core#3521` -> [PR #5689](https://github.com/tscircuit/core/pull/5689) (Open)
+- **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/core/issues/3521 (`Trace schDisplayLabel on branched connectivity becomes schematic_net_label`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 3521) == False`)
+- **Fork & Branch**: `pecopeko:fix/branched-trace-inline-display-label-3521` (`86e5477`)
+- **Root Cause**: When branched trace connectivity (`>2` schematic ports without `<net>`) was converted solely into pairwise `directConnections`, `applyInlineNetLabelEligibility` skipped them due to `portsOnNet?.length === 2`, causing `schDisplayLabel` to fall back to `schematic_net_label` without `source_trace_id`. In composed subcircuits, `selectAll("trace")` also stopped at child `<subcircuit>` boundaries when resolving trace ownership.
+- **Fix Summary**:
+  - Updated `createSchematicTraceSolverInputProblem.ts` to emit an internal-flagged `netConnections` entry for routable, non-ground, explicitly labeled 3+ port trace networks (stripped at solver boundary).
+  - Updated `applyInlineNetLabelEligibility.ts` to allow `isBranchedTraceConnection` eligibility alongside explicit port-to-net traces.
+  - Updated `applyInlineNetLabelPlacements.ts` to index `Trace` components across child subcircuits via `getDescendants()` and match `schDisplayLabel` / `displayName` / `name` / `mspPairId` when assigning `source_trace_id`.
+  - Added regression coverage in `tests/features/schematic-inline-net-label/inline-net-label7.test.tsx` (single 3-port path and two-trace standalone + composed subcircuits). Zero existing upstream snapshots modified.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `./node_modules/.bin/biome check` on 4 touched files: **Checked 4 files, 0 issues**
+  - `bun test --timeout 30000 tests/features/schematic-inline-net-label/inline-net-label7.test.tsx tests/examples/example10-schDisplayLabel.test.tsx tests/examples/example11-net-symbol.test.tsx tests/components/primitive-components/schematic-section-2.test.tsx tests/components/trace/multiple-net-labels.test.tsx`: **6 pass, 0 fail** (19 `expect()` calls)
+  - `bun test --timeout 30000 tests/features/schematic-inline-net-label/ tests/features/schematic-net-superscripts/ tests/repros/repro157-three-way-transistor-base-junction.test.tsx`: **13 pass, 0 fail** (74 `expect()` calls)
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
 - Flagged non-cash credit-only org: `hanzoai` (rewards in platform credits rather than cash)

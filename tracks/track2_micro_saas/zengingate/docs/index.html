@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZENGINGATE（全銀門）：適格請求書T番号・全銀120バイト振込データ ブラウザ検証＆変換</title>
+  <meta name="description" content="100%ブラウザローカル完結・銀行口座データの社外送信ゼロで適格請求書T番号（Mod-9）検証、全銀協半角カナ自動補正、120バイト総合振込データ生成・検算を実施。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar" data-ui="bar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <span class="brand__seal" aria-hidden="true">銀</span>
+        <div>
+          <strong class="brand__name">ZENGINGATE 全銀門</strong>
+          <span class="brand__sub">100% ブラウザ内処理 / 口座・請求情報の社外送信ゼロ</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主要機能">
+        <a href="#csv-zengin">CSV全銀変換</a>
+        <a href="#zengin-audit">120バイト検算</a>
+        <a href="#invoice-check">T番号一括検証</a>
+        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
+        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>全銀120バイト総合振込データ変換と、適格請求書T番号の厳格検査を手元だけで。</h1>
+      <p class="intro__lead">
+        振込先名義のひらがな・全角カナ・「株式会社」・濁点/半濁点（1バイト分離計算）や小書き文字（ｧ→ｱ・ｯ→ﾂ）を全銀協規格へ自動補正し、120バイト固定長ファイル生成とトレーラ合計検算まで外部通信ゼロで実行します。
+      </p>
+    </section>
+
+    <section id="csv-zengin" class="panel" data-ui="converter">
+      <div class="panel__head">
+        <h2>1. カンマ区切り明細 → 全銀協120バイト総合振込データ生成</h2>
+        <button type="button" id="loadSampleCsvBtn" class="chip">サンプル明細を読込</button>
+      </div>
+      <div class="grid-3">
+        <label class="field">
+          <span>委託者名（カナ/最大40バイト）</span>
+          <input type="text" id="reqNameInput" value="株式会社ホライゾン">
+        </label>
+        <label class="field">
+          <span>委託者コード（数字10桁）</span>
+          <input type="text" id="reqCodeInput" value="0000123456">
+        </label>
+        <label class="field">
+          <span>振込指定日（MMDD）</span>
+          <input type="text" id="transferDateInput" value="1125">
+        </label>
+      </div>
+      <p class="hint">列順：銀行コード,銀行名カナ,支店コード,支店名カナ,預金種目(1普通/2当座),口座番号,受取人名義,振込金額</p>
+      <textarea id="csvRowsInput" rows="5"></textarea>
+      <div class="actions">
+        <button type="button" id="generateZenginBtn" class="btn-primary">全銀120バイトを生成</button>
+        <button type="button" id="downloadZenginBtn" class="btn-outline">ZENGIN (.txt / CRLF) を保存</button>
+      </div>
+      <div id="genSummary" class="status-box"></div>
+      <pre id="zenginPreview" class="code-box"></pre>
+    </section>
+
+    <section id="zengin-audit" class="panel" data-ui="auditor">
+      <div class="panel__head">
+        <h2>2. 既存全銀120バイトデータ 構文・合計検算チェック</h2>
+        <button type="button" id="auditZenginBtn" class="btn-outline">120バイト検査を実行</button>
+      </div>
+      <textarea id="zenginRawInput" rows="5" placeholder="ヘッダ(区分1)からエンド(区分9)までの全銀固定長データを貼り付けてください。"></textarea>
+      <div id="zenginAuditOutput" class="status-box"></div>
+    </section>
+
+    <section id="invoice-check" class="panel" data-ui="invoice">
+      <div class="panel__head">
+        <h2>3. 適格請求書T番号（T+13桁）・法人番号（13桁）Mod-9 一括検証</h2>
+        <button type="button" id="checkIdsBtn" class="btn-outline">チェックデジット検査を実行</button>
+      </div>
+      <textarea id="idsInput" rows="4" placeholder="1行に1件ずつ T番号または13桁法人番号を入力してください。">Ｔ７００００１２０５０００２
+T8000012050002
+70000-1205-0002
+1234567890123</textarea>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>行</th>
+              <th>種別</th>
+              <th>正規化ID</th>
+              <th>判定</th>
+              <th>根拠・詳細</th>
+            </tr>
+          </thead>
+          <tbody id="idsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel ext-box" data-ui="kit">
+      <div>
+        <h2>オフライン配布キット v1.0.0 ＆ 関連ツール</h2>
+        <p>社内閉域網やインターネット非接続端末でもそのまま開ける静的HTML/ESMパッケージとソースコードを公開しています。</p>
+      </div>
+      <div class="actions">
+        <a class="btn-primary" href="https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip">オフラインZIPを保存</a>
+        <a class="btn-outline" href="https://pecopeko.github.io/yakkigate/" target="_blank" rel="noopener">YAKKIGATE（薬機法監査）</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>ZENGINGATE（全銀門）：100%ローカル処理・ブラウザ外へのデータ送信なし</span>
+      <span><a href="https://github.com/pecopeko/zengingate" target="_blank" rel="noopener">GitHub pecopeko/zengingate</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

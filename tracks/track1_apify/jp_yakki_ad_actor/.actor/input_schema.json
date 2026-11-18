@@ -1,0 +1,17 @@
+{
+  "title": "JP Yakki-ho & Keihyo-ho Ad Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "texts": {
+      "title": "Ad Copies to Audit",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of Japanese LP headlines, product copy, or SNS draft texts.",
+      "default": [
+        "この化粧水でシミが完全に消えます！口コミNo.1！"
+      ]
+    }
+  },
+  "required": ["texts"]
+}

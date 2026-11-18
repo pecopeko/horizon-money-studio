@@ -1,0 +1,25 @@
+{
+  "title": "SEC EDGAR Extractor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "identifiers": {
+      "title": "Tickers or 10-Digit CIKs",
+      "type": "array",
+      "editor": "stringList",
+      "default": ["0000320193"]
+    },
+    "forms": {
+      "title": "Filing Form Types",
+      "type": "array",
+      "editor": "stringList",
+      "default": ["8-K", "10-K", "10-Q"]
+    },
+    "limitPerCompany": {
+      "title": "Recent Filings per Company",
+      "type": "integer",
+      "default": 5
+    }
+  },
+  "required": ["identifiers"]
+}
