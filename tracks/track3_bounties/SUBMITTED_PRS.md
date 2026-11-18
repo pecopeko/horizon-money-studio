@@ -110,6 +110,21 @@
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
   - `bun test --timeout 45000 tests/cli/make-vfs-bundle-hygiene.test.ts tests/cli/export/export-output-path.test.ts tests/cli/build/build.test.ts`: **17 pass, 0 fail** (103 `expect()` calls)
 
+### 8. `tscircuit/core#3520` -> [PR #5704](https://github.com/tscircuit/core/pull/5704) (Open)
+- **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/core/issues/3520 (`schematicsymbol schRotation is ignored for oriented native symbols`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 3520, max_pages=4) == False`)
+- **Fork & Branch**: `pecopeko:fix/schematic-symbol-oriented-rotation-3520` (`b1125be`)
+- **Root Cause**: `PrimitiveComponent._getSchematicSymbolName()` remapped oriented native symbols such as `opamp_with_power_left` @ `schRotation={180}` onto `opamp_with_power_right`, which is mirrored across the X-axis in `schematic-symbols` (`inp1/+` remains upper-left instead of rotating geometrically to lower-left). Because `circuit-to-svg` matches `symbol_name` ports solely by unrotated angle, reusing mismatched `symbol_name` drops the requested 180° rotation.
+- **Fix Summary**:
+  - Added `lib/components/primitive-components/SchematicSymbol/getSchematicSymbolWithRotation.ts` to verify whether rotated port and static-label offsets align with `resolvedSymbol`, keeping `mode: "native"` for unrotated symbols, matching library rotations (`opamp_with_power_right` @ `90` -> `opamp_with_power_up`), and `_horz`/`_vert` quarter-turns.
+  - Otherwise geometrically rotates the raw `SchSymbol` (`primitives`, `ports`, `size`, and 9-point text anchors CCW) around `symbol.center` and materializes Circuit JSON schematic primitives with `is_box_with_pins: false`.
+  - Updated `SchematicSymbol.ts` and `SchematicSymbol_doInitialSchematicComponentRender.ts` and added regression tests + snapshot in `tests/components/primitive-components/schematic-symbol-oriented-rotation.test.tsx`.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `./node_modules/.bin/biome check lib/components/primitive-components/SchematicSymbol/ tests/components/primitive-components/schematic-symbol-oriented-rotation.test.tsx`: **Checked 5 files, 0 issues**
+  - `bun test --timeout 90000 tests/components/primitive-components/schematic-symbol-oriented-rotation.test.tsx tests/components/primitive-components/schematic-symbol-element.test.tsx tests/components/primitive-components/schematic-symbol-schRotation.test.tsx tests/components/primitive-components/schematic-symbol-two-sheets-mosfet-opamp.test.tsx tests/components/primitive-components/schematic-symbol-connections-mosfet.test.tsx tests/components/primitive-components/schematic-symbol-speaker.test.tsx`: **7 pass, 0 fail** (21 `expect()` calls)
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
 - Flagged non-cash credit-only org: `hanzoai` (rewards in platform credits rather than cash)

@@ -1,0 +1,31 @@
+{
+  "title": "OSS SBOM Copyleft & Procurement License Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Dependency Manifests or Package Lists to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "repo_name": "acme/saas-api",
+          "package_json": {
+            "name": "saas-api",
+            "license": "Proprietary",
+            "dependencies": {
+              "express": "^4.19.2",
+              "custom-fork": "git+https://github.com/example/fork.git",
+              "any-pkg": "*"
+            }
+          },
+          "packages": [
+            {"name": "express", "version": "4.19.2", "license": "MIT"},
+            {"name": "agpl-worker", "version": "1.2.0", "license": "AGPL-3.0-only"}
+          ]
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

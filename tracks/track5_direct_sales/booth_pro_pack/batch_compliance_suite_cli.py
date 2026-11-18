@@ -15,6 +15,9 @@ from pathlib import Path
 from typing import Any
 
 from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_jp_business_text
+from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
+from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
+from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
 from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
 from tracks.track1_apify.jp_zengin_invoice_actor.main import (
     to_zengin_halfwidth,
@@ -27,13 +30,19 @@ def run_offline_compliance_audit(
     text_column: str = "text",
     id_column: str = "invoice_id",
     payee_column: str = "payee_name",
+    contract_column: str = "contract_text",
+    tokusho_column: str = "tokusho_text",
+    dencho_column: str = "dencho_record",
 ) -> dict[str, Any]:
-    """Audit rows across PII redaction, Yakki/Keihyo rules, Invoice Mod-9, and Zengin kana."""
+    """Audit rows across PII, Yakki/Keihyo, Invoice Mod-9, Zengin kana, Contract, Tokushoho, and Dencho-ho."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
     yakki_flagged = 0
     invalid_ids = 0
+    keiyaku_flagged = 0
+    tokusho_flagged = 0
+    dencho_noncompliant = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -47,25 +56,50 @@ def run_offline_compliance_audit(
         raw_payee = str(row.get(payee_column) or "").strip()
         kana_res = to_zengin_halfwidth(raw_payee) if raw_payee else None
 
+        raw_contract = str(row.get(contract_column) or "").strip()
+        keiyaku_res = audit_jp_contract_item(raw_contract) if raw_contract else None
+
+        raw_tokusho = str(row.get(tokusho_column) or "").strip()
+        raw_checkout = str(row.get("checkout_text") or "").strip()
+        tokusho_res = (
+            audit_tokusho_item(raw_tokusho, checkout_text=raw_checkout)
+            if raw_tokusho
+            else None
+        )
+
+        raw_dencho = str(row.get(dencho_column) or "").strip()
+        dencho_res = validate_denchoho_record(raw_dencho) if raw_dencho else None
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
             yakki_flagged += 1
         if id_res and not id_res["valid"]:
             invalid_ids += 1
+        if keiyaku_res and keiyaku_res["findings_count"] > 0:
+            keiyaku_flagged += 1
+        if tokusho_res and tokusho_res["underwriting_status"] != "pass":
+            tokusho_flagged += 1
+        if dencho_res and not dencho_res["compliant"]:
+            dencho_noncompliant += 1
 
-        audited_rows.append(
-            {
-                "row": idx,
-                "redacted_text": pii_res.redacted_text if pii_res else "",
-                "pii_count": finding_cnt,
-                "injection_risk_score": pii_res.injection_risk_score if pii_res else 0.0,
-                "yakki_risk_score": yakki_res["risk_score"] if yakki_res else 0,
-                "yakki_label": yakki_res["predicted_label"] if yakki_res else "compliant",
-                "invoice_check": id_res,
-                "zengin_payee": kana_res,
-            }
-        )
+        row_entry: dict[str, Any] = {
+            "row": idx,
+            "redacted_text": pii_res.redacted_text if pii_res else "",
+            "pii_count": finding_cnt,
+            "injection_risk_score": pii_res.injection_risk_score if pii_res else 0.0,
+            "yakki_risk_score": yakki_res["risk_score"] if yakki_res else 0,
+            "yakki_label": yakki_res["predicted_label"] if yakki_res else "compliant",
+            "invoice_check": id_res,
+            "zengin_payee": kana_res,
+        }
+        if keiyaku_res is not None:
+            row_entry["keiyaku_audit"] = keiyaku_res
+        if tokusho_res is not None:
+            row_entry["tokusho_audit"] = tokusho_res
+        if dencho_res is not None:
+            row_entry["dencho_check"] = dencho_res
+        audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
@@ -74,6 +108,9 @@ def run_offline_compliance_audit(
         "total_pii_masked": pii_total,
         "yakki_flagged_rows": yakki_flagged,
         "invalid_invoice_ids": invalid_ids,
+        "keiyaku_flagged_rows": keiyaku_flagged,
+        "tokusho_flagged_rows": tokusho_flagged,
+        "dencho_noncompliant_rows": dencho_noncompliant,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

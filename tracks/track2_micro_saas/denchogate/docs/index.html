@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DENCHOGATE（電帳門）：改正電子帳簿保存法 検索ファイル名一括変換・索引簿CSV・要件監査</title>
+  <meta name="description" content="100%ブラウザローカル処理で電子取引PDFファイル名を和暦・全角対応で「YYYYMMDD_取引先名_金額.pdf」へ一括正規化。T番号Mod-9検算・検索用索引簿CSV・事務処理規程ひな形まで端末内完結で出力。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar" data-ui="bar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <span class="brand__seal" aria-hidden="true">帳</span>
+        <div>
+          <strong class="brand__name">DENCHOGATE 電帳門</strong>
+          <span class="brand__sub">100% ブラウザ内処理 / 取引先・請求金額・PDF名の外部送信ゼロ</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主要機能">
+        <a href="#dencho-batch">ファイル名一括整形</a>
+        <a href="#workflow-audit">保存要件監査</a>
+        <a href="#kitei-export">事務処理規程出力</a>
+        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
+        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>電子取引データを、その場で「YYYYMMDD_取引先_金額」と索引簿CSVへ整える。</h1>
+      <p class="intro__lead">
+        改正電子帳簿保存法（第7条電子取引）に必要な「取引年月日・取引先名・取引金額」の3要素を、和暦（令和/R表記）・全角数字・記号混在テキストからブラウザ内のみで抽出し、標準ファイル名変換表、国税庁モデル形式の検索用索引簿CSV、T番号Mod-9妥当性、事務処理規程Markdownを即座に出力します。
+      </p>
+    </section>
+
+    <section id="dencho-batch" class="panel" data-ui="batch">
+      <div class="panel__head">
+        <h2>電子取引ファイル名 一括正規化 ＆ 検索用索引簿CSV生成</h2>
+        <div class="preset-group">
+          <button type="button" id="loadSampleBatchBtn" class="chip">和暦・全角混在サンプル</button>
+          <button type="button" id="clearBatchBtn" class="chip">クリア</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>受領PDFファイル名または明細行（1行1件：和暦・全角数字・T番号混在可）</span>
+        <textarea id="batchInput" rows="6"></textarea>
+      </label>
+      <div class="actions">
+        <button type="button" id="normalizeBatchBtn" class="btn-primary">標準ファイル名と索引簿を一括生成</button>
+        <button type="button" id="downloadCsvBtn" class="btn-outline">索引簿CSV（UTF-8 BOM）を保存</button>
+      </div>
+      <div id="batchSummaryBox" class="status-box"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>取引年月日</th>
+              <th>取引先名</th>
+              <th>取引金額</th>
+              <th>T番号</th>
+              <th>標準ファイル名案</th>
+              <th>要件判定</th>
+            </tr>
+          </thead>
+          <tbody id="batchTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="workflow-audit" class="panel" data-ui="auditor">
+      <div class="panel__head">
+        <h2>運用フロー・真実性・検索要件 自己点検</h2>
+        <div class="preset-group">
+          <button type="button" id="loadRiskyFlowBtn" class="chip">指摘リスク例</button>
+          <button type="button" id="loadSafeFlowBtn" class="chip">適合運用例</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>現在の経理保存運用メモ</span>
+        <textarea id="workflowInput" rows="4"></textarea>
+      </label>
+      <div class="toggle-row">
+        <label class="check-label"><input type="checkbox" id="hasImmutableCheck"> タイムスタンプ／訂正削除履歴が残るシステム使用</label>
+        <label class="check-label"><input type="checkbox" id="hasKiteiCheck"> 訂正削除防止の事務処理規程を備付け</label>
+        <label class="check-label"><input type="checkbox" id="hasSearchCheck"> 規則的ファイル名または索引簿CSV運用</label>
+        <label class="check-label"><input type="checkbox" id="under50mCheck"> 基準期間売上高5,000万円以下</label>
+      </div>
+      <div class="actions">
+        <button type="button" id="runFlowAuditBtn" class="btn-primary">電帳法要件を診断</button>
+      </div>
+      <div id="flowSummaryBox" class="status-box"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>深刻度</th>
+              <th>根拠条文</th>
+              <th>検知・課題内容</th>
+              <th>是正アクション</th>
+            </tr>
+          </thead>
+          <tbody id="flowTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="kitei-export" class="panel" data-ui="template">
+      <div class="panel__head">
+        <h2>訂正削除防止 事務処理規程ジェネレータ（無料措置対応）</h2>
+        <button type="button" id="downloadKiteiBtn" class="btn-outline">事務処理規程.md を保存</button>
+      </div>
+      <div class="grid-3">
+        <label class="field">
+          <span>事業者名・屋号</span>
+          <input type="text" id="companyInput" value="合同会社ホライゾンラボ">
+        </label>
+        <label class="field">
+          <span>管理責任者役職</span>
+          <input type="text" id="managerInput" value="代表社員（経理責任者兼務）">
+        </label>
+        <label class="field">
+          <span>施行日</span>
+          <input type="text" id="effectiveDateInput" value="2026-11-19">
+        </label>
+      </div>
+      <pre id="kiteiPreview" class="code-box"></pre>
+    </section>
+
+    <section class="panel ext-box" data-ui="kit">
+      <div>
+        <h2>オフライン配布キット v1.0.0 ＆ 関連B2Bチェックゲート</h2>
+        <p>閉域PCやインターネット非接続環境でも開けるHTML/ESM一式とソースコードを公開しています。</p>
+      </div>
+      <div class="actions">
+        <a class="btn-primary" href="https://github.com/pecopeko/denchogate/releases/download/v1.0.0/denchogate-offline-kit-v1.0.0.zip">オフラインZIPを保存</a>
+        <a class="btn-outline" href="https://pecopeko.github.io/zengingate/" target="_blank" rel="noopener">ZENGINGATE（全銀門）</a>
+        <a class="btn-outline" href="https://pecopeko.github.io/tokushogate/" target="_blank" rel="noopener">TOKUSHOGATE（特商門）</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>DENCHOGATE（電帳門）：100%ローカル処理・ブラウザ外へのデータ送信なし</span>
+      <span><a href="https://github.com/pecopeko/denchogate" target="_blank" rel="noopener">GitHub pecopeko/denchogate</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

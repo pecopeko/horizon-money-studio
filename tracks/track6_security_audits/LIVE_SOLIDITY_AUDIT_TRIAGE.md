@@ -125,3 +125,35 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `oku-custom-order-types/contracts/automatedTrigger/OracleLess.sol` | 406 | `token.safeTransferFrom(owner, address(this), amount);` |
 | `SOL-FOT-04` | Low/Medium | `oku-custom-order-types/contracts/automatedTrigger/StopLimit.sol` | 239 | `tokenIn.safeTransferFrom(msg.sender, address(this), amountIn);` |
 | `SOL-FOT-04` | Low/Medium | `oku-custom-order-types/contracts/automatedTrigger/StopLimit.sol` | 314 | `order.tokenIn.safeTransferFrom(` |
+
+## Repository: `https://github.com/sherlock-audit/2025-07-cap.git`
+- Non-test/non-interface `.sol` files scanned: `105`
+- Candidate pattern hits: `12`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-AUTH-02` | High | `cap-contracts/contracts/deploy/utils/WalletUtils.sol` | 6 | `wallet = tx.origin;` |
+| `SOL-FOT-04` | Low/Medium | `cap-contracts/contracts/feeAuction/FeeAuction.sol` | 67 | `IERC20($.paymentToken).safeTransferFrom(msg.sender, $.paymentRecipient, price);` |
+| `SOL-FOT-04` | Low/Medium | `cap-contracts/contracts/lendingPool/libraries/BorrowLogic.sol` | 118 | `IERC20(params.asset).safeTransferFrom(params.caller, address(this), repaid);` |
+| `SOL-PRECISION-01` | Medium | `cap-contracts/contracts/lendingPool/libraries/LiquidationLogic.sol` | 90 | `(liquidated + (liquidated * bonus / 1e27)) * assetPrice / (10 ** $.reservesData[params.asset].decimals);` |
+| `SOL-PRECISION-01` | Medium | `cap-contracts/contracts/lendingPool/libraries/ViewLogic.sol` | 160 | `accruedInterest = totalDebt * rate * elapsedTime / (1e27 * SECONDS_IN_YEAR);` |
+| `SOL-ORACLE-03` | High | `cap-contracts/contracts/oracle/libraries/ChainlinkAdapter.sol` | 17 | `(, intLatestAnswer,, lastUpdated,) = IChainlink(_source).latestRoundData();` |
+| `SOL-PRECISION-01` | Medium | `cap-contracts/contracts/oracle/libraries/VaultAdapter.sol` | 95 | `interestRate = (slopes.slope0 + (slopes.slope1 * excess / 1e27)) * utilizationData.multiplier / 1e27;` |
+| `SOL-PRECISION-01` | Medium | `cap-contracts/contracts/oracle/libraries/VaultAdapter.sol` | 104 | `interestRate = (slopes.slope0 * _utilization / slopes.kink) * utilizationData.multiplier / 1e27;` |
+| `SOL-FOT-04` | Low/Medium | `cap-contracts/contracts/testnetCampaign/PreMainnetVault.sol` | 113 | `asset.safeTransferFrom(msg.sender, address(this), _amount);` |
+| `SOL-ERC4626-06` | High | `cap-contracts/contracts/token/StakedCap.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-FOT-04` | Low/Medium | `cap-contracts/contracts/vault/libraries/VaultLogic.sol` | 129 | `IERC20(params.asset).safeTransferFrom(msg.sender, address(this), params.amountIn);` |
+| `SOL-FOT-04` | Low/Medium | `cap-contracts/contracts/vault/libraries/VaultLogic.sol` | 207 | `IERC20(params.asset).safeTransferFrom(msg.sender, address(this), params.amount);` |
+
+## Repository: `https://github.com/sherlock-audit/2025-07-mellow-flexible-vaults.git`
+- Non-test/non-interface `.sol` files scanned: `39`
+- Candidate pattern hits: `6`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `flexible-vaults/src/libraries/TransferLibrary.sol` | 46 | `IERC20(asset).safeTransferFrom(from, address(this), assets);` |
+| `SOL-ERC4626-06` | High | `flexible-vaults/src/managers/RiskManager.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 31 | `bytes memory approveReponse = ICallModule(subvault).call(` |
+| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 37 | `ICallModule(subvault).call(` |
+| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 48 | `ICallModule(subvault).call(` |
+| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 59 | `ICallModule(subvault).call(` |
