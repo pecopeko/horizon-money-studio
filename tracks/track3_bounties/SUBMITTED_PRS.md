@@ -17,6 +17,21 @@
   - `bun run format:check` (`biome format .`): **Checked 646 files, 0 issues**
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
+### 2. `tscircuit/core#5677` -> [PR #5680](https://github.com/tscircuit/core/pull/5680) (Open)
+- **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/core/issues/5677 (`<board autorouter={{ traceClearance: "0.5mm" }} />` doesn't seem to be working)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 5677) == False`)
+- **Fork & Branch**: `pecopeko:fix/board-autorouter-trace-clearance-5677` (`2c03e61`)
+- **Root Cause**: `getPresetAutoroutingConfig()` dropped `traceClearance` when resolving object configs with presets, and `Group` / `getSimpleRouteJsonFromCircuitJson()` did not propagate `autorouterConfig.traceClearance` (or `pcb_group.autorouter_configuration.trace_clearance`) into `SimpleRouteJson.minTraceToPadEdgeClearance`.
+- **Fix Summary**:
+  - Preserved `traceClearance` across preset expansion in `lib/utils/autorouting/getPresetAutoroutingConfig.ts`.
+  - Propagated `traceClearance` into `SimpleRouteJson.minTraceToPadEdgeClearance` (preserving stricter explicit `minTraceToPadEdgeClearance` via `Math.max` and supporting subcircuit groups) in `lib/components/primitive-components/Group/Group.ts` and `lib/utils/autorouting/getSimpleRouteJsonFromCircuitJson.ts`.
+  - Added regression coverage in `tests/features/autorouter-trace-clearance.test.tsx`.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `bun test tests/features/autorouter-trace-clearance.test.tsx tests/features/autorouter-allow-via-in-pad.test.tsx tests/features/autorouter-min-via-dimensions.test.tsx tests/features/autoroutingphase-region-reroute.test.tsx`: **6 pass, 0 fail** (38 `expect()` calls)
+  - `./node_modules/.bin/biome format` (4 touched files): **Checked 4 files, 0 issues**
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
 - Flagged non-cash credit-only org: `hanzoai` (rewards in platform credits rather than cash)

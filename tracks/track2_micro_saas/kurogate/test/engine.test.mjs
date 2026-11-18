@@ -21,6 +21,11 @@ import {
   restoreDelimited,
   buildAuditReport,
 } from "../docs/core/kurogate-engine.mjs";
+import {
+  parseDistilledModelManifest,
+  softmaxLogits,
+  fuseRuleAndNeuralScore,
+} from "../docs/core/neural-guard-loader.mjs";
 
 function makeCorporate(body12) {
   return `${computeCorporateCheckDigit(body12)}${body12}`;
@@ -237,4 +242,32 @@ test("ISMS / P-mark audit report omits plaintext PII and attests zero network ca
   assert.ok(audit.markdownString.includes("[INVOICE_ID_1]"));
   assert.ok(Object.keys(ENTITY_LABELS).includes("JP_BANK_ACCOUNT"));
   assert.equal(typeof createVaultSession().vaultMap, "object");
+});
+
+test("Neural guard adapter parses Colab distilled config.json and fuses scores safely", () => {
+  const manifest = parseDistilledModelManifest({
+    architectures: ["DebertaV2ForSequenceClassification"],
+    id2label: {
+      "0": "safe_business",
+      "1": "contextual_pii_leak",
+      "2": "prompt_injection",
+    },
+  });
+  assert.equal(manifest.numLabels, 3);
+  assert.deepEqual(manifest.labels, ["safe_business", "contextual_pii_leak", "prompt_injection"]);
+  assert.equal(manifest.onnxRelativePath, "onnx/model_quantized.onnx");
+
+  const probs = softmaxLogits([-1.5, 2.2, -0.8]);
+  const sum = probs.reduce((a, b) => a + b, 0);
+  assert.ok(Math.abs(sum - 1.0) < 1e-6);
+
+  const fused = fuseRuleAndNeuralScore({
+    ruleRiskScore: 0.1,
+    neuralProbs: probs,
+    labels: manifest.labels,
+    safeLabel: "safe_business",
+  });
+  assert.equal(fused.predictedLabel, "contextual_pii_leak");
+  assert.ok(fused.neuralRisk > 0.85);
+  assert.ok(fused.combinedRisk >= 0.55);
 });
