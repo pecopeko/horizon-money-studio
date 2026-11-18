@@ -29,12 +29,13 @@
    - Web App: https://pecopeko.github.io/zengingate/
    - Offline Kit ZIP: https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip
 
-## Track 3 — Open-Source Cash / Sponsor Pull Requests (`4` Open PRs)
+## Track 3 — Open-Source Cash / Sponsor Pull Requests (`5` Open PRs)
 - All targets screened for `has_competing_open_pr == False` and excluded honeypot orgs. See `tracks/track3_bounties/SUBMITTED_PRS.md`.
   1. `tscircuit/cli#5654` -> https://github.com/tscircuit/cli/pull/5858 (`c8345f0`)
   2. `tscircuit/core#5677` -> https://github.com/tscircuit/core/pull/5680 (`2c03e61`)
   3. `tscircuit/core#3982` -> https://github.com/tscircuit/core/pull/5684 (`58ed612`)
-  4. `tscircuit/core#3521` -> https://github.com/tscircuit/core/pull/5689 (`86e5477`)
+  4. `tscircuit/core#3521` -> https://github.com/tscircuit/core/pull/5689 (`41ba5c6`)
+  5. `tscircuit/tscircuit#6430` -> https://github.com/tscircuit/props/pull/1038 (`fbff781`)
 
 ## Track 4 — `macroTomicro` Read-Only Empirical AFML & Pruned Alpha Proposal
 - **Audit Reports**: `tracks/track4_m2m_colab/REAL_PANEL_AFML_AUDIT_REPORT.md`, `tracks/track4_m2m_colab/M2M_ACTIONABLE_ALPHA_PATCH_PROPOSAL.md`, `tracks/track4_m2m_colab/pruned_alpha_results.json`.
@@ -55,6 +56,7 @@
 - **Live Scan Triage (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md`)**:
   - `sherlock-audit/2026-07-tare`: `41` non-test `.sol` files scanned, `10` static pattern hits (`SOL-FOT-04`, `SOL-ERC4626-06`).
   - `Cyfrin/battlechain-safe-harbor-contracts`: `29` non-test `.sol` files scanned, `6` static pattern hits (`SOL-FOT-04`, `SOL-CALL-05`).
+  - `code-423n4/2026-04-monetrix`: `21` non-test `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
 
 ## Track 7 — Fast-Cash Freelance Automation Deliverables & Playbook
 - **Pre-Built Tested Engines (`tracks/track7_freelance_kit/deliverables/`)**:

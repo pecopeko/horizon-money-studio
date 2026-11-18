@@ -17,11 +17,12 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - **KUROGATE（黒門）**: https://pecopeko.github.io/kurogate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip))
   - **YAKKIGATE（薬影）**: https://pecopeko.github.io/yakkigate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/yakkigate/releases/download/v1.0.0/yakkigate-chrome-extension-v1.0.0.zip))
   - **ZENGINGATE（全銀門）**: https://pecopeko.github.io/zengingate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip))
-- **Track 3 — Live OSS Cash/Sponsor Pull Requests (`4` Open PRs)**:
+- **Track 3 — Live OSS Cash/Sponsor Pull Requests (`5` Open PRs)**:
   - `tscircuit/cli#5654`: https://github.com/tscircuit/cli/pull/5858
   - `tscircuit/core#5677`: https://github.com/tscircuit/core/pull/5680
   - `tscircuit/core#3982`: https://github.com/tscircuit/core/pull/5684
   - `tscircuit/core#3521`: https://github.com/tscircuit/core/pull/5689
+  - `tscircuit/tscircuit#6430`: https://github.com/tscircuit/props/pull/1038
   - Details in `tracks/track3_bounties/SUBMITTED_PRS.md`
 - **Track 4 — `macroTomicro` Read-Only Empirical AFML Audit & Pruned Alpha Proposal**:
   - `Pruned18` + 3-tier conviction scaling (`800k / 1.6M / 2.4M JPY`): `+2,646,201 JPY` (`Sharpe 2.501`) vs Uniform Control `+2,100,950 JPY` (`Sharpe 2.328`) -> `+545,251 JPY` edge (`tracks/track4_m2m_colab/M2M_ACTIONABLE_ALPHA_PATCH_PROPOSAL.md`)
@@ -30,7 +31,7 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - **Zenn Content Repo (`¥2,400` 6-chapter book + 2 free articles)**: https://github.com/pecopeko/zenn-content
   - **BOOTH Pro Suite Bundle Release (`v1.0.0-pro-kit`)**: https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit
 - **Track 6 — Solidity Smart Contract Audit Pre-Screener & Live Triage**:
-  - `src/makemoney/scouts/solidity_audit_scanner.py` + `tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` (`sherlock-audit/2026-07-tare` + `Cyfrin/battlechain-safe-harbor-contracts`)
+  - `src/makemoney/scouts/solidity_audit_scanner.py` + `tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` (`sherlock-audit/2026-07-tare`, `Cyfrin/battlechain-safe-harbor-contracts`, `code-423n4/2026-04-monetrix`)
 - **Track 7 — Freelance Automation Deliverables & Playbook**:
   - `tracks/track7_freelance_kit/deliverables/{dirty_csv_to_zengin120.py,polite_feed_price_diff.py,folder_pii_vault_sanitizer.py}` + `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md`
 

@@ -31,3 +31,15 @@ Deterministic static vulnerability pre-screen produced by `src/makemoney/scouts/
 | `SOL-CALL-05` | Medium | `src/CreateX.sol` | 424 | `(success, returnData) = refundAddress.call{ value: _SELF.balance }("");` |
 | `SOL-CALL-05` | Medium | `src/CreateX.sol` | 760 | `(success, returnData) = newContract.call{ value: values.initCallAmount }(data);` |
 | `SOL-CALL-05` | Medium | `src/CreateX.sol` | 768 | `(success, returnData) = refundAddress.call{ value: _SELF.balance }("");` |
+
+## Repository: `https://github.com/code-423n4/2026-04-monetrix.git`
+- Non-test `.sol` files scanned: `21`
+- Candidate pattern hits: `5`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `src/core/InsuranceFund.sol` | 40 | `usdc.safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `src/core/MonetrixVault.sol` | 178 | `usdc.safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `src/core/MonetrixVault.sol` | 185 | `IERC20(address(usdm)).safeTransferFrom(msg.sender, address(this), usdmAmount);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/sUSDM.sol` | 240 | `IERC20(asset()).safeTransferFrom(msg.sender, address(this), usdmAmount);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/sUSDMEscrow.sol` | 34 | `usdm.safeTransferFrom(sUSDM, address(this), amount);` |

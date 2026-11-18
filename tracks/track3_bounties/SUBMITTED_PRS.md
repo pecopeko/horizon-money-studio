@@ -50,18 +50,32 @@
 - **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
 - **Target Issue**: https://github.com/tscircuit/core/issues/3521 (`Trace schDisplayLabel on branched connectivity becomes schematic_net_label`)
 - **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 3521) == False`)
-- **Fork & Branch**: `pecopeko:fix/branched-trace-inline-display-label-3521` (`86e5477`)
+- **Fork & Branch**: `pecopeko:fix/branched-trace-inline-display-label-3521` (`41ba5c6`)
 - **Root Cause**: When branched trace connectivity (`>2` schematic ports without `<net>`) was converted solely into pairwise `directConnections`, `applyInlineNetLabelEligibility` skipped them due to `portsOnNet?.length === 2`, causing `schDisplayLabel` to fall back to `schematic_net_label` without `source_trace_id`. In composed subcircuits, `selectAll("trace")` also stopped at child `<subcircuit>` boundaries when resolving trace ownership.
 - **Fix Summary**:
-  - Updated `createSchematicTraceSolverInputProblem.ts` to emit an internal-flagged `netConnections` entry for routable, non-ground, explicitly labeled 3+ port trace networks (stripped at solver boundary).
+  - Updated `createSchematicTraceSolverInputProblem.ts` to emit an internal-flagged `netConnections` entry for routable, non-ground 3+ port trace networks where at least one `Trace` explicitly sets `schDisplayLabel` (stripped at solver boundary).
   - Updated `applyInlineNetLabelEligibility.ts` to allow `isBranchedTraceConnection` eligibility alongside explicit port-to-net traces.
   - Updated `applyInlineNetLabelPlacements.ts` to index `Trace` components across child subcircuits via `getDescendants()` and match `schDisplayLabel` / `displayName` / `name` / `mspPairId` when assigning `source_trace_id`.
-  - Added regression coverage in `tests/features/schematic-inline-net-label/inline-net-label7.test.tsx` (single 3-port path and two-trace standalone + composed subcircuits). Zero existing upstream snapshots modified.
-- **Local Verification (100% Pass Before Opening PR)**:
-  - `./node_modules/.bin/biome check` on 4 touched files: **Checked 4 files, 0 issues**
-  - `bun test --timeout 30000 tests/features/schematic-inline-net-label/inline-net-label7.test.tsx tests/examples/example10-schDisplayLabel.test.tsx tests/examples/example11-net-symbol.test.tsx tests/components/primitive-components/schematic-section-2.test.tsx tests/components/trace/multiple-net-labels.test.tsx`: **6 pass, 0 fail** (19 `expect()` calls)
-  - `bun test --timeout 30000 tests/features/schematic-inline-net-label/ tests/features/schematic-net-superscripts/ tests/repros/repro157-three-way-transistor-base-junction.test.tsx`: **13 pass, 0 fail** (74 `expect()` calls)
+  - Added regression coverage in `tests/features/schematic-inline-net-label/inline-net-label7.test.tsx` and updated `tests/repros/__snapshots__/repro126-trace-overlap-box-resistor-schematic.snap.svg` (where `<trace schDisplayLabel="FB" />` branches to `R1` and `R2`).
+- **Local Verification (100% Pass After Final Edit)**:
+  - `./node_modules/.bin/biome check` on touched files: **Checked 4 files, 0 issues**
+  - `bun test --timeout 30000 tests/features/schematic-inline-net-label/inline-net-label7.test.tsx tests/repros/repro-tb67s579ftg-inline-label-attachments.test.tsx tests/repros/repro-tb67s579ftg-inline-net-labels.test.tsx tests/repros/repro-tb67s579ftg-vertical-inline-label-stub.test.tsx tests/repros/repro126-trace-overlap-box-resistor.test.tsx`: **6 pass, 0 fail** (78 `expect()` calls)
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
+### 5. `tscircuit/tscircuit#6430` -> [PR #1038](https://github.com/tscircuit/props/pull/1038) (Open)
+- **Repository**: `tscircuit/props` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/tscircuit/issues/6430 (`<keepout>` cannot block traces without also removing copper pour — `Part of tscircuit/tscircuit#6430`, aligned with `tscircuit/circuit-json#1015`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs in `tscircuit/props`
+- **Fork & Branch**: `pecopeko:feat/keepout-allow-copper-pour-6430` (`fbff781`)
+- **Fix Summary**:
+  - Added optional boolean `allowCopperPour` prop to both `"circle"` and `"rect"` keepout variants in `lib/components/pcb-keepout.ts`, clarifying JSDoc on `allowTraces` and `allowPlacements`.
+  - Expanded `tests/pcb-keepout-permissions.test.ts` permission & invalid-type coverage to include `allowCopperPour` across all shapes.
+  - Regenerated `generated/COMPONENT_TYPES.md` via `bun run generate:component-types`.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `bun run format:check`: **Checked 442 files, 0 issues**
+  - `bun run typecheck`: **exit 0**
+  - `bun run check-circular-deps`: **No circular dependency found** (230 files)
+  - `bun test`: **788 pass, 0 fail** (8 snapshots, 3713 `expect()` calls, 204 files)
 
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
