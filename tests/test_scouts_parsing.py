@@ -321,3 +321,35 @@ def test_has_competing_open_pr_checks_title_body_and_head_branch(monkeypatch) ->
     monkeypatch.setattr("makemoney.scouts.bounty_scout.github_api_request", fake_api)
     assert has_competing_open_pr("org/repo", 99) is True
     assert called == [("GET", "/repos/org/repo/pulls", {"state": "open", "per_page": 100})]
+
+
+def test_has_competing_open_pr_paginates_beyond_100_open_prs() -> None:
+    page1_prs = [
+        {
+            "title": f"Unrelated PR #{1000 + i}",
+            "body": "No overlap",
+            "head": {"ref": f"chore/item-{i}"},
+        }
+        for i in range(100)
+    ]
+    page2_prs = [
+        {
+            "title": "Fix layout overlap",
+            "body": "Fixes #5608",
+            "head": {"ref": "fix/layout-5608"},
+        }
+    ]
+    pages_requested: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        page_param = request.url.params.get("page")
+        pages_requested.append(page_param)
+        if page_param == "2":
+            return httpx.Response(200, json=page2_prs)
+        return httpx.Response(200, json=page1_prs)
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as mock_client:
+        assert has_competing_open_pr("org/repo", 5608, client=mock_client) is True
+        assert has_competing_open_pr("org/repo", 99999, client=mock_client, max_pages=2) is False
+
+    assert pages_requested == [None, "2", None, "2"]

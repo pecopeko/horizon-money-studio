@@ -1,0 +1,20 @@
+{
+  "title": "Japan Tokushoho & Dark-Pattern EC Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Tokushoho and Checkout Pages to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "tokusho_text": "販売業者：テスト商店 返金：いかなる理由であっても一切返金いたしません。解約は電話のみ。",
+          "checkout_text": "初回500円でお試し！",
+          "is_subscription": true
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

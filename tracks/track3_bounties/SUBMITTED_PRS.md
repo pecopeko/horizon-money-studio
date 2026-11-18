@@ -93,6 +93,23 @@
   - `bun test --timeout 90000 tests/features/schematic-sheet/schematic-sheet-section-row-wrap.test.tsx tests/features/schematic-sheet/schematic-sheet-outside-warning.test.tsx tests/features/schematic-sheet/schematic-sheet-sections.test.tsx`: **4 pass, 0 fail** (16 `expect()` calls)
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
+### 7. `tscircuit/cli#5767` -> [PR #5861](https://github.com/tscircuit/cli/pull/5861) (Open)
+- **Repository**: `tscircuit/cli` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/cli/issues/5767 (`@tscircuit/cli 0.1.2452 bundles brace-expansion 2.0.1 and minimatch 5.1.2 (via make-vfs), both with published advisories`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/cli", 5767, topic_terms=("make-vfs", "brace-expansion")) == False`)
+- **Fork & Branch**: `pecopeko:fix/remove-bundled-make-vfs-advisories-5767` (`f91006b`)
+- **Root Cause**: Direct (`lib/shared/generate-circuit-json.tsx`) and transitive (`winterspec` via `@tscircuit/file-server`) imports of `make-vfs` pulled inlined copies of `glob-promise -> glob 8 -> minimatch 5.1.2 -> brace-expansion 2.0.1` into all 4 published `dist/` bundles.
+- **Fix Summary**:
+  - Replaced `make-vfs` with a zero-dependency Node `fs/promises` + `path` module in `lib/shared/make-vfs.ts`.
+  - Switched `lib/shared/generate-circuit-json.tsx` to `./make-vfs`, removed `"make-vfs"` from `devDependencies` (`package.json` + `bun.lock`), and added a `Bun.build` `onResolve(/^make-vfs$/)` plugin in `scripts/bun-build.ts` so transitive `winterspec` imports resolve to the internal helper.
+  - Added regression & bundle-hygiene tests in `tests/cli/make-vfs-bundle-hygiene.test.ts` verifying `0` occurrences of `node_modules/make-vfs`, `brace-expansion`, and `minimatch` across all 4 `dist/` artifacts.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `bun run build`: **4 bundles built cleanly, all grep counts = `0` for `node_modules/make-vfs`, `brace-expansion`, `minimatch`**
+  - `bun run format:check`: **Checked 648 files, 0 issues**
+  - `bun scripts/check-for-dependencies.ts`: **exit 0**
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+  - `bun test --timeout 45000 tests/cli/make-vfs-bundle-hygiene.test.ts tests/cli/export/export-output-path.test.ts tests/cli/build/build.test.ts`: **17 pass, 0 fail** (103 `expect()` calls)
+
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
 - Flagged non-cash credit-only org: `hanzoai` (rewards in platform credits rather than cash)

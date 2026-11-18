@@ -208,28 +208,10 @@ def has_competing_open_pr(
     topic_terms: tuple[str, ...] = (),
     timeout_sec: float = 15.0,
     client: httpx.Client | None = None,
+    max_pages: int = 4,
 ) -> bool:
     """Return True if any open PR in repo references the issue number or topic in title, body, or head branch."""
     if issue_number <= 0 and not topic_terms:
-        return False
-
-    if client is not None:
-        resp = client.get(
-            f"https://api.github.com/repos/{repo_full_name}/pulls",
-            params={"state": "open", "per_page": 100},
-        )
-        resp.raise_for_status()
-        pulls = resp.json()
-    else:
-        pulls = github_api_request(
-            "GET",
-            f"/repos/{repo_full_name}/pulls",
-            params={"state": "open", "per_page": 100},
-            require_auth=False,
-            timeout_sec=timeout_sec,
-        )
-
-    if not isinstance(pulls, list):
         return False
 
     num_str = str(issue_number)
@@ -244,25 +226,53 @@ def has_competing_open_pr(
     )
     normalized_terms = tuple(term.strip().lower() for term in topic_terms if term and term.strip())
 
-    for pr in pulls:
-        if not isinstance(pr, dict):
-            continue
-        title = str(pr.get("title") or "")
-        body = str(pr.get("body") or "")
-        head = pr.get("head")
-        head_ref = str(head.get("ref") or "") if isinstance(head, dict) else ""
+    page_limit = max(1, max_pages)
+    for page in range(1, page_limit + 1):
+        params: dict[str, int | str] = {"state": "open", "per_page": 100}
+        if page > 1:
+            params["page"] = page
 
-        if issue_number > 0 and (
-            title_issue_re.search(title)
-            or body_issue_re.search(body)
-            or branch_issue_re.search(head_ref)
-        ):
-            return True
+        if client is not None:
+            resp = client.get(
+                f"https://api.github.com/repos/{repo_full_name}/pulls",
+                params=params,
+            )
+            resp.raise_for_status()
+            pulls = resp.json()
+        else:
+            pulls = github_api_request(
+                "GET",
+                f"/repos/{repo_full_name}/pulls",
+                params=params,
+                require_auth=False,
+                timeout_sec=timeout_sec,
+            )
 
-        if normalized_terms:
-            combined = f"{title}\n{body}\n{head_ref}".lower()
-            if any(term in combined for term in normalized_terms):
+        if not isinstance(pulls, list) or not pulls:
+            return False
+
+        for pr in pulls:
+            if not isinstance(pr, dict):
+                continue
+            title = str(pr.get("title") or "")
+            body = str(pr.get("body") or "")
+            head = pr.get("head")
+            head_ref = str(head.get("ref") or "") if isinstance(head, dict) else ""
+
+            if issue_number > 0 and (
+                title_issue_re.search(title)
+                or body_issue_re.search(body)
+                or branch_issue_re.search(head_ref)
+            ):
                 return True
+
+            if normalized_terms:
+                combined = f"{title}\n{body}\n{head_ref}".lower()
+                if any(term in combined for term in normalized_terms):
+                    return True
+
+        if len(pulls) < 100:
+            break
 
     return False
 
