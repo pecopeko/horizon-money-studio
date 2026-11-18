@@ -13,7 +13,8 @@ A 4-track autonomous revenue & R&D studio designed around lean local orchestrati
   - Chrome MV3 Extension ZIP (Release `v1.0.0`): https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip
 - **Track 3 — Live OSS Cash/Sponsor Pull Requests**:
   - `tscircuit/cli#5654` fix submitted & open (`tsci export -f glb` relative `stepUrl`): https://github.com/tscircuit/cli/pull/5858 (14/14 CI green)
-  - `tscircuit/core#5677` fix submitted & open (`<board autorouter={{ traceClearance }} />` propagation): https://github.com/tscircuit/core/pull/5680
+  - `tscircuit/core#5677` fix submitted & open (`<board autorouter={{ traceClearance }} />` propagation): https://github.com/tscircuit/core/pull/5680 (18/18 CI green)
+  - `tscircuit/core#3982` fix submitted & open (portable `rgb(132, 0, 0)` schematic outline color): https://github.com/tscircuit/core/pull/5684
   - Details in `tracks/track3_bounties/SUBMITTED_PRS.md`
 - **Colab A100/L4 Open-Weights AI Model Factory (`$0.00` API Spend)**:
   - **Real Neural Model Training & Knowledge Distillation (`Qwen2.5-14B-Instruct` 4-bit NF4 GPU Teacher -> `ku-nlp/deberta-v3-base-japanese` KL-divergence Student -> INT8 `Transformers.js` ONNX)**: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pecopeko/horizon-money-studio/blob/main/colab/train_jp_ai_models_a100_factory.ipynb)

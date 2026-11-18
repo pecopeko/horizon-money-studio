@@ -2,7 +2,7 @@
 
 ## Live Submitted Pull Requests
 
-### 1. `tscircuit/cli#5654` -> [PR #5858](https://github.com/tscircuit/cli/pull/5858) (Open)
+### 1. `tscircuit/cli#5654` -> [PR #5858](https://github.com/tscircuit/cli/pull/5858) (Open — 14/14 CI checks green)
 - **Repository**: `tscircuit/cli` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
 - **Target Issue**: https://github.com/tscircuit/cli/issues/5654 (`tsci export -f glb can't load a relative cadModel stepUrl (404); build --glbs can`)
 - **Pre-Submission Competition Audit**: `0` issue comments, `0` competing open PRs (`has_competing_open_pr("tscircuit/cli", 5654) == False`)
@@ -17,7 +17,7 @@
   - `bun run format:check` (`biome format .`): **Checked 646 files, 0 issues**
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
-### 2. `tscircuit/core#5677` -> [PR #5680](https://github.com/tscircuit/core/pull/5680) (Open)
+### 2. `tscircuit/core#5677` -> [PR #5680](https://github.com/tscircuit/core/pull/5680) (Open — 18/18 CI checks green)
 - **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
 - **Target Issue**: https://github.com/tscircuit/core/issues/5677 (`<board autorouter={{ traceClearance: "0.5mm" }} />` doesn't seem to be working)
 - **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 5677) == False`)
@@ -30,6 +30,20 @@
 - **Local Verification (100% Pass Before Opening PR)**:
   - `bun test tests/features/autorouter-trace-clearance.test.tsx tests/features/autorouter-allow-via-in-pad.test.tsx tests/features/autorouter-min-via-dimensions.test.tsx tests/features/autoroutingphase-region-reroute.test.tsx`: **6 pass, 0 fail** (38 `expect()` calls)
   - `./node_modules/.bin/biome format` (4 touched files): **Checked 4 files, 0 issues**
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
+### 3. `tscircuit/core#3982` -> [PR #5684](https://github.com/tscircuit/core/pull/5684) (Open)
+- **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/core/issues/3982 (`SCHEMATIC_COMPONENT_OUTLINE_COLOR "rgba(132, 0, 0)" is not portable SVG color; strict SVG renderers reject schematic output`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/core", 3982) == False`)
+- **Fork & Branch**: `pecopeko:fix/schematic-outline-color-rgb-3982` (`58ed612`)
+- **Root Cause**: `SCHEMATIC_COMPONENT_OUTLINE_COLOR` in `lib/utils/constants.ts` used CSS Color Level 4 3-argument `"rgba(132, 0, 0)"`, which strict SVG 1.1 / CSS2 renderers (such as CairoSVG) reject. Switching to `"rgb(132, 0, 0)"` produces the identical color and matches `INLINE_NET_LABEL_COLOR` and `circuit-to-svg` default styling.
+- **Fix Summary**:
+  - Updated `SCHEMATIC_COMPONENT_OUTLINE_COLOR` in `lib/utils/constants.ts` to `"rgb(132, 0, 0)"`.
+  - Added regression test in `tests/utils/schematic/schematic-component-outline-color.test.tsx` validating `schematic_rect`, `schematic_line`, `schematic_circle`, `schematic_arc`, port stems, and `convertCircuitJsonToSchematicSvg` output.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `./node_modules/.bin/biome check lib/utils/constants.ts tests/utils/schematic/schematic-component-outline-color.test.tsx`: **Checked 2 files, 0 issues**
+  - `bun test --timeout 30000 tests/utils/schematic/schematic-component-outline-color.test.tsx tests/components/primitive-components/schematic-rect.test.tsx tests/components/primitive-components/schematic-line.test.tsx tests/components/primitive-components/schematic-circle.test.tsx tests/components/primitive-components/schematic-arc.test.tsx tests/components/primitive-components/port-sch-stem-length.test.tsx`: **6 pass, 0 fail** (33 `expect()` calls)
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
