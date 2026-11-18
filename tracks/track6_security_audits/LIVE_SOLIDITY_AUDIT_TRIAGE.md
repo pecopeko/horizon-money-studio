@@ -174,12 +174,11 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-PRECISION-01` | Medium | `yv3-liquityv2-sp-strategy/src/periphery/StrategyAprOracle.sol` | 115 | `return _weightedInterestRate / _totalDebt * _totalDebt / uint256(int256(_stabilityPoolDeposits) + _delta)` |
 
 ## Repository: `https://github.com/sherlock-audit/2025-06-symbiotic-relay.git`
-- Non-test/non-interface `.sol` files scanned: `48`
-- Candidate pattern hits: `4`
+- Non-test/non-interface `.sol` files scanned: `45`
+- Candidate pattern hits: `3` (re-scanned after `/script/` deployment exclusion; removed `SymbioticInit.sol`)
 
 | Rule ID | Severity | File | Line | Snippet |
 |---|---|---|---:|---|
-| `SOL-CALL-05` | Medium | `middleware-sdk/script/integration/SymbioticInit.sol` | 111 | `to.call{value: give}("");` |
 | `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 88 | `(success, response) = slasher.call(` |
 | `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 96 | `(success, response) = slasher.call(` |
 | `SOL-CALL-05` | Medium | `middleware-sdk/src/contracts/modules/voting-power/extensions/logic/BaseSlashingLogic.sol` | 129 | `(success, response) = slasher.call(abi.encodeCall(IVetoSlasher.executeSlash, (slashIndex, hints)));` |
@@ -187,3 +186,29 @@ _Showing top 40 of 42 deterministic pattern hits._
 ## Repository: `https://github.com/sherlock-audit/2025-07-allbridge-core-yield.git`
 - Non-test/non-interface `.sol` files scanned: `3`
 - Candidate pattern hits: `0` (clean on static rules across `3` contracts; substituted after `code-423n4/2026-04-k2` & `2026-02-jupiter-lend` returned `0` `.sol` files)
+
+## Repository: `https://github.com/hats-finance/Cross-chain-Realitio-Proxy-0x9efc47be23fb612aff9bce511bad4a308f1f4f39.git`
+- Non-test/non-interface `.sol` files scanned: `14`
+- Candidate pattern hits: `0`
+
+## Repository: `https://github.com/hats-finance/dTRINITY-0xee5c6f15e8d0b55a5eff84bb66beeee0e6140ffe.git`
+- Non-test/non-interface `.sol` files scanned: `219`
+- Candidate pattern hits: `57` (top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-ERC4626-06` | High | `bot/dlend-liquidator/contracts/aave-v3/FlashLoanLiquidatorAaveBorrowRepayBase.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ERC4626-06` | High | `contracts/common/RescuableVault.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ERC4626-06` | High | `contracts/common/SwappableVault.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-INIT-08` | High | `contracts/dlend/core/dependencies/openzeppelin/upgradeability/InitializableUpgradeabilityProxy.sol` | 36 | `function initialize(address _logic, bytes memory _data) public payable {` |
+| `SOL-ORACLE-03` | High | `contracts/dlend/core/protocol/configuration/PriceOracleSentinel.sol` | 101 | `.latestRoundData();` |
+| `SOL-CALL-05` | Medium | `contracts/dlend/core/dependencies/openzeppelin/contracts/Address.sol` | 166 | `(bool success, bytes memory returndata) = target.call{value: value}(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/BorrowLogic.sol` | 298 | `IERC20(params.asset).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/BridgeLogic.sol` | 178 | `IERC20(asset).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/FlashLoanLogic.sol` | 295 | `IERC20(params.asset).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/LiquidationLogic.sol` | 265 | `IERC20(params.debtAsset).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/SupplyLogic.sol` | 99 | `IERC20(params.asset).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/adapters/curve/CurveDebtSwapAdapter.sol` | 274 | `IERC20WithPermit(aToken).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/misc/WrappedTokenGatewayV3.sol` | 91 | `aWETH.transferFrom(msg.sender, address(this), amountToWithdraw);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dstable/AmoManager.sol` | 176 | `dstable.transferFrom(amoVault, address(this), dstableAmount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dstable/CollateralHolderVault.sol` | 75 | `IERC20Metadata(fromCollateral).safeTransferFrom(` |

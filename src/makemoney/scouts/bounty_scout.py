@@ -30,6 +30,7 @@ HONEYPOT_ORGS: frozenset[str] = frozenset(
         "zhangjiayang6835-cyber",
         "wholetroutmedia",
         "relayhop",
+        "limitlessprojects",
     }
 )
 
@@ -104,10 +105,19 @@ def is_non_cash_org(repo_full_name: str) -> bool:
     return _extract_repo_owner(repo_full_name) in NON_CASH_ORGS
 
 
+_SPAM_TITLE_RE = re.compile(
+    r"(?i)^(?:\[wildcard\]\s*|test\d*$|ssadsa$)|(?:lorem ipsum|dolor sit amet)"
+)
+
+
 def is_honeypot_or_bait(raw_issue: dict[str, Any]) -> bool:
     """Return True if the issue is from a blocklisted honeypot org or has bait labels."""
     repo_full_name = _extract_repo_full_name(raw_issue)
     if _extract_repo_owner(repo_full_name) in HONEYPOT_ORGS:
+        return True
+
+    title_text = str(raw_issue.get("title") or "").strip()
+    if _SPAM_TITLE_RE.search(title_text):
         return True
 
     author = raw_issue.get("user")

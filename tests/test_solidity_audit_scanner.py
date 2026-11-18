@@ -142,3 +142,38 @@ def test_ignores_external_total_assets_and_flags_zero_slippage() -> None:
     assert findings[0].line_number == 6
 
 
+def test_excludes_deployment_scripts_and_flags_unguarded_initialize(tmp_path: Path) -> None:
+    src_dir = tmp_path / "src"
+    script_dir = tmp_path / "script"
+    src_dir.mkdir()
+    script_dir.mkdir()
+
+    (script_dir / "Deploy.s.sol").write_text(
+        "contract DeployScript { function run() external { swap.call(\"\"); } }",
+        encoding="utf-8",
+    )
+    (src_dir / "ProxyVault.sol").write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract BadInit {
+            function initialize(address owner_) external {
+                admin = owner_;
+            }
+        }
+        contract GoodInit {
+            function initialize(address owner_) external initializer {
+                admin = owner_;
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    summary = scan_solidity_tree(tmp_path)
+    assert summary["scanned_files"] == 1
+    init_findings = [f for f in summary["findings"] if f["rule_id"] == "SOL-INIT-08"]
+    assert len(init_findings) == 1
+    assert init_findings[0]["line_number"] == 4
+
+
+

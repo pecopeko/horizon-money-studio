@@ -462,3 +462,29 @@ def test_wave7_relayhop_honeypot_and_preloaded_pulls_zero_network() -> None:
     assert has_competing_open_pr("org/repo", 888, preloaded_pulls=sample_pulls) is False
 
 
+def test_wave8_limitlessprojects_and_spam_title_filters() -> None:
+    assert "limitlessprojects" in HONEYPOT_ORGS
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/limitlessprojects/Go-Hybrid",
+                "title": "Legit looking title",
+                "labels": [],
+            }
+        )
+        is True
+    )
+    for spam_title in ("[wildcard] Derive an editable index", "test", "Dolor sit amet"):
+        assert (
+            is_honeypot_or_bait(
+                {
+                    "repository_url": "https://api.github.com/repos/someorg/somerepo",
+                    "title": spam_title,
+                    "labels": [],
+                }
+            )
+            is True
+        )
+
+
+

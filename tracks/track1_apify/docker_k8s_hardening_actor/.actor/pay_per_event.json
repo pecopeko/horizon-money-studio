@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "manifest_audited": {
+        "eventTitle": "Container / K8s Manifest Audited",
+        "eventDescription": "Charged per Dockerfile, docker-compose, or Kubernetes YAML manifest scanned for container security misconfigurations.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

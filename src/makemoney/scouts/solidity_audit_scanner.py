@@ -29,6 +29,8 @@ _ORACLE_CALL_RE = re.compile(r"latestRoundData\s*\(")
 _TRANSFER_FROM_RE = re.compile(r"\.safeTransferFrom\(|\.transferFrom\(")
 _UNCHECKED_LOW_LEVEL_RE = re.compile(r"\.call\s*(?:\{[^}]*\})?\s*\(")
 _ZERO_SLIPPAGE_RE = re.compile(r"\b(?:amountOutMinimum|amountOutMin|minAmountOut|minOut|minSharesOut)\s*[:=]\s*0\b")
+_UNPROTECTED_INIT_RE = re.compile(r"\bfunction\s+initialize\s*\(")
+_INIT_GUARD_RE = re.compile(r"\b(?:initializer|reinitializer|onlyInitializing)\b")
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -66,6 +68,9 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
     """Scan a Solidity file for high-value audit competition bug patterns."""
     lines = strip_solidity_comments(source)
     joined = "\n".join(lines)
+    is_concrete_or_abstract_contract = bool(
+        re.search(r"\b(?:abstract\s+)?contract\s+[A-Za-z_]", joined)
+    )
     findings: list[SolidityFinding] = []
 
     for idx, line in enumerate(lines, 1):
@@ -181,10 +186,21 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                     rationale="Hardcoding minimum output/shares to zero exposes swaps and vault withdrawals to MEV sandwich attacks.",
                 )
             )
+        if is_concrete_or_abstract_contract and _UNPROTECTED_INIT_RE.search(stripped):
+            sig_window = "\n".join(lines[idx - 1 : min(len(lines), idx + 3)])
+            if "{" in sig_window and not _INIT_GUARD_RE.search(sig_window):
+                findings.append(
+                    SolidityFinding(
+                        rule_id="SOL-INIT-08",
+                        severity="High",
+                        title="Upgradeable initialize() missing initializer modifier guard",
+                        file_path=file_path,
+                        line_number=idx,
+                        snippet=stripped[:140],
+                        rationale="An unguarded public initialize() function allows any attacker to hijack proxy initialization or re-initialize ownership.",
+                    )
+                )
 
-    is_concrete_or_abstract_contract = bool(
-        re.search(r"\b(?:abstract\s+)?contract\s+[A-Za-z_]", joined)
-    )
     if (
         is_concrete_or_abstract_contract
         and _ERC4626_HEADER_RE.search(joined)
@@ -215,7 +231,7 @@ def scan_solidity_tree(root_dir: str | Path) -> dict[str, Any]:
         low_rel = f"/{rel.lower()}"
         if any(
             skip in low_rel
-            for skip in ("/test/", "/tests/", "/interfaces/", "node_modules/", "/lib/", "/mock", ".t.sol")
+            for skip in ("/test/", "/tests/", "/interfaces/", "/script/", "/scripts/", "node_modules/", "/lib/", "/mock", ".t.sol", ".s.sol")
         ):
             continue
         try:
