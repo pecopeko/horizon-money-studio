@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+*.pyc
+.DS_Store
+*.egg-info/
+dist/
+build/
+.taste-skill/
+tracks/track3_bounties/work/

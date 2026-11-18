@@ -1,0 +1,3084 @@
+{
+  "generated_utc": "2026-11-18T09:53:15.240792+00:00",
+  "macroTomicro_read_only_root": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research",
+  "panel_a_jp_macro_cube": {
+    "cube_file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/closing-macro-funnel-20261018/final/closing_macro_master_cube.parquet",
+    "payoff_file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/closing-macro-funnel-20261018/final/payoff_lookup_matrix.parquet",
+    "cube_rows": 376,
+    "cube_cols": 145,
+    "cube_date_span": "2025-04-01 .. 2026-10-15",
+    "payoff_oos_days": 269,
+    "payoff_date_span": "2025-09-01 .. 2026-10-15",
+    "causality_audit": {
+      "checked_audit_timestamp_cols": 14,
+      "post_1525_jst_violations": 0
+    },
+    "feature_sets": {
+      "full_feature_count": 92,
+      "full_dropped_cols_with_nulls": [
+        "nikkei_return_from_previous_close",
+        "nikkei_return_from_open",
+        "nikkei_return_30m",
+        "nikkei_return_5m",
+        "nikkei_range_30m",
+        "proxy_dispersion",
+        "leverage_dislocation",
+        "market_mean_return_from_open",
+        "market_advance_ratio_from_open",
+        "market_mean_return_5m",
+        "market_mean_return_20m",
+        "market_dispersion_from_open",
+        "prior_top20_score",
+        "prior_top20_probability",
+        "prior_top20_sector",
+        "breadth_minus_nikkei_direction",
+        "day_minus_sox_semiconductor",
+        "day_minus_sp500",
+        "day_minus_nasdaq100"
+      ],
+      "core_feature_count": 22,
+      "core_features": [
+        "sox_semiconductor_return_1d",
+        "nasdaq100_return_1d",
+        "sp500_return_1d",
+        "kospi_return_1d",
+        "taiwan_weighted_return_1d",
+        "hang_seng_return_1d",
+        "euro_stoxx50_return_1d",
+        "us_10y_yield_return_1d",
+        "dollar_index_futures_return_1d",
+        "crude_oil_wti_futures_return_1d",
+        "gold_futures_return_1d",
+        "copper_futures_return_1d",
+        "vix_return_1d",
+        "vix_volatility_20d",
+        "nk_gap_today",
+        "anchor_beta_sox",
+        "anchor_beta_sp500",
+        "anchor_beta_vix",
+        "anchor_overnight_std20",
+        "gap_minus_sox_semiconductor",
+        "gap_minus_sp500",
+        "gap_minus_nasdaq100"
+      ],
+      "core_dropped_cols": []
+    },
+    "target_audits": {
+      "T3_jp_top20": {
+        "target_col": "label_T3_bp",
+        "valid_rows": 376,
+        "dropped_null_target_rows": 0,
+        "train_init_n": 104,
+        "oos_n": 272,
+        "walk_forward_full": {
+          "20": {
+            "alpha": 20.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0673,
+            "ridge_spearman_ic": 0.0661,
+            "bag_pearson_ic": 0.0623,
+            "bag_spearman_ic": 0.0707
+          },
+          "50": {
+            "alpha": 50.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0763,
+            "ridge_spearman_ic": 0.0631,
+            "bag_pearson_ic": 0.073,
+            "bag_spearman_ic": 0.0704
+          },
+          "100": {
+            "alpha": 100.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0704,
+            "ridge_spearman_ic": 0.0495,
+            "bag_pearson_ic": 0.0682,
+            "bag_spearman_ic": 0.0602
+          }
+        },
+        "walk_forward_core": {
+          "20": {
+            "alpha": 20.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0499,
+            "ridge_spearman_ic": 0.037,
+            "bag_pearson_ic": 0.0504,
+            "bag_spearman_ic": 0.0395
+          },
+          "50": {
+            "alpha": 50.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0499,
+            "ridge_spearman_ic": 0.0288,
+            "bag_pearson_ic": 0.0503,
+            "bag_spearman_ic": 0.0291
+          },
+          "100": {
+            "alpha": 100.0,
+            "folds": 14,
+            "oos_n": 272,
+            "ridge_pearson_ic": 0.0465,
+            "ridge_spearman_ic": 0.0196,
+            "bag_pearson_ic": 0.0462,
+            "bag_spearman_ic": 0.0166
+          }
+        },
+        "orthogonality_full": {
+          "train_n": 104,
+          "oos_n": 272,
+          "train_span": "2025-04-01 .. 2025-08-29",
+          "oos_span": "2025-09-01 .. 2026-10-15",
+          "train_pearson_ic": 0.7792,
+          "oos_pearson_ic": -0.0617,
+          "oos_spearman_ic": -0.0495,
+          "kaiser_effective_dims": 15,
+          "total_features": 92,
+          "pca_top_k_count": 15,
+          "pca_top_k_oos_ic": -0.0588,
+          "pca_bottom_k_oos_ic": -0.048,
+          "edge_on_top_pcs": false,
+          "positive_mda_feature_count": 44,
+          "flagged_overfit_features": [],
+          "top_positive_mda_features": [
+            {
+              "feature": "crude_oil_wti_futures_return_5d",
+              "in_sample_importance": 0.0206,
+              "oos_mda_ic": 0.0184,
+              "oos_mda_std": 0.0093,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "taiwan_weighted_return_1d",
+              "in_sample_importance": 0.0276,
+              "oos_mda_ic": 0.0123,
+              "oos_mda_std": 0.0078,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "euro_stoxx50_age_days",
+              "in_sample_importance": 0.0153,
+              "oos_mda_ic": 0.0107,
+              "oos_mda_std": 0.0054,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "crude_oil_wti_futures_volatility_20d",
+              "in_sample_importance": 0.0087,
+              "oos_mda_ic": 0.0106,
+              "oos_mda_std": 0.0046,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "hang_seng_age_days",
+              "in_sample_importance": 0.0167,
+              "oos_mda_ic": 0.0104,
+              "oos_mda_std": 0.0081,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gold_futures_volatility_5d",
+              "in_sample_importance": 0.0093,
+              "oos_mda_ic": 0.008,
+              "oos_mda_std": 0.0049,
+              "overfit_suspected": false
+            }
+          ],
+          "worst_negative_mda_features": [
+            {
+              "feature": "kospi_return_5d",
+              "in_sample_importance": 0.0275,
+              "oos_mda_ic": -0.03,
+              "oos_mda_std": 0.0315,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_volatility_5d",
+              "in_sample_importance": 0.016,
+              "oos_mda_ic": -0.0234,
+              "oos_mda_std": 0.014,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gold_futures_return_1d",
+              "in_sample_importance": 0.0223,
+              "oos_mda_ic": -0.0168,
+              "oos_mda_std": 0.0085,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_return_20d",
+              "in_sample_importance": 0.0167,
+              "oos_mda_ic": -0.0124,
+              "oos_mda_std": 0.0211,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "us_30y_yield_return_5d",
+              "in_sample_importance": 0.0238,
+              "oos_mda_ic": -0.0103,
+              "oos_mda_std": 0.0061,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "us_10y_yield_return_5d",
+              "in_sample_importance": 0.0171,
+              "oos_mda_ic": -0.0099,
+              "oos_mda_std": 0.0049,
+              "overfit_suspected": false
+            }
+          ]
+        },
+        "orthogonality_core": {
+          "train_n": 104,
+          "oos_n": 272,
+          "train_span": "2025-04-01 .. 2025-08-29",
+          "oos_span": "2025-09-01 .. 2026-10-15",
+          "train_pearson_ic": 0.5818,
+          "oos_pearson_ic": -0.0503,
+          "oos_spearman_ic": -0.0758,
+          "kaiser_effective_dims": 7,
+          "total_features": 22,
+          "pca_top_k_count": 7,
+          "pca_top_k_oos_ic": -0.105,
+          "pca_bottom_k_oos_ic": 0.0651,
+          "edge_on_top_pcs": false,
+          "positive_mda_feature_count": 11,
+          "flagged_overfit_features": [
+            "hang_seng_return_1d",
+            "us_10y_yield_return_1d",
+            "dollar_index_futures_return_1d",
+            "gold_futures_return_1d"
+          ],
+          "top_positive_mda_features": [
+            {
+              "feature": "taiwan_weighted_return_1d",
+              "in_sample_importance": 0.0867,
+              "oos_mda_ic": 0.0356,
+              "oos_mda_std": 0.0187,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "vix_return_1d",
+              "in_sample_importance": 0.0485,
+              "oos_mda_ic": 0.012,
+              "oos_mda_std": 0.0056,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "euro_stoxx50_return_1d",
+              "in_sample_importance": 0.1073,
+              "oos_mda_ic": 0.0074,
+              "oos_mda_std": 0.025,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_return_1d",
+              "in_sample_importance": 0.0186,
+              "oos_mda_ic": 0.0063,
+              "oos_mda_std": 0.0025,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "nasdaq100_return_1d",
+              "in_sample_importance": 0.0418,
+              "oos_mda_ic": 0.005,
+              "oos_mda_std": 0.0069,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "vix_volatility_20d",
+              "in_sample_importance": 0.0518,
+              "oos_mda_ic": 0.005,
+              "oos_mda_std": 0.0081,
+              "overfit_suspected": false
+            }
+          ],
+          "worst_negative_mda_features": [
+            {
+              "feature": "us_10y_yield_return_1d",
+              "in_sample_importance": 0.0849,
+              "oos_mda_ic": -0.0321,
+              "oos_mda_std": 0.0245,
+              "overfit_suspected": true
+            },
+            {
+              "feature": "gold_futures_return_1d",
+              "in_sample_importance": 0.0548,
+              "oos_mda_ic": -0.0299,
+              "oos_mda_std": 0.0215,
+              "overfit_suspected": true
+            },
+            {
+              "feature": "anchor_beta_sp500",
+              "in_sample_importance": 0.0315,
+              "oos_mda_ic": -0.0163,
+              "oos_mda_std": 0.0265,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "nk_gap_today",
+              "in_sample_importance": 0.0456,
+              "oos_mda_ic": -0.0097,
+              "oos_mda_std": 0.0106,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gap_minus_sox_semiconductor",
+              "in_sample_importance": 0.0336,
+              "oos_mda_ic": -0.0073,
+              "oos_mda_std": 0.0058,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "dollar_index_futures_return_1d",
+              "in_sample_importance": 0.0626,
+              "oos_mda_ic": -0.006,
+              "oos_mda_std": 0.007,
+              "overfit_suspected": true
+            }
+          ]
+        }
+      },
+      "T2_us_macro": {
+        "target_col": "label_T2_bp",
+        "valid_rows": 362,
+        "dropped_null_target_rows": 14,
+        "train_init_n": 100,
+        "oos_n": 262,
+        "walk_forward_full": {
+          "20": {
+            "alpha": 20.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.0434,
+            "ridge_spearman_ic": 0.0046,
+            "bag_pearson_ic": 0.0721,
+            "bag_spearman_ic": 0.0116
+          },
+          "50": {
+            "alpha": 50.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.0551,
+            "ridge_spearman_ic": 0.0076,
+            "bag_pearson_ic": 0.0791,
+            "bag_spearman_ic": 0.0128
+          },
+          "100": {
+            "alpha": 100.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.0612,
+            "ridge_spearman_ic": 0.0102,
+            "bag_pearson_ic": 0.082,
+            "bag_spearman_ic": 0.0161
+          }
+        },
+        "walk_forward_core": {
+          "20": {
+            "alpha": 20.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.1258,
+            "ridge_spearman_ic": 0.1112,
+            "bag_pearson_ic": 0.1424,
+            "bag_spearman_ic": 0.1212
+          },
+          "50": {
+            "alpha": 50.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.133,
+            "ridge_spearman_ic": 0.1112,
+            "bag_pearson_ic": 0.1427,
+            "bag_spearman_ic": 0.1134
+          },
+          "100": {
+            "alpha": 100.0,
+            "folds": 14,
+            "oos_n": 262,
+            "ridge_pearson_ic": 0.1373,
+            "ridge_spearman_ic": 0.1085,
+            "bag_pearson_ic": 0.1416,
+            "bag_spearman_ic": 0.1089
+          }
+        },
+        "orthogonality_full": {
+          "train_n": 100,
+          "oos_n": 262,
+          "train_span": "2025-04-01 .. 2025-08-29",
+          "oos_span": "2025-09-02 .. 2026-10-15",
+          "train_pearson_ic": 0.7549,
+          "oos_pearson_ic": 0.0311,
+          "oos_spearman_ic": 0.0441,
+          "kaiser_effective_dims": 15,
+          "total_features": 92,
+          "pca_top_k_count": 15,
+          "pca_top_k_oos_ic": 0.0835,
+          "pca_bottom_k_oos_ic": -0.0491,
+          "edge_on_top_pcs": true,
+          "positive_mda_feature_count": 51,
+          "flagged_overfit_features": [
+            "euro_stoxx50_return_1d"
+          ],
+          "top_positive_mda_features": [
+            {
+              "feature": "gap_minus_nasdaq100",
+              "in_sample_importance": 0.018,
+              "oos_mda_ic": 0.0211,
+              "oos_mda_std": 0.0051,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "crude_oil_wti_futures_volatility_20d",
+              "in_sample_importance": 0.011,
+              "oos_mda_ic": 0.0202,
+              "oos_mda_std": 0.0103,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gap_minus_sp500",
+              "in_sample_importance": 0.0165,
+              "oos_mda_ic": 0.0107,
+              "oos_mda_std": 0.0048,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gap_minus_sox_semiconductor",
+              "in_sample_importance": 0.0112,
+              "oos_mda_ic": 0.0102,
+              "oos_mda_std": 0.0042,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "crude_oil_wti_futures_return_5d",
+              "in_sample_importance": 0.0215,
+              "oos_mda_ic": 0.0094,
+              "oos_mda_std": 0.0147,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "hang_seng_return_1d",
+              "in_sample_importance": 0.0286,
+              "oos_mda_ic": 0.0074,
+              "oos_mda_std": 0.0106,
+              "overfit_suspected": false
+            }
+          ],
+          "worst_negative_mda_features": [
+            {
+              "feature": "kospi_return_5d",
+              "in_sample_importance": 0.0148,
+              "oos_mda_ic": -0.0186,
+              "oos_mda_std": 0.0124,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "us_10y_yield_return_5d",
+              "in_sample_importance": 0.0193,
+              "oos_mda_ic": -0.012,
+              "oos_mda_std": 0.0062,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_volatility_20d",
+              "in_sample_importance": 0.0121,
+              "oos_mda_ic": -0.0117,
+              "oos_mda_std": 0.019,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gold_futures_volatility_5d",
+              "in_sample_importance": 0.0186,
+              "oos_mda_ic": -0.0101,
+              "oos_mda_std": 0.0159,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_volatility_5d",
+              "in_sample_importance": 0.0095,
+              "oos_mda_ic": -0.01,
+              "oos_mda_std": 0.0069,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "gold_futures_return_1d",
+              "in_sample_importance": 0.0169,
+              "oos_mda_ic": -0.0091,
+              "oos_mda_std": 0.0065,
+              "overfit_suspected": false
+            }
+          ]
+        },
+        "orthogonality_core": {
+          "train_n": 100,
+          "oos_n": 262,
+          "train_span": "2025-04-01 .. 2025-08-29",
+          "oos_span": "2025-09-02 .. 2026-10-15",
+          "train_pearson_ic": 0.5524,
+          "oos_pearson_ic": 0.0886,
+          "oos_spearman_ic": 0.0926,
+          "kaiser_effective_dims": 7,
+          "total_features": 22,
+          "pca_top_k_count": 7,
+          "pca_top_k_oos_ic": 0.0602,
+          "pca_bottom_k_oos_ic": 0.0256,
+          "edge_on_top_pcs": true,
+          "positive_mda_feature_count": 14,
+          "flagged_overfit_features": [
+            "us_10y_yield_return_1d",
+            "dollar_index_futures_return_1d",
+            "vix_volatility_20d"
+          ],
+          "top_positive_mda_features": [
+            {
+              "feature": "gap_minus_nasdaq100",
+              "in_sample_importance": 0.0425,
+              "oos_mda_ic": 0.0307,
+              "oos_mda_std": 0.0111,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "euro_stoxx50_return_1d",
+              "in_sample_importance": 0.1607,
+              "oos_mda_ic": 0.0225,
+              "oos_mda_std": 0.0501,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "vix_return_1d",
+              "in_sample_importance": 0.0485,
+              "oos_mda_ic": 0.0213,
+              "oos_mda_std": 0.0103,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "anchor_overnight_std20",
+              "in_sample_importance": 0.0331,
+              "oos_mda_ic": 0.0168,
+              "oos_mda_std": 0.0141,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "hang_seng_return_1d",
+              "in_sample_importance": 0.0716,
+              "oos_mda_ic": 0.0138,
+              "oos_mda_std": 0.0195,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "taiwan_weighted_return_1d",
+              "in_sample_importance": 0.0947,
+              "oos_mda_ic": 0.0129,
+              "oos_mda_std": 0.0131,
+              "overfit_suspected": false
+            }
+          ],
+          "worst_negative_mda_features": [
+            {
+              "feature": "us_10y_yield_return_1d",
+              "in_sample_importance": 0.0801,
+              "oos_mda_ic": -0.024,
+              "oos_mda_std": 0.0208,
+              "overfit_suspected": true
+            },
+            {
+              "feature": "crude_oil_wti_futures_return_1d",
+              "in_sample_importance": 0.04,
+              "oos_mda_ic": -0.0179,
+              "oos_mda_std": 0.0156,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "kospi_return_1d",
+              "in_sample_importance": 0.023,
+              "oos_mda_ic": -0.012,
+              "oos_mda_std": 0.0099,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "dollar_index_futures_return_1d",
+              "in_sample_importance": 0.0521,
+              "oos_mda_ic": -0.011,
+              "oos_mda_std": 0.0078,
+              "overfit_suspected": true
+            },
+            {
+              "feature": "gold_futures_return_1d",
+              "in_sample_importance": 0.0332,
+              "oos_mda_ic": -0.0065,
+              "oos_mda_std": 0.0051,
+              "overfit_suspected": false
+            },
+            {
+              "feature": "copper_futures_return_1d",
+              "in_sample_importance": 0.0314,
+              "oos_mda_ic": -0.0048,
+              "oos_mda_std": 0.0063,
+              "overfit_suspected": false
+            }
+          ]
+        },
+        "us_holiday_oos_dates_no_label": 10
+      }
+    },
+    "jp_fixed_capital_269d": [
+      {
+        "variant": "AlwaysLong_Open_5bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 142,
+          "loss_days": 127,
+          "flat_days": 0,
+          "total_net_pnl": 3144591.28,
+          "daily_mean_pnl": 11689.93,
+          "return_on_base_pct": 393.07,
+          "avg_net_bp": 57.61,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 2.375,
+          "total_net_pnl_jpy": null
+        }
+      },
+      {
+        "variant": "AlwaysShort_Open_35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 95,
+          "loss_days": 174,
+          "flat_days": 0,
+          "total_net_pnl": -5434431.07,
+          "daily_mean_pnl": -20202.35,
+          "return_on_base_pct": -679.3,
+          "avg_net_bp": -97.29,
+          "best_day_pnl": 217202.7,
+          "worst_day_pnl": -457978.95,
+          "annualized_sharpe": -4.108,
+          "total_net_pnl_jpy": null
+        }
+      },
+      {
+        "variant": "T3_jp_top20_Ridge_Pred>0_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 169,
+          "zero_trade_days": 100,
+          "trade_count": 169,
+          "win_days": 87,
+          "loss_days": 82,
+          "flat_days": 100,
+          "total_net_pnl": 1821435.43,
+          "daily_mean_pnl": 6771.14,
+          "return_on_base_pct": 227.68,
+          "avg_net_bp": 51.33,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 1.61,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.6283,
+        "uniform_linear_control_pnl_jpy": 1975598.24,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 1507806.69,
+          "business_days": 269,
+          "trading_days": 267,
+          "zero_trade_days": 2,
+          "trade_count": 267,
+          "win_days": 140,
+          "loss_days": 127,
+          "flat_days": 2,
+          "total_net_pnl": 1488920.52,
+          "daily_mean_pnl": 5535.02,
+          "return_on_base_pct": 186.12,
+          "avg_net_bp": 54.02,
+          "best_day_pnl": 249366.75,
+          "worst_day_pnl": -150742.6,
+          "annualized_sharpe": 2.051,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": false,
+        "beats_uniform_cap_pnl": true,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T3_jp_top20_Ridge_Pred>0_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 120,
+          "loss_days": 149,
+          "flat_days": 0,
+          "total_net_pnl": -348473.63,
+          "daily_mean_pnl": -1295.44,
+          "return_on_base_pct": -43.56,
+          "avg_net_bp": -7.98,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -363574.0,
+          "annualized_sharpe": -0.258,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T3_jp_top20_DayBlockBag_Pred>0_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 179,
+          "zero_trade_days": 90,
+          "trade_count": 179,
+          "win_days": 93,
+          "loss_days": 86,
+          "flat_days": 90,
+          "total_net_pnl": 2430501.53,
+          "daily_mean_pnl": 9035.32,
+          "return_on_base_pct": 303.81,
+          "avg_net_bp": 64.84,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 2.056,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.6654,
+        "uniform_linear_control_pnl_jpy": 2092497.54,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 1597026.02,
+          "business_days": 269,
+          "trading_days": 267,
+          "zero_trade_days": 2,
+          "trade_count": 267,
+          "win_days": 140,
+          "loss_days": 127,
+          "flat_days": 2,
+          "total_net_pnl": 1823275.3,
+          "daily_mean_pnl": 6777.98,
+          "return_on_base_pct": 227.91,
+          "avg_net_bp": 54.02,
+          "best_day_pnl": 299240.1,
+          "worst_day_pnl": -150742.6,
+          "annualized_sharpe": 2.224,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": true,
+        "beats_uniform_cap_pnl": true,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T3_jp_top20_DayBlockBag_Pred>0_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 124,
+          "loss_days": 145,
+          "flat_days": 0,
+          "total_net_pnl": 954329.77,
+          "daily_mean_pnl": 3547.69,
+          "return_on_base_pct": 119.29,
+          "avg_net_bp": 15.3,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 0.71,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T3_jp_top20_DayBlockBag_Pred>TrainQ20_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 208,
+          "zero_trade_days": 61,
+          "trade_count": 208,
+          "win_days": 108,
+          "loss_days": 100,
+          "flat_days": 61,
+          "total_net_pnl": 2220084.62,
+          "daily_mean_pnl": 8253.1,
+          "return_on_base_pct": 277.51,
+          "avg_net_bp": 51.02,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 1.801,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.7732,
+        "uniform_linear_control_pnl_jpy": 2431505.53,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 1855762.08,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 142,
+          "loss_days": 127,
+          "flat_days": 0,
+          "total_net_pnl": 2526332.37,
+          "daily_mean_pnl": 9391.57,
+          "return_on_base_pct": 315.79,
+          "avg_net_bp": 57.61,
+          "best_day_pnl": 349113.45,
+          "worst_day_pnl": -210921.0,
+          "annualized_sharpe": 2.519,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": false,
+        "beats_uniform_cap_pnl": false,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T3_jp_top20_DayBlockBag_Pred>TrainQ20_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 128,
+          "loss_days": 141,
+          "flat_days": 0,
+          "total_net_pnl": 781231.18,
+          "daily_mean_pnl": 2904.21,
+          "return_on_base_pct": 97.65,
+          "avg_net_bp": 12.22,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 0.581,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_Ridge_Pred>0_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 210,
+          "zero_trade_days": 59,
+          "trade_count": 210,
+          "win_days": 109,
+          "loss_days": 101,
+          "flat_days": 59,
+          "total_net_pnl": 2431470.33,
+          "daily_mean_pnl": 9038.92,
+          "return_on_base_pct": 303.93,
+          "avg_net_bp": 57.32,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 1.98,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.7807,
+        "uniform_linear_control_pnl_jpy": 2454885.39,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 1873605.95,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 142,
+          "loss_days": 127,
+          "flat_days": 0,
+          "total_net_pnl": 2603000.92,
+          "daily_mean_pnl": 9676.58,
+          "return_on_base_pct": 325.38,
+          "avg_net_bp": 57.61,
+          "best_day_pnl": 349113.45,
+          "worst_day_pnl": -210921.0,
+          "annualized_sharpe": 2.585,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": false,
+        "beats_uniform_cap_pnl": false,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_Ridge_Pred>0_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 128,
+          "loss_days": 141,
+          "flat_days": 0,
+          "total_net_pnl": 1236746.98,
+          "daily_mean_pnl": 4597.57,
+          "return_on_base_pct": 154.59,
+          "avg_net_bp": 23.42,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -233242.5,
+          "annualized_sharpe": 0.921,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_DayBlockBag_Pred>0_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 215,
+          "zero_trade_days": 54,
+          "trade_count": 215,
+          "win_days": 113,
+          "loss_days": 102,
+          "flat_days": 54,
+          "total_net_pnl": 2671568.73,
+          "daily_mean_pnl": 9931.48,
+          "return_on_base_pct": 333.95,
+          "avg_net_bp": 61.39,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 2.165,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.7993,
+        "uniform_linear_control_pnl_jpy": 2513335.04,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 1918215.61,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 142,
+          "loss_days": 127,
+          "flat_days": 0,
+          "total_net_pnl": 2562626.67,
+          "daily_mean_pnl": 9526.49,
+          "return_on_base_pct": 320.33,
+          "avg_net_bp": 57.61,
+          "best_day_pnl": 349113.45,
+          "worst_day_pnl": -210921.0,
+          "annualized_sharpe": 2.524,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": true,
+        "beats_uniform_cap_pnl": true,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_DayBlockBag_Pred>0_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 131,
+          "loss_days": 138,
+          "flat_days": 0,
+          "total_net_pnl": 1757356.58,
+          "daily_mean_pnl": 6532.92,
+          "return_on_base_pct": 219.67,
+          "avg_net_bp": 32.81,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -233242.5,
+          "annualized_sharpe": 1.313,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_DayBlockBag_Pred>TrainQ20_CashVeto",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 230,
+          "zero_trade_days": 39,
+          "trade_count": 230,
+          "win_days": 121,
+          "loss_days": 109,
+          "flat_days": 39,
+          "total_net_pnl": 2963502.92,
+          "daily_mean_pnl": 11016.74,
+          "return_on_base_pct": 370.44,
+          "avg_net_bp": 64.01,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -226113.9,
+          "annualized_sharpe": 2.336,
+          "total_net_pnl_jpy": null
+        },
+        "active_rate": 0.855,
+        "uniform_linear_control_pnl_jpy": 2688683.99,
+        "uniform_cap_control": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2052044.61,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 142,
+          "loss_days": 127,
+          "flat_days": 0,
+          "total_net_pnl": 2645533.5,
+          "daily_mean_pnl": 9834.7,
+          "return_on_base_pct": 330.69,
+          "avg_net_bp": 57.61,
+          "best_day_pnl": 398986.8,
+          "worst_day_pnl": -210921.0,
+          "annualized_sharpe": 2.448,
+          "total_net_pnl_jpy": null
+        },
+        "beats_uniform_linear_pnl": true,
+        "beats_uniform_cap_pnl": true,
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      },
+      {
+        "variant": "T2_us_macro_DayBlockBag_Pred>TrainQ20_FlipShort35bp",
+        "report": {
+          "market": "JP",
+          "currency": "JPY",
+          "base_capital": 800000.0,
+          "effective_cap": 2400000.0,
+          "business_days": 269,
+          "trading_days": 269,
+          "zero_trade_days": 0,
+          "trade_count": 269,
+          "win_days": 135,
+          "loss_days": 134,
+          "flat_days": 0,
+          "total_net_pnl": 2449521.38,
+          "daily_mean_pnl": 9106.03,
+          "return_on_base_pct": 306.19,
+          "avg_net_bp": 46.04,
+          "best_day_pnl": 448860.15,
+          "worst_day_pnl": -233242.5,
+          "annualized_sharpe": 1.838,
+          "total_net_pnl_jpy": null
+        },
+        "beats_always_long_sharpe": false,
+        "beats_always_long_pnl": false
+      }
+    ]
+  },
+  "panel_b_us_signals": {
+    "us_long_only": {
+      "file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/cross-market-20261008-inputs/closing_long_signals.parquet",
+      "total_rows": 371,
+      "valid_rows": 371,
+      "dropped_null_rows": [],
+      "date_span": "2025-04-01 .. 2026-09-22",
+      "side_breakdown": {
+        "long_count": 371,
+        "long_mean_net_bp": 23.76
+      },
+      "precomputed_model_ics": {
+        "full_ensemble_score_vs_raw_bp_ic": 0.0885,
+        "post_oct25_ensemble_score_vs_raw_bp_ic": 0.1012,
+        "full_base_score_vs_net_bp_ic": 0.0885,
+        "full_meta_score_vs_net_bp_ic": 0.0309,
+        "post_oct25_meta_score_vs_net_bp_ic": 0.0786,
+        "meta_score_quantiles": [
+          0.767,
+          0.85,
+          0.95,
+          0.983,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "causal_feature_count": 39,
+      "dropped_null_or_constant_features": [
+        "return_last5m"
+      ],
+      "walk_forward_raw_bp": {
+        "20": {
+          "alpha": 20.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.04,
+          "ridge_spearman_ic": 0.0388,
+          "bag_pearson_ic": 0.0382,
+          "bag_spearman_ic": 0.0391
+        },
+        "50": {
+          "alpha": 50.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.0259,
+          "ridge_spearman_ic": 0.0332,
+          "bag_pearson_ic": 0.0272,
+          "bag_spearman_ic": 0.0321
+        },
+        "100": {
+          "alpha": 100.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.0158,
+          "ridge_spearman_ic": 0.0241,
+          "bag_pearson_ic": 0.0174,
+          "bag_spearman_ic": 0.0332
+        }
+      },
+      "orthogonality_audit_raw_bp": {
+        "train_n": 126,
+        "oos_n": 245,
+        "train_span": "2025-04-01 .. 2025-09-30",
+        "oos_span": "2025-10-01 .. 2026-09-22",
+        "train_pearson_ic": 0.4396,
+        "oos_pearson_ic": 0.1039,
+        "oos_spearman_ic": 0.1163,
+        "kaiser_effective_dims": 11,
+        "total_features": 39,
+        "pca_top_k_count": 11,
+        "pca_top_k_oos_ic": 0.0385,
+        "pca_bottom_k_oos_ic": 0.079,
+        "edge_on_top_pcs": false,
+        "positive_mda_feature_count": 19,
+        "flagged_overfit_features": [],
+        "top_positive_mda_features": [
+          {
+            "feature": "tech_return_autocorr_20",
+            "in_sample_importance": 0.0476,
+            "oos_mda_ic": 0.0425,
+            "oos_mda_std": 0.0148,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_return_20d",
+            "in_sample_importance": 0.0261,
+            "oos_mda_ic": 0.0231,
+            "oos_mda_std": 0.0112,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "vwap_deviation_1520",
+            "in_sample_importance": 0.0342,
+            "oos_mda_ic": 0.017,
+            "oos_mda_std": 0.0179,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "distance_from_high",
+            "in_sample_importance": 0.0258,
+            "oos_mda_ic": 0.0122,
+            "oos_mda_std": 0.0092,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "tech_atr_14",
+            "in_sample_importance": 0.0307,
+            "oos_mda_ic": 0.0082,
+            "oos_mda_std": 0.0119,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_market_volatility_20d",
+            "in_sample_importance": 0.0202,
+            "oos_mda_ic": 0.0067,
+            "oos_mda_std": 0.0021,
+            "overfit_suspected": false
+          }
+        ],
+        "worst_negative_mda_features": [
+          {
+            "feature": "prior_market_return_5d",
+            "in_sample_importance": 0.0322,
+            "oos_mda_ic": -0.0122,
+            "oos_mda_std": 0.0085,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "tech_bollinger_z_20",
+            "in_sample_importance": 0.0257,
+            "oos_mda_ic": -0.0106,
+            "oos_mda_std": 0.0146,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_return_1d",
+            "in_sample_importance": 0.0351,
+            "oos_mda_ic": -0.0056,
+            "oos_mda_std": 0.0115,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "tech_rsi_14",
+            "in_sample_importance": 0.0195,
+            "oos_mda_ic": -0.0056,
+            "oos_mda_std": 0.0045,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_return_5d",
+            "in_sample_importance": 0.0357,
+            "oos_mda_ic": -0.0042,
+            "oos_mda_std": 0.0162,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_distance_low_20d",
+            "in_sample_importance": 0.0206,
+            "oos_mda_ic": -0.0037,
+            "oos_mda_std": 0.0067,
+            "overfit_suspected": false
+          }
+        ]
+      },
+      "us_fixed_capital_full": [
+        {
+          "variant": "AlwaysTrade_5bp",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 371,
+            "trading_days": 341,
+            "zero_trade_days": 30,
+            "trade_count": 341,
+            "win_days": 174,
+            "loss_days": 167,
+            "flat_days": 30,
+            "total_net_pnl": 134.21,
+            "daily_mean_pnl": 0.36,
+            "return_on_base_pct": 58.81,
+            "avg_net_bp": 20.85,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 0.764,
+            "total_net_pnl_jpy": 20936.99
+          }
+        },
+        {
+          "variant": "MetaScore>=0.90",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 371,
+            "trading_days": 285,
+            "zero_trade_days": 86,
+            "trade_count": 285,
+            "win_days": 141,
+            "loss_days": 144,
+            "flat_days": 86,
+            "total_net_pnl": 92.19,
+            "daily_mean_pnl": 0.25,
+            "return_on_base_pct": 40.4,
+            "avg_net_bp": 17.81,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 0.552,
+            "total_net_pnl_jpy": 14381.18
+          },
+          "active_rate": 0.8358,
+          "uniform_linear_control_usd": 112.17,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 190.72,
+            "effective_cap": 185.17,
+            "business_days": 371,
+            "trading_days": 334,
+            "zero_trade_days": 37,
+            "trade_count": 334,
+            "win_days": 171,
+            "loss_days": 163,
+            "flat_days": 37,
+            "total_net_pnl": 113.97,
+            "daily_mean_pnl": 0.31,
+            "return_on_base_pct": 59.75,
+            "avg_net_bp": 21.38,
+            "best_day_pnl": 29.43,
+            "worst_day_pnl": -40.13,
+            "annualized_sharpe": 0.781,
+            "total_net_pnl_jpy": 17778.8
+          },
+          "beats_uniform_linear_usd": false,
+          "beats_uniform_cap_usd": false,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        },
+        {
+          "variant": "MetaScore>=0.95",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 371,
+            "trading_days": 258,
+            "zero_trade_days": 113,
+            "trade_count": 258,
+            "win_days": 131,
+            "loss_days": 127,
+            "flat_days": 113,
+            "total_net_pnl": 145.25,
+            "daily_mean_pnl": 0.39,
+            "return_on_base_pct": 63.65,
+            "avg_net_bp": 29.86,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 0.891,
+            "total_net_pnl_jpy": 22658.23
+          },
+          "active_rate": 0.7566,
+          "uniform_linear_control_usd": 101.54,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 172.66,
+            "effective_cap": 167.63,
+            "business_days": 371,
+            "trading_days": 325,
+            "zero_trade_days": 46,
+            "trade_count": 325,
+            "win_days": 167,
+            "loss_days": 158,
+            "flat_days": 46,
+            "total_net_pnl": 108.54,
+            "daily_mean_pnl": 0.29,
+            "return_on_base_pct": 62.87,
+            "avg_net_bp": 23.02,
+            "best_day_pnl": 26.98,
+            "worst_day_pnl": -37.04,
+            "annualized_sharpe": 0.827,
+            "total_net_pnl_jpy": 16932.81
+          },
+          "beats_uniform_linear_usd": true,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": true,
+          "beats_always_trade_usd": true
+        }
+      ],
+      "us_fixed_capital_oos_post_oct25": [
+        {
+          "variant": "OOS_AlwaysTrade_5bp",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 219,
+            "zero_trade_days": 26,
+            "trade_count": 219,
+            "win_days": 115,
+            "loss_days": 104,
+            "flat_days": 26,
+            "total_net_pnl": 167.67,
+            "daily_mean_pnl": 0.68,
+            "return_on_base_pct": 73.47,
+            "avg_net_bp": 39.57,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.352,
+            "total_net_pnl_jpy": 26155.93
+          }
+        },
+        {
+          "variant": "OOS_WF_Ridge_DirectionalAgree",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 135,
+            "zero_trade_days": 110,
+            "trade_count": 135,
+            "win_days": 72,
+            "loss_days": 63,
+            "flat_days": 110,
+            "total_net_pnl": 85.97,
+            "daily_mean_pnl": 0.35,
+            "return_on_base_pct": 37.67,
+            "avg_net_bp": 32.98,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 0.868,
+            "total_net_pnl_jpy": 13411.63
+          },
+          "active_rate": 0.6164,
+          "uniform_linear_control_usd": 103.36,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 140.67,
+            "effective_cap": 136.57,
+            "business_days": 245,
+            "trading_days": 194,
+            "zero_trade_days": 51,
+            "trade_count": 194,
+            "win_days": 103,
+            "loss_days": 91,
+            "flat_days": 51,
+            "total_net_pnl": 103.06,
+            "daily_mean_pnl": 0.42,
+            "return_on_base_pct": 73.26,
+            "avg_net_bp": 46.4,
+            "best_day_pnl": 20.85,
+            "worst_day_pnl": -27.78,
+            "annualized_sharpe": 1.432,
+            "total_net_pnl_jpy": 16077.39
+          },
+          "beats_uniform_linear_usd": false,
+          "beats_uniform_cap_usd": false,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        },
+        {
+          "variant": "OOS_WF_DayBlockBag_DirectionalAgree",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 140,
+            "zero_trade_days": 105,
+            "trade_count": 140,
+            "win_days": 78,
+            "loss_days": 62,
+            "flat_days": 105,
+            "total_net_pnl": 118.26,
+            "daily_mean_pnl": 0.48,
+            "return_on_base_pct": 51.82,
+            "avg_net_bp": 42.97,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.18,
+            "total_net_pnl_jpy": 18448.45
+          },
+          "active_rate": 0.6393,
+          "uniform_linear_control_usd": 107.19,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 145.88,
+            "effective_cap": 141.63,
+            "business_days": 245,
+            "trading_days": 194,
+            "zero_trade_days": 51,
+            "trade_count": 194,
+            "win_days": 103,
+            "loss_days": 91,
+            "flat_days": 51,
+            "total_net_pnl": 108.42,
+            "daily_mean_pnl": 0.44,
+            "return_on_base_pct": 74.32,
+            "avg_net_bp": 46.4,
+            "best_day_pnl": 22.07,
+            "worst_day_pnl": -30.87,
+            "annualized_sharpe": 1.438,
+            "total_net_pnl_jpy": 16913.64
+          },
+          "beats_uniform_linear_usd": true,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        }
+      ]
+    },
+    "us_long_short": {
+      "file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/cross-market-20261008-inputs/closing_long_short_signals.parquet",
+      "total_rows": 371,
+      "valid_rows": 370,
+      "dropped_null_rows": [
+        {
+          "row_index": 15,
+          "signal_date": "2025-04-23",
+          "code": "RDDT",
+          "reason": "missing target_0900/exit_0900"
+        }
+      ],
+      "date_span": "2025-04-01 .. 2026-09-22",
+      "side_breakdown": {
+        "long_count": 306,
+        "long_mean_net_bp": 32.83,
+        "short_count": 64,
+        "short_mean_net_bp_5bp": 116.99,
+        "short_mean_net_bp_35bp_sens": 86.99
+      },
+      "precomputed_model_ics": {
+        "full_ensemble_score_vs_raw_bp_ic": 0.1658,
+        "post_oct25_ensemble_score_vs_raw_bp_ic": 0.172,
+        "full_base_score_vs_net_bp_ic": 0.1142,
+        "full_meta_score_vs_net_bp_ic": 0.032,
+        "post_oct25_meta_score_vs_net_bp_ic": 0.0725,
+        "meta_score_quantiles": [
+          0.767,
+          0.85,
+          0.917,
+          0.983,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "causal_feature_count": 40,
+      "dropped_null_or_constant_features": [],
+      "walk_forward_raw_bp": {
+        "20": {
+          "alpha": 20.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.0293,
+          "ridge_spearman_ic": 0.0263,
+          "bag_pearson_ic": 0.0598,
+          "bag_spearman_ic": 0.0629
+        },
+        "50": {
+          "alpha": 50.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.0374,
+          "ridge_spearman_ic": 0.0428,
+          "bag_pearson_ic": 0.0703,
+          "bag_spearman_ic": 0.0782
+        },
+        "100": {
+          "alpha": 100.0,
+          "folds": 13,
+          "oos_n": 245,
+          "ridge_pearson_ic": 0.0388,
+          "ridge_spearman_ic": 0.0482,
+          "bag_pearson_ic": 0.0732,
+          "bag_spearman_ic": 0.078
+        }
+      },
+      "orthogonality_audit_raw_bp": {
+        "train_n": 125,
+        "oos_n": 245,
+        "train_span": "2025-04-01 .. 2025-09-30",
+        "oos_span": "2025-10-01 .. 2026-09-22",
+        "train_pearson_ic": 0.5518,
+        "oos_pearson_ic": -0.0376,
+        "oos_spearman_ic": 0.0321,
+        "kaiser_effective_dims": 11,
+        "total_features": 40,
+        "pca_top_k_count": 11,
+        "pca_top_k_oos_ic": -0.0229,
+        "pca_bottom_k_oos_ic": -0.0225,
+        "edge_on_top_pcs": false,
+        "positive_mda_feature_count": 16,
+        "flagged_overfit_features": [
+          "prior_market_return_5d"
+        ],
+        "top_positive_mda_features": [
+          {
+            "feature": "vwap_deviation_1520",
+            "in_sample_importance": 0.0649,
+            "oos_mda_ic": 0.0985,
+            "oos_mda_std": 0.0322,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "distance_from_high",
+            "in_sample_importance": 0.0315,
+            "oos_mda_ic": 0.0467,
+            "oos_mda_std": 0.018,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "intraday_range",
+            "in_sample_importance": 0.0341,
+            "oos_mda_ic": 0.021,
+            "oos_mda_std": 0.0129,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "return_last5m",
+            "in_sample_importance": 0.0339,
+            "oos_mda_ic": 0.02,
+            "oos_mda_std": 0.0114,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "ref_GLD_from_session_start",
+            "in_sample_importance": 0.0193,
+            "oos_mda_ic": 0.0075,
+            "oos_mda_std": 0.0073,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_distance_low_20d",
+            "in_sample_importance": 0.0461,
+            "oos_mda_ic": 0.0058,
+            "oos_mda_std": 0.0199,
+            "overfit_suspected": false
+          }
+        ],
+        "worst_negative_mda_features": [
+          {
+            "feature": "volume_ratio_20d_1520",
+            "in_sample_importance": 0.0282,
+            "oos_mda_ic": -0.0969,
+            "oos_mda_std": 0.0322,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "tech_bollinger_z_20",
+            "in_sample_importance": 0.0496,
+            "oos_mda_ic": -0.0291,
+            "oos_mda_std": 0.0146,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "return_open_to_1520",
+            "in_sample_importance": 0.0194,
+            "oos_mda_ic": -0.021,
+            "oos_mda_std": 0.0074,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "tech_rsi_14",
+            "in_sample_importance": 0.0318,
+            "oos_mda_ic": -0.0169,
+            "oos_mda_std": 0.0093,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "prior_stock_return_20d",
+            "in_sample_importance": 0.0342,
+            "oos_mda_ic": -0.0149,
+            "oos_mda_std": 0.0107,
+            "overfit_suspected": false
+          },
+          {
+            "feature": "market_relative_return",
+            "in_sample_importance": 0.0113,
+            "oos_mda_ic": -0.0139,
+            "oos_mda_std": 0.004,
+            "overfit_suspected": false
+          }
+        ]
+      },
+      "us_fixed_capital_full": [
+        {
+          "variant": "AlwaysTrade_5bp",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 370,
+            "trading_days": 340,
+            "zero_trade_days": 30,
+            "trade_count": 340,
+            "win_days": 182,
+            "loss_days": 158,
+            "flat_days": 30,
+            "total_net_pnl": 314.38,
+            "daily_mean_pnl": 0.85,
+            "return_on_base_pct": 137.76,
+            "avg_net_bp": 44.26,
+            "best_day_pnl": 48.08,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.502,
+            "total_net_pnl_jpy": 49042.71
+          }
+        },
+        {
+          "variant": "MetaScore>=0.90",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 370,
+            "trading_days": 280,
+            "zero_trade_days": 90,
+            "trade_count": 280,
+            "win_days": 150,
+            "loss_days": 130,
+            "flat_days": 90,
+            "total_net_pnl": 269.34,
+            "daily_mean_pnl": 0.73,
+            "return_on_base_pct": 118.03,
+            "avg_net_bp": 46.64,
+            "best_day_pnl": 42.45,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.39,
+            "total_net_pnl_jpy": 42016.81
+          },
+          "active_rate": 0.8235,
+          "uniform_linear_control_usd": 258.9,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 187.93,
+            "effective_cap": 182.46,
+            "business_days": 370,
+            "trading_days": 334,
+            "zero_trade_days": 36,
+            "trade_count": 334,
+            "win_days": 177,
+            "loss_days": 157,
+            "flat_days": 36,
+            "total_net_pnl": 229.25,
+            "daily_mean_pnl": 0.62,
+            "return_on_base_pct": 121.99,
+            "avg_net_bp": 41.35,
+            "best_day_pnl": 32.06,
+            "worst_day_pnl": -40.13,
+            "annualized_sharpe": 1.336,
+            "total_net_pnl_jpy": 35762.4
+          },
+          "beats_uniform_linear_usd": true,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        },
+        {
+          "variant": "MetaScore>=0.95",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 370,
+            "trading_days": 243,
+            "zero_trade_days": 127,
+            "trade_count": 243,
+            "win_days": 133,
+            "loss_days": 110,
+            "flat_days": 127,
+            "total_net_pnl": 221.5,
+            "daily_mean_pnl": 0.6,
+            "return_on_base_pct": 97.06,
+            "avg_net_bp": 44.73,
+            "best_day_pnl": 42.45,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.194,
+            "total_net_pnl_jpy": 34553.69
+          },
+          "active_rate": 0.7147,
+          "uniform_linear_control_usd": 224.69,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 163.1,
+            "effective_cap": 158.35,
+            "business_days": 370,
+            "trading_days": 329,
+            "zero_trade_days": 41,
+            "trade_count": 329,
+            "win_days": 174,
+            "loss_days": 155,
+            "flat_days": 41,
+            "total_net_pnl": 155.47,
+            "daily_mean_pnl": 0.42,
+            "return_on_base_pct": 95.33,
+            "avg_net_bp": 33.56,
+            "best_day_pnl": 32.06,
+            "worst_day_pnl": -33.96,
+            "annualized_sharpe": 1.066,
+            "total_net_pnl_jpy": 24254.08
+          },
+          "beats_uniform_linear_usd": false,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        },
+        {
+          "variant": "AlwaysTrade_Short35bp_Sensitivity",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 370,
+            "trading_days": 340,
+            "zero_trade_days": 30,
+            "trade_count": 340,
+            "win_days": 181,
+            "loss_days": 159,
+            "flat_days": 30,
+            "total_net_pnl": 277.12,
+            "daily_mean_pnl": 0.75,
+            "return_on_base_pct": 121.44,
+            "avg_net_bp": 38.97,
+            "best_day_pnl": 47.51,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.325,
+            "total_net_pnl_jpy": 43230.5
+          }
+        }
+      ],
+      "us_fixed_capital_oos_post_oct25": [
+        {
+          "variant": "OOS_AlwaysTrade_5bp",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 221,
+            "zero_trade_days": 24,
+            "trade_count": 221,
+            "win_days": 116,
+            "loss_days": 105,
+            "flat_days": 24,
+            "total_net_pnl": 181.74,
+            "daily_mean_pnl": 0.74,
+            "return_on_base_pct": 79.64,
+            "avg_net_bp": 40.18,
+            "best_day_pnl": 42.45,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.304,
+            "total_net_pnl_jpy": 28350.72
+          }
+        },
+        {
+          "variant": "OOS_WF_Ridge_DirectionalAgree",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 145,
+            "zero_trade_days": 100,
+            "trade_count": 145,
+            "win_days": 76,
+            "loss_days": 69,
+            "flat_days": 100,
+            "total_net_pnl": 75.55,
+            "daily_mean_pnl": 0.31,
+            "return_on_base_pct": 33.11,
+            "avg_net_bp": 24.47,
+            "best_day_pnl": 33.62,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 0.676,
+            "total_net_pnl_jpy": 11785.31
+          },
+          "active_rate": 0.6561,
+          "uniform_linear_control_usd": 119.24,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 149.72,
+            "effective_cap": 145.36,
+            "business_days": 245,
+            "trading_days": 206,
+            "zero_trade_days": 39,
+            "trade_count": 206,
+            "win_days": 106,
+            "loss_days": 100,
+            "flat_days": 39,
+            "total_net_pnl": 68.19,
+            "daily_mean_pnl": 0.28,
+            "return_on_base_pct": 45.55,
+            "avg_net_bp": 23.54,
+            "best_day_pnl": 26.53,
+            "worst_day_pnl": -30.87,
+            "annualized_sharpe": 0.783,
+            "total_net_pnl_jpy": 10638.32
+          },
+          "beats_uniform_linear_usd": false,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        },
+        {
+          "variant": "OOS_WF_DayBlockBag_DirectionalAgree",
+          "report": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 228.2,
+            "effective_cap": 221.55,
+            "business_days": 245,
+            "trading_days": 149,
+            "zero_trade_days": 96,
+            "trade_count": 149,
+            "win_days": 80,
+            "loss_days": 69,
+            "flat_days": 96,
+            "total_net_pnl": 146.6,
+            "daily_mean_pnl": 0.6,
+            "return_on_base_pct": 64.24,
+            "avg_net_bp": 47.24,
+            "best_day_pnl": 35.56,
+            "worst_day_pnl": -46.3,
+            "annualized_sharpe": 1.215,
+            "total_net_pnl_jpy": 22869.18
+          },
+          "active_rate": 0.6742,
+          "uniform_linear_control_usd": 122.53,
+          "uniform_cap_control": {
+            "market": "US",
+            "currency": "USD",
+            "base_capital": 153.85,
+            "effective_cap": 149.37,
+            "business_days": 245,
+            "trading_days": 206,
+            "zero_trade_days": 39,
+            "trade_count": 206,
+            "win_days": 106,
+            "loss_days": 100,
+            "flat_days": 39,
+            "total_net_pnl": 68.41,
+            "daily_mean_pnl": 0.28,
+            "return_on_base_pct": 44.46,
+            "avg_net_bp": 23.54,
+            "best_day_pnl": 26.53,
+            "worst_day_pnl": -30.87,
+            "annualized_sharpe": 0.771,
+            "total_net_pnl_jpy": 10671.8
+          },
+          "beats_uniform_linear_usd": true,
+          "beats_uniform_cap_usd": true,
+          "beats_always_trade_sharpe": false,
+          "beats_always_trade_usd": false
+        }
+      ]
+    }
+  },
+  "panel_c_overnight_exit_wait": {
+    "jp": {
+      "jp_history_raw_225d": {
+        "rows": 225,
+        "date_span": "2025-09-01 .. 2026-09-10",
+        "policies": [
+          {
+            "exit_policy": "open_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 126,
+              "loss_days": 99,
+              "flat_days": 0,
+              "total_net_pnl": 3882535.67,
+              "daily_mean_pnl": 17255.71,
+              "return_on_base_pct": 485.32,
+              "avg_net_bp": 81.76,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -158336.4,
+              "annualized_sharpe": 3.654,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "immediate_price",
+            "missing_exit_prices": 2,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 223,
+              "zero_trade_days": 2,
+              "trade_count": 223,
+              "win_days": 122,
+              "loss_days": 101,
+              "flat_days": 2,
+              "total_net_pnl": 3128404.33,
+              "daily_mean_pnl": 13904.02,
+              "return_on_base_pct": 391.05,
+              "avg_net_bp": 66.49,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -166061.25,
+              "annualized_sharpe": 2.939,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_10_price",
+            "missing_exit_prices": 2,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 223,
+              "zero_trade_days": 2,
+              "trade_count": 223,
+              "win_days": 118,
+              "loss_days": 105,
+              "flat_days": 2,
+              "total_net_pnl": 2853036.32,
+              "daily_mean_pnl": 12680.16,
+              "return_on_base_pct": 356.63,
+              "avg_net_bp": 60.69,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -207676.0,
+              "annualized_sharpe": 2.367,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_15_price",
+            "missing_exit_prices": 2,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 223,
+              "zero_trade_days": 2,
+              "trade_count": 223,
+              "win_days": 120,
+              "loss_days": 103,
+              "flat_days": 2,
+              "total_net_pnl": 2903098.57,
+              "daily_mean_pnl": 12902.66,
+              "return_on_base_pct": 362.89,
+              "avg_net_bp": 61.53,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -307776.0,
+              "annualized_sharpe": 2.299,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_10_price",
+            "missing_exit_prices": 2,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 223,
+              "zero_trade_days": 2,
+              "trade_count": 223,
+              "win_days": 145,
+              "loss_days": 78,
+              "flat_days": 2,
+              "total_net_pnl": 3711436.32,
+              "daily_mean_pnl": 16495.27,
+              "return_on_base_pct": 463.93,
+              "avg_net_bp": 79.02,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -207676.0,
+              "annualized_sharpe": 3.194,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_15_price",
+            "missing_exit_prices": 2,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 223,
+              "zero_trade_days": 2,
+              "trade_count": 223,
+              "win_days": 152,
+              "loss_days": 71,
+              "flat_days": 2,
+              "total_net_pnl": 3873198.57,
+              "daily_mean_pnl": 17214.22,
+              "return_on_base_pct": 484.15,
+              "avg_net_bp": 82.21,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -307776.0,
+              "annualized_sharpe": 3.239,
+              "total_net_pnl_jpy": null
+            }
+          }
+        ]
+      },
+      "jp_history_next_observed_225d": {
+        "rows": 225,
+        "date_span": "2025-09-01 .. 2026-09-10",
+        "policies": [
+          {
+            "exit_policy": "open_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 126,
+              "loss_days": 99,
+              "flat_days": 0,
+              "total_net_pnl": 3882535.67,
+              "daily_mean_pnl": 17255.71,
+              "return_on_base_pct": 485.32,
+              "avg_net_bp": 81.76,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -158336.4,
+              "annualized_sharpe": 3.654,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "immediate_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 122,
+              "loss_days": 103,
+              "flat_days": 0,
+              "total_net_pnl": 3103235.68,
+              "daily_mean_pnl": 13792.16,
+              "return_on_base_pct": 387.9,
+              "avg_net_bp": 65.38,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -166061.25,
+              "annualized_sharpe": 2.914,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_10_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 120,
+              "loss_days": 105,
+              "flat_days": 0,
+              "total_net_pnl": 2859635.67,
+              "daily_mean_pnl": 12709.49,
+              "return_on_base_pct": 357.45,
+              "avg_net_bp": 60.31,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -207676.0,
+              "annualized_sharpe": 2.373,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_15_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 120,
+              "loss_days": 105,
+              "flat_days": 0,
+              "total_net_pnl": 2899585.67,
+              "daily_mean_pnl": 12887.05,
+              "return_on_base_pct": 362.45,
+              "avg_net_bp": 60.92,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -307776.0,
+              "annualized_sharpe": 2.296,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_10_price",
+            "missing_exit_prices": 0,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 147,
+              "loss_days": 78,
+              "flat_days": 0,
+              "total_net_pnl": 3725035.67,
+              "daily_mean_pnl": 16555.71,
+              "return_on_base_pct": 465.63,
+              "avg_net_bp": 78.74,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -207676.0,
+              "annualized_sharpe": 3.206,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_15_price",
+            "missing_exit_prices": 0,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 225,
+              "trading_days": 225,
+              "zero_trade_days": 0,
+              "trade_count": 225,
+              "win_days": 152,
+              "loss_days": 73,
+              "flat_days": 0,
+              "total_net_pnl": 3869685.67,
+              "daily_mean_pnl": 17198.6,
+              "return_on_base_pct": 483.71,
+              "avg_net_bp": 81.41,
+              "best_day_pnl": 488904.5,
+              "worst_day_pnl": -307776.0,
+              "annualized_sharpe": 3.236,
+              "total_net_pnl_jpy": null
+            }
+          }
+        ]
+      },
+      "jp_recent_27d": {
+        "rows": 27,
+        "date_span": "2026-08-26 .. 2026-10-09",
+        "policies": [
+          {
+            "exit_policy": "open_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 15,
+              "loss_days": 12,
+              "flat_days": 0,
+              "total_net_pnl": 112442.3,
+              "daily_mean_pnl": 4164.53,
+              "return_on_base_pct": 14.06,
+              "avg_net_bp": 18.11,
+              "best_day_pnl": 101482.2,
+              "worst_day_pnl": -181113.5,
+              "annualized_sharpe": 1.203,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "immediate_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 15,
+              "loss_days": 12,
+              "flat_days": 0,
+              "total_net_pnl": 124142.3,
+              "daily_mean_pnl": 4597.86,
+              "return_on_base_pct": 15.52,
+              "avg_net_bp": 22.48,
+              "best_day_pnl": 115282.2,
+              "worst_day_pnl": -160113.5,
+              "annualized_sharpe": 1.267,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_10_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 18,
+              "loss_days": 9,
+              "flat_days": 0,
+              "total_net_pnl": 184542.3,
+              "daily_mean_pnl": 6834.9,
+              "return_on_base_pct": 23.07,
+              "avg_net_bp": 33.17,
+              "best_day_pnl": 91282.2,
+              "worst_day_pnl": -170113.5,
+              "annualized_sharpe": 1.933,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "wait_15_price",
+            "missing_exit_prices": 0,
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 15,
+              "loss_days": 12,
+              "flat_days": 0,
+              "total_net_pnl": 282942.3,
+              "daily_mean_pnl": 10479.34,
+              "return_on_base_pct": 35.37,
+              "avg_net_bp": 51.55,
+              "best_day_pnl": 108682.2,
+              "worst_day_pnl": -143113.5,
+              "annualized_sharpe": 2.885,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_10_price",
+            "missing_exit_prices": 0,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 18,
+              "loss_days": 9,
+              "flat_days": 0,
+              "total_net_pnl": 178942.3,
+              "daily_mean_pnl": 6627.49,
+              "return_on_base_pct": 22.37,
+              "avg_net_bp": 30.78,
+              "best_day_pnl": 101482.2,
+              "worst_day_pnl": -170113.5,
+              "annualized_sharpe": 1.91,
+              "total_net_pnl_jpy": null
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_15_price",
+            "missing_exit_prices": 0,
+            "note": "Uses open-print net>0 proxy per protocol.json",
+            "report": {
+              "market": "JP",
+              "currency": "JPY",
+              "base_capital": 800000.0,
+              "effective_cap": 2400000.0,
+              "business_days": 27,
+              "trading_days": 27,
+              "zero_trade_days": 0,
+              "trade_count": 27,
+              "win_days": 18,
+              "loss_days": 9,
+              "flat_days": 0,
+              "total_net_pnl": 279042.3,
+              "daily_mean_pnl": 10334.9,
+              "return_on_base_pct": 34.88,
+              "avg_net_bp": 49.76,
+              "best_day_pnl": 101482.2,
+              "worst_day_pnl": -143113.5,
+              "annualized_sharpe": 3.107,
+              "total_net_pnl_jpy": null
+            }
+          }
+        ]
+      }
+    },
+    "us": {
+      "us_history_244d_usd": {
+        "rows": 244,
+        "date_span": "2025-09-02 .. 2026-08-20",
+        "fx_conversion_divisor": 150.0,
+        "policies": [
+          {
+            "exit_policy": "open_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 117,
+              "loss_days": 97,
+              "flat_days": 30,
+              "total_net_pnl": 238.98,
+              "daily_mean_pnl": 0.98,
+              "return_on_base_pct": 104.72,
+              "avg_net_bp": 55.78,
+              "best_day_pnl": 47.06,
+              "worst_day_pnl": -18.36,
+              "annualized_sharpe": 2.424,
+              "total_net_pnl_jpy": 37280.33
+            }
+          },
+          {
+            "exit_policy": "immediate_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 111,
+              "loss_days": 103,
+              "flat_days": 30,
+              "total_net_pnl": 183.64,
+              "daily_mean_pnl": 0.75,
+              "return_on_base_pct": 80.47,
+              "avg_net_bp": 42.48,
+              "best_day_pnl": 55.73,
+              "worst_day_pnl": -22.55,
+              "annualized_sharpe": 1.715,
+              "total_net_pnl_jpy": 28647.82
+            }
+          },
+          {
+            "exit_policy": "wait_10_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 116,
+              "loss_days": 98,
+              "flat_days": 30,
+              "total_net_pnl": 176.78,
+              "daily_mean_pnl": 0.72,
+              "return_on_base_pct": 77.47,
+              "avg_net_bp": 39.46,
+              "best_day_pnl": 56.93,
+              "worst_day_pnl": -18.0,
+              "annualized_sharpe": 1.525,
+              "total_net_pnl_jpy": 27577.83
+            }
+          },
+          {
+            "exit_policy": "wait_15_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 115,
+              "loss_days": 99,
+              "flat_days": 30,
+              "total_net_pnl": 217.74,
+              "daily_mean_pnl": 0.89,
+              "return_on_base_pct": 95.41,
+              "avg_net_bp": 49.56,
+              "best_day_pnl": 53.18,
+              "worst_day_pnl": -21.55,
+              "annualized_sharpe": 1.789,
+              "total_net_pnl_jpy": 33966.93
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_10_price",
+            "note": "Converted from JPY proxy via fx_us=150.0; uses open-print proxy",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 136,
+              "loss_days": 78,
+              "flat_days": 30,
+              "total_net_pnl": 216.27,
+              "daily_mean_pnl": 0.89,
+              "return_on_base_pct": 94.77,
+              "avg_net_bp": 49.08,
+              "best_day_pnl": 47.06,
+              "worst_day_pnl": -18.0,
+              "annualized_sharpe": 2.063,
+              "total_net_pnl_jpy": 33738.51
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_15_price",
+            "note": "Converted from JPY proxy via fx_us=150.0; uses open-print proxy",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 244,
+              "trading_days": 214,
+              "zero_trade_days": 30,
+              "trade_count": 214,
+              "win_days": 143,
+              "loss_days": 71,
+              "flat_days": 30,
+              "total_net_pnl": 242.51,
+              "daily_mean_pnl": 0.99,
+              "return_on_base_pct": 106.27,
+              "avg_net_bp": 54.96,
+              "best_day_pnl": 47.06,
+              "worst_day_pnl": -21.55,
+              "annualized_sharpe": 2.289,
+              "total_net_pnl_jpy": 37830.84
+            }
+          }
+        ]
+      },
+      "us_recent_3d_usd": {
+        "rows": 3,
+        "date_span": "2026-10-08 .. 2026-10-12",
+        "fx_conversion_divisor": 150.0,
+        "policies": [
+          {
+            "exit_policy": "open_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 1,
+              "loss_days": 1,
+              "flat_days": 1,
+              "total_net_pnl": 9.42,
+              "daily_mean_pnl": 3.14,
+              "return_on_base_pct": 4.13,
+              "avg_net_bp": 184.69,
+              "best_day_pnl": 14.1,
+              "worst_day_pnl": -4.68,
+              "annualized_sharpe": 5.097,
+              "total_net_pnl_jpy": 1469.52
+            }
+          },
+          {
+            "exit_policy": "immediate_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 1,
+              "loss_days": 1,
+              "flat_days": 1,
+              "total_net_pnl": 14.45,
+              "daily_mean_pnl": 4.82,
+              "return_on_base_pct": 6.33,
+              "avg_net_bp": 315.18,
+              "best_day_pnl": 17.66,
+              "worst_day_pnl": -3.21,
+              "annualized_sharpe": 6.802,
+              "total_net_pnl_jpy": 2254.2
+            }
+          },
+          {
+            "exit_policy": "wait_10_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 2,
+              "loss_days": 0,
+              "flat_days": 1,
+              "total_net_pnl": 20.93,
+              "daily_mean_pnl": 6.98,
+              "return_on_base_pct": 9.17,
+              "avg_net_bp": 500.68,
+              "best_day_pnl": 20.08,
+              "worst_day_pnl": 0.0,
+              "annualized_sharpe": 9.75,
+              "total_net_pnl_jpy": 3265.08
+            }
+          },
+          {
+            "exit_policy": "wait_15_price",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 2,
+              "loss_days": 0,
+              "flat_days": 1,
+              "total_net_pnl": 14.88,
+              "daily_mean_pnl": 4.96,
+              "return_on_base_pct": 6.52,
+              "avg_net_bp": 366.02,
+              "best_day_pnl": 13.04,
+              "worst_day_pnl": 0.0,
+              "annualized_sharpe": 11.157,
+              "total_net_pnl_jpy": 2322.06
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_10_price",
+            "note": "Converted from JPY proxy via fx_us=150.0; uses open-print proxy",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 2,
+              "loss_days": 0,
+              "flat_days": 1,
+              "total_net_pnl": 14.95,
+              "daily_mean_pnl": 4.98,
+              "return_on_base_pct": 6.55,
+              "avg_net_bp": 359.57,
+              "best_day_pnl": 14.1,
+              "worst_day_pnl": 0.0,
+              "annualized_sharpe": 10.001,
+              "total_net_pnl_jpy": 2332.2
+            }
+          },
+          {
+            "exit_policy": "conditional_loss_wait_15_price",
+            "note": "Converted from JPY proxy via fx_us=150.0; uses open-print proxy",
+            "report": {
+              "market": "US",
+              "currency": "USD",
+              "base_capital": 228.2,
+              "effective_cap": 221.55,
+              "business_days": 3,
+              "trading_days": 2,
+              "zero_trade_days": 1,
+              "trade_count": 2,
+              "win_days": 2,
+              "loss_days": 0,
+              "flat_days": 1,
+              "total_net_pnl": 15.94,
+              "daily_mean_pnl": 5.31,
+              "return_on_base_pct": 6.99,
+              "avg_net_bp": 391.03,
+              "best_day_pnl": 14.1,
+              "worst_day_pnl": 0.0,
+              "annualized_sharpe": 11.005,
+              "total_net_pnl_jpy": 2487.42
+            }
+          }
+        ]
+      }
+    }
+  },
+  "panel_d_pengin_100pt": {
+    "ablation_file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/pengin-100pt-upside-ml-20261116/exact_prod25_ablation_416d.csv",
+    "mda_file": "/Users/wakabayashishuntaira/Documents/macroTomicro/data/research/pengin-100pt-upside-ml-20261116/p6b_mdi_vs_oos_mda.csv",
+    "business_days": 416,
+    "ablation_variants": [
+      {
+        "variant": "P0_Fearful_70pt_Base (SymLCB + 6Vetoes, mkt<=20)",
+        "trades": 340,
+        "cash_days": 76,
+        "sum5_jpy": 1645429,
+        "avg5_jpy": 3955,
+        "d_sum5_jpy": 0,
+        "rec60_jpy": 313352,
+        "nov26_jpy": 45768,
+        "win_rate_pct": 65.0,
+        "payoff": 1.48,
+        "worst_jpy": -36860,
+        "dd_jpy": 79844,
+        "sharpe": 3.94
+      },
+      {
+        "variant": "P1_AsymScore_Only (Q80/Q20 Score + OldVetoes, mkt<=20)",
+        "trades": 340,
+        "cash_days": 76,
+        "sum5_jpy": 1656575,
+        "avg5_jpy": 3982,
+        "d_sum5_jpy": 11146,
+        "rec60_jpy": 313467,
+        "nov26_jpy": 46219,
+        "win_rate_pct": 64.41,
+        "payoff": 1.52,
+        "worst_jpy": -36860,
+        "dd_jpy": 68899,
+        "sharpe": 3.94
+      },
+      {
+        "variant": "P1b_AsymScore+PM_Wave (Q80+PM_Q80 + OldVetoes, mkt<=20)",
+        "trades": 340,
+        "cash_days": 76,
+        "sum5_jpy": 1694309,
+        "avg5_jpy": 4073,
+        "d_sum5_jpy": 48880,
+        "rec60_jpy": 320574,
+        "nov26_jpy": 53934,
+        "win_rate_pct": 64.71,
+        "payoff": 1.5,
+        "worst_jpy": -36860,
+        "dd_jpy": 70756,
+        "sharpe": 4.01
+      },
+      {
+        "variant": "P2_DownsideGuard_Only (OldScore + Q20_Guard, mkt<=20)",
+        "trades": 354,
+        "cash_days": 62,
+        "sum5_jpy": 1832527,
+        "avg5_jpy": 4405,
+        "d_sum5_jpy": 187098,
+        "rec60_jpy": 418723,
+        "nov26_jpy": 50332,
+        "win_rate_pct": 63.84,
+        "payoff": 1.62,
+        "worst_jpy": -36860,
+        "dd_jpy": 79975,
+        "sharpe": 4.2
+      },
+      {
+        "variant": "P3_AsymBag_Combined (Q80 Score + Q20_Guard, mkt<=20)",
+        "trades": 354,
+        "cash_days": 62,
+        "sum5_jpy": 1878277,
+        "avg5_jpy": 4515,
+        "d_sum5_jpy": 232848,
+        "rec60_jpy": 407809,
+        "nov26_jpy": 50783,
+        "win_rate_pct": 63.84,
+        "payoff": 1.63,
+        "worst_jpy": -36860,
+        "dd_jpy": 70176,
+        "sharpe": 4.26
+      },
+      {
+        "variant": "P3b_AsymBag+PM_Combined (Q80+PM_Q80 + Q20_Guard, <=20)",
+        "trades": 354,
+        "cash_days": 62,
+        "sum5_jpy": 1925739,
+        "avg5_jpy": 4629,
+        "d_sum5_jpy": 280310,
+        "rec60_jpy": 411664,
+        "nov26_jpy": 58498,
+        "win_rate_pct": 64.41,
+        "payoff": 1.6,
+        "worst_jpy": -36860,
+        "dd_jpy": 70756,
+        "sharpe": 4.35
+      },
+      {
+        "variant": "P4_QuantileQ72_Head (Dedicated Q72 + Q20_Guard, <=20)",
+        "trades": 354,
+        "cash_days": 62,
+        "sum5_jpy": 1805258,
+        "avg5_jpy": 4340,
+        "d_sum5_jpy": 159829,
+        "rec60_jpy": 394756,
+        "nov26_jpy": 50783,
+        "win_rate_pct": 61.58,
+        "payoff": 1.73,
+        "worst_jpy": -36860,
+        "dd_jpy": 102876,
+        "sharpe": 4.07
+      },
+      {
+        "variant": "P5_Hybrid_Huber+Q72 (Blend + Q20_Guard, mkt<=20)",
+        "trades": 354,
+        "cash_days": 62,
+        "sum5_jpy": 1876522,
+        "avg5_jpy": 4511,
+        "d_sum5_jpy": 231093,
+        "rec60_jpy": 399221,
+        "nov26_jpy": 50783,
+        "win_rate_pct": 62.15,
+        "payoff": 1.78,
+        "worst_jpy": -36860,
+        "dd_jpy": 70176,
+        "sharpe": 4.25
+      },
+      {
+        "variant": "P6a_100pt_AsymBag + mkt<=28 (Zero New Model Heads!)",
+        "trades": 375,
+        "cash_days": 41,
+        "sum5_jpy": 1968421,
+        "avg5_jpy": 4732,
+        "d_sum5_jpy": 322993,
+        "rec60_jpy": 431186,
+        "nov26_jpy": 50783,
+        "win_rate_pct": 64.0,
+        "payoff": 1.63,
+        "worst_jpy": -36860,
+        "dd_jpy": 67583,
+        "sharpe": 4.44
+      },
+      {
+        "variant": "P6b_100pt_AsymBag+PM + mkt<=28 (Zero New Heads!)",
+        "trades": 375,
+        "cash_days": 41,
+        "sum5_jpy": 2015883,
+        "avg5_jpy": 4846,
+        "d_sum5_jpy": 370455,
+        "rec60_jpy": 435042,
+        "nov26_jpy": 58498,
+        "win_rate_pct": 64.53,
+        "payoff": 1.61,
+        "worst_jpy": -36860,
+        "dd_jpy": 70756,
+        "sharpe": 4.53
+      },
+      {
+        "variant": "P7_100pt_Hybrid_Q72 + mkt<=28",
+        "trades": 375,
+        "cash_days": 41,
+        "sum5_jpy": 1930922,
+        "avg5_jpy": 4642,
+        "d_sum5_jpy": 285493,
+        "rec60_jpy": 403163,
+        "nov26_jpy": 50783,
+        "win_rate_pct": 61.87,
+        "payoff": 1.76,
+        "worst_jpy": -36860,
+        "dd_jpy": 67583,
+        "sharpe": 4.34
+      }
+    ],
+    "p0_vs_p6b_uniform_exposure_check": {
+      "p0_trades": 340,
+      "p6b_trades": 375,
+      "exposure_scale": 1.1029,
+      "p0_sum5_jpy": 1645429,
+      "p0_uniform_expanded_jpy": 1814811.4,
+      "p6b_sum5_jpy": 2015883,
+      "alpha_above_uniform_expansion_jpy": 201071.6
+    },
+    "feature_mda_summary": {
+      "total_features": 29,
+      "positive_oos_mda_count": 16,
+      "non_positive_oos_mda_count": 13,
+      "top_positive_features": [
+        {
+          "feature": "pred_compact_1125_res",
+          "is_mdi_pct": 11.702,
+          "oos_mda_dic": 0.026541
+        },
+        {
+          "feature": "mkt_ret_am",
+          "is_mdi_pct": 4.856,
+          "oos_mda_dic": 0.011866
+        },
+        {
+          "feature": "pred_time_1230",
+          "is_mdi_pct": 6.183,
+          "oos_mda_dic": 0.011495
+        },
+        {
+          "feature": "am_range_vs_own_20d_ratio",
+          "is_mdi_pct": 4.992,
+          "oos_mda_dic": 0.009704
+        },
+        {
+          "feature": "ret_5m",
+          "is_mdi_pct": 3.773,
+          "oos_mda_dic": 0.00565
+        }
+      ],
+      "worst_negative_features": [
+        {
+          "feature": "dbar_higher_low_bp",
+          "is_mdi_pct": 3.095,
+          "oos_mda_dic": -0.0034
+        },
+        {
+          "feature": "ffd_cum_r1d_norm",
+          "is_mdi_pct": 3.736,
+          "oos_mda_dic": -0.003333
+        },
+        {
+          "feature": "dbar_higher_high_bp",
+          "is_mdi_pct": 1.976,
+          "oos_mda_dic": -0.003331
+        },
+        {
+          "feature": "alpha_late_1049_1119_bp",
+          "is_mdi_pct": 2.932,
+          "oos_mda_dic": -0.00284
+        },
+        {
+          "feature": "trapped_overhang_bp",
+          "is_mdi_pct": 2.286,
+          "oos_mda_dic": -0.002506
+        },
+        {
+          "feature": "early_vs_late_dbar_bal",
+          "is_mdi_pct": 2.791,
+          "oos_mda_dic": -0.002212
+        }
+      ],
+      "high_mdi_negative_mda_suspects": [
+        {
+          "feature": "stock_up_am_lunch_habit_60d",
+          "is_mdi_pct": 3.8,
+          "oos_mda_dic": -0.001018
+        },
+        {
+          "feature": "rel_sec_am",
+          "is_mdi_pct": 2.597,
+          "oos_mda_dic": -0.001089
+        },
+        {
+          "feature": "early_vs_late_dbar_bal",
+          "is_mdi_pct": 2.791,
+          "oos_mda_dic": -0.002212
+        },
+        {
+          "feature": "alpha_late_1049_1119_bp",
+          "is_mdi_pct": 2.932,
+          "oos_mda_dic": -0.00284
+        },
+        {
+          "feature": "ffd_cum_r1d_norm",
+          "is_mdi_pct": 3.736,
+          "oos_mda_dic": -0.003333
+        },
+        {
+          "feature": "dbar_higher_low_bp",
+          "is_mdi_pct": 3.095,
+          "oos_mda_dic": -0.0034
+        }
+      ]
+    }
+  }
+}

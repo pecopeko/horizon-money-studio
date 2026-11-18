@@ -1,0 +1,70 @@
+{
+  "title": "Podcast RSS & Transcript Extractor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "applePodcastIds": {
+      "title": "Apple Podcasts IDs or URLs",
+      "type": "array",
+      "description": "List of Apple Podcasts numeric IDs (e.g. '1584274529') or Apple Podcasts URLs to resolve via the iTunes Lookup API.",
+      "editor": "stringList",
+      "prefill": [
+        "1584274529"
+      ]
+    },
+    "searchQueries": {
+      "title": "iTunes Podcast Search Queries",
+      "type": "array",
+      "description": "Search queries resolved to RSS feeds via the public iTunes Search API.",
+      "editor": "stringList",
+      "default": []
+    },
+    "rssUrls": {
+      "title": "Direct Podcast RSS Feed URLs",
+      "type": "array",
+      "description": "Direct HTTP(S) podcast RSS XML URLs to parse.",
+      "editor": "stringList",
+      "default": []
+    },
+    "maxEpisodesPerFeed": {
+      "title": "Max Episodes Per Feed",
+      "type": "integer",
+      "description": "Maximum number of newest episodes to extract per podcast feed.",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 500
+    },
+    "searchLimitPerQuery": {
+      "title": "Feeds Per Search Query",
+      "type": "integer",
+      "description": "Maximum number of podcast feeds to resolve per search query.",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 25
+    },
+    "country": {
+      "title": "iTunes Store Country Code",
+      "type": "string",
+      "description": "Two-letter country code passed to the iTunes Search/Lookup API (e.g. US, JP, GB).",
+      "default": "US"
+    },
+    "fetchTranscripts": {
+      "title": "Fetch & Normalize Transcripts",
+      "type": "boolean",
+      "description": "Fetch Podcasting 2.0 <podcast:transcript> files (SRT, VTT, JSON, TXT) and normalize into segments + full_transcript.",
+      "default": true
+    },
+    "fetchChapters": {
+      "title": "Fetch Podcasting 2.0 Chapters",
+      "type": "boolean",
+      "description": "Fetch and normalize JSON chapters referenced by <podcast:chapters> tags.",
+      "default": true
+    },
+    "includeTranscriptSegments": {
+      "title": "Include Timestamped Segments",
+      "type": "boolean",
+      "description": "Include per-cue timestamped segments alongside full_transcript in dataset records.",
+      "default": true
+    }
+  }
+}

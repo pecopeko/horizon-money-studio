@@ -1,0 +1,29 @@
+{
+  "title": "JP LLM Compliance & PII Guard Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "texts": {
+      "title": "Documents to Screen & Redact",
+      "type": "array",
+      "description": "List of Japanese or multilingual text strings to redact and screen for prompt injection.",
+      "editor": "stringList",
+      "default": [
+        "請求書番号 T7000012050002 / 連絡先: 03-1234-5678 / test@example.co.jp"
+      ]
+    },
+    "normalizeText": {
+      "title": "Normalize Japanese Business Text",
+      "type": "boolean",
+      "description": "Apply NFKC width normalization while keeping katakana full-width before redaction.",
+      "default": false
+    },
+    "includeVaultMap": {
+      "title": "Include Reversible Vault Map",
+      "type": "boolean",
+      "description": "Include placeholder-to-original mapping in dataset output so downstream workflows can restore values.",
+      "default": true
+    }
+  },
+  "required": ["texts"]
+}

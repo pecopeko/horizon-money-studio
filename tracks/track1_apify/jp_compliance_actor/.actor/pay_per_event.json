@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "document_processed": {
+        "eventTitle": "Document Processed",
+        "eventDescription": "Charged per text document scanned, normalized, check-digit redacted, and screened for prompt injection.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.002
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

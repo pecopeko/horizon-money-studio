@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "episode_extracted": {
+        "eventTitle": "Episode Extracted",
+        "eventDescription": "Charged per podcast episode extracted with clean show notes, audio enclosure metadata, chapters, and normalized Podcasting 2.0 transcript.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

@@ -1,0 +1,323 @@
+"""Deterministic offline tests for Track 1 and Track 3 market scouts."""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from makemoney.scouts import (
+    compute_actor_health,
+    extract_free_tier_event_price_usd,
+    parse_bounty_usd,
+    scan_bounty_issues,
+    score_bounty_issue,
+    score_niche_opportunity,
+)
+from makemoney.scouts.bounty_scout import (
+    HONEYPOT_ORGS,
+    NON_CASH_ORGS,
+    SUSPICIOUS_BAIT_LABELS,
+    has_competing_open_pr,
+    is_honeypot_or_bait,
+    is_non_cash_org,
+)
+
+
+def _sample_apify_item(
+    username: str = "acme",
+    name: str = "jp-scraper",
+    users_30d: int = 45,
+    total_users: int = 120,
+    total_runs: int = 200,
+    failed_runs: int = 20,
+    timed_out_runs: int = 10,
+    price_usd: float = 0.003,
+) -> dict:
+    succeeded = max(total_runs - failed_runs - timed_out_runs, 0)
+    return {
+        "username": username,
+        "name": name,
+        "title": f"{username}/{name}",
+        "isWhiteListedForAgenticPayments": True,
+        "stats": {
+            "totalUsers": total_users,
+            "totalUsers30Days": users_30d,
+            "totalRuns": 5000,
+            "publicActorRunStats30Days": {
+                "ABORTED": 0,
+                "FAILED": failed_runs,
+                "SUCCEEDED": succeeded,
+                "TIMED-OUT": timed_out_runs,
+                "TOTAL": total_runs,
+            },
+        },
+        "currentPricingInfo": {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "secondary_event": {
+                        "isPrimaryEvent": False,
+                        "eventTieredPricingUsd": {"FREE": {"tieredEventPriceUsd": 0.01}},
+                    },
+                    "outputrecord": {
+                        "isPrimaryEvent": True,
+                        "eventTieredPricingUsd": {"FREE": {"tieredEventPriceUsd": price_usd}},
+                    },
+                }
+            },
+        },
+    }
+
+
+def test_extract_free_tier_event_price_prefers_primary_event() -> None:
+    item = _sample_apify_item(price_usd=0.00399)
+    price = extract_free_tier_event_price_usd(item["currentPricingInfo"])
+    assert price == 0.00399
+    assert extract_free_tier_event_price_usd(None) is None
+    assert extract_free_tier_event_price_usd({"pricingModel": "FREE"}) is None
+
+
+def test_compute_actor_health_and_broken_incumbent_scoring() -> None:
+    broken_item = _sample_apify_item(
+        users_30d=40,
+        total_users=250,
+        total_runs=200,
+        failed_runs=40,
+        timed_out_runs=20,
+        price_usd=0.004,
+    )
+    healthy_item = _sample_apify_item(
+        username="solid",
+        name="clean-actor",
+        users_30d=40,
+        total_users=250,
+        total_runs=200,
+        failed_runs=0,
+        timed_out_runs=0,
+        price_usd=0.004,
+    )
+    health = compute_actor_health(broken_item)
+    assert health["broken_rate_30d"] == 0.3
+    assert health["estimated_30d_gross_proxy_usd"] == 140 * 0.004
+
+    opp_broken = score_niche_opportunity("mercari", total_store_hits=15, items=[broken_item])
+    opp_healthy = score_niche_opportunity("mercari", total_store_hits=15, items=[healthy_item])
+    assert opp_broken.incumbent_broken_rate == 0.3
+    assert opp_broken.opportunity_score > opp_healthy.opportunity_score
+
+    dead_item = _sample_apify_item(users_30d=0, total_users=2, total_runs=5)
+    opp_dead = score_niche_opportunity("ghost", total_store_hits=1, items=[dead_item])
+    assert opp_dead.opportunity_score == 0.0
+
+
+def test_parse_bounty_usd_variants() -> None:
+    assert parse_bounty_usd("Fix OAuth bug [$250]", None, ["💎 Bounty"]) == 250.0
+    assert parse_bounty_usd("Improve parser", "Reward: 1,500 USD via Algora", []) == 1500.0
+    assert parse_bounty_usd("Small task", "Paying USD 120 upon merge", []) == 120.0
+    assert parse_bounty_usd("Issue #1", "Out of scope $5 or $100000 valuation", []) is None
+
+
+def test_score_bounty_issue_penalizes_competition_and_claims() -> None:
+    now = datetime(2026, 11, 18, 9, 0, tzinfo=timezone.utc)
+    clean_issue = {
+        "repository_url": "https://api.github.com/repos/org/fast-repo",
+        "number": 42,
+        "html_url": "https://github.com/org/fast-repo/issues/42",
+        "title": "Add streaming JSON export ($300)",
+        "body": "Bounty funded via Algora.",
+        "comments": 0,
+        "created_at": "2026-11-17T12:00:00Z",
+        "labels": [{"name": "💎 Bounty"}],
+        "assignee": None,
+        "assignees": [],
+    }
+    crowded_issue = {
+        **clean_issue,
+        "number": 43,
+        "html_url": "https://github.com/org/fast-repo/issues/43",
+        "comments": 14,
+        "assignee": {"login": "someone"},
+        "assignees": [{"login": "someone"}],
+        "labels": [{"name": "💎 Bounty"}, {"name": "WIP"}],
+    }
+    c_clean = score_bounty_issue(clean_issue, now_utc=now)
+    c_crowded = score_bounty_issue(crowded_issue, now_utc=now)
+
+    assert c_clean.repo_full_name == "org/fast-repo"
+    assert c_clean.bounty_usd == 300.0
+    assert not c_clean.contested_flag
+    assert not c_clean.non_cash_only
+    assert not c_clean.honeypot_flag
+    assert c_crowded.contested_flag
+    assert c_clean.ev_score > c_crowded.ev_score * 5.0
+
+
+def test_honeypot_bait_and_non_cash_filtering(monkeypatch) -> None:
+    for org in (
+        "securebananalabs",
+        "unsafelabs",
+        "clankernation",
+        "ies-boilerroom",
+        "zhangjiayang6835-cyber",
+    ):
+        assert org in HONEYPOT_ORGS
+        assert is_honeypot_or_bait(
+            {
+                "repository_url": f"https://api.github.com/repos/{org}/trap-repo",
+                "number": 1,
+                "html_url": f"https://github.com/{org}/trap-repo/issues/1",
+                "title": "$500 easy fix",
+                "labels": [{"name": "💎 Bounty"}],
+            }
+        )
+
+    for bait_label in ("AI only allowed", "AI agent friendly", "Autonomus Agents Only"):
+        assert bait_label.lower() in SUSPICIOUS_BAIT_LABELS
+        assert is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/someorg/some-repo",
+                "number": 2,
+                "html_url": "https://github.com/someorg/some-repo/issues/2",
+                "title": "$200 task",
+                "labels": [{"name": bait_label}],
+            }
+        )
+
+    assert "hanzoai" in NON_CASH_ORGS
+    assert is_non_cash_org("hanzoai/llm")
+
+    seen_queries: list[str] = []
+    seen_auth_headers: list[str | None] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen_queries.append(request.url.params.get("q", ""))
+        seen_auth_headers.append(request.headers.get("authorization"))
+        return httpx.Response(
+            200,
+            json={
+                "total_count": 4,
+                "items": [
+                    {
+                        "repository_url": "https://api.github.com/repos/SecureBananaLabs/bait",
+                        "number": 10,
+                        "html_url": "https://github.com/SecureBananaLabs/bait/issues/10",
+                        "title": "Honeypot [$500]",
+                        "body": "Trap",
+                        "comments": 0,
+                        "created_at": "2026-11-17T00:00:00Z",
+                        "labels": [{"name": "💎 Bounty"}],
+                    },
+                    {
+                        "repository_url": "https://api.github.com/repos/real-org/real-repo",
+                        "number": 11,
+                        "html_url": "https://github.com/real-org/real-repo/issues/11",
+                        "title": "Real bug [$150]",
+                        "body": "AI bait label",
+                        "comments": 0,
+                        "created_at": "2026-11-17T00:00:00Z",
+                        "labels": [{"name": "Autonomus Agents Only"}],
+                    },
+                    {
+                        "repository_url": "https://api.github.com/repos/hanzoai/credits-repo",
+                        "number": 12,
+                        "html_url": "https://github.com/hanzoai/credits-repo/issues/12",
+                        "title": "Feature [$300]",
+                        "body": "Paid in Hanzo credits",
+                        "comments": 0,
+                        "created_at": "2026-11-17T00:00:00Z",
+                        "labels": [{"name": "💎 Bounty"}],
+                    },
+                    {
+                        "repository_url": "https://api.github.com/repos/tscircuit/core",
+                        "number": 13,
+                        "html_url": "https://github.com/tscircuit/core/issues/13",
+                        "title": "Fix spice netlist export [$100]",
+                        "body": "Repro included",
+                        "comments": 0,
+                        "created_at": "2026-11-17T00:00:00Z",
+                        "labels": [{"name": "💎 Bounty"}],
+                    },
+                ],
+            },
+        )
+
+    # First check token integration, then anonymous fallback.
+    monkeypatch.setattr("makemoney.scouts.bounty_scout.get_github_token", lambda: "test-tok")
+    with httpx.Client(transport=httpx.MockTransport(handler)) as mock_client:
+        res_with_tok = scan_bounty_issues(
+            queries=('is:issue is:open label:"💎 Bounty"',),
+            delay_sec=0.0,
+            client=mock_client,
+        )
+
+    # Verify default client path uses get_github_token() and anonymous fallback safely.
+    from makemoney.scouts.bounty_scout import _build_github_headers
+
+    assert _build_github_headers()["Authorization"] == "Bearer test-tok"
+    monkeypatch.setattr("makemoney.scouts.bounty_scout.get_github_token", lambda: None)
+    assert "Authorization" not in _build_github_headers()
+
+    assert len(seen_queries) == 1
+    assert "-linked:pr" in seen_queries[0]
+    assert "no:assignee" in seen_queries[0]
+    assert res_with_tok["filtered_honeypot_count"] == 2
+
+    candidates = res_with_tok["candidates"]
+    assert [c.repo_full_name for c in candidates] == ["tscircuit/core", "hanzoai/credits-repo"]
+    assert candidates[0].non_cash_only is False
+    assert candidates[1].non_cash_only is True
+    assert candidates[0].ev_score > candidates[1].ev_score
+
+
+def test_has_competing_open_pr_checks_title_body_and_head_branch(monkeypatch) -> None:
+    open_prs = [
+        {
+            "title": "unrelated fix for py3.11 support (#110)",
+            "body": "Addresses issue #1100 and port 11",
+            "head": {"ref": "chore/py3.11-ci"},
+        },
+        {
+            "title": "Add export option",
+            "body": "Closes https://github.com/org/repo/issues/42",
+            "head": {"ref": "feat/export"},
+        },
+        {
+            "title": "WIP parser cleanup",
+            "body": "Working on spice netlist bug",
+            "head": {"ref": "fix/issue-99-parser"},
+        },
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/repos/org/repo/pulls"
+        assert request.url.params.get("state") == "open"
+        assert request.url.params.get("per_page") == "100"
+        return httpx.Response(200, json=open_prs)
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as mock_client:
+        assert has_competing_open_pr("org/repo", 11, client=mock_client) is False
+        assert has_competing_open_pr("org/repo", 110, client=mock_client) is True
+        assert has_competing_open_pr("org/repo", 42, client=mock_client) is True
+        assert has_competing_open_pr("org/repo", 99, client=mock_client) is True
+        assert has_competing_open_pr("org/repo", 777, client=mock_client) is False
+        assert (
+            has_competing_open_pr(
+                "org/repo",
+                777,
+                topic_terms=("spice netlist",),
+                client=mock_client,
+            )
+            is True
+        )
+
+    # Verify default path calls github_api_request cleanly when no client is injected.
+    called: list[tuple[str, str, dict]] = []
+
+    def fake_api(method: str, path: str, **kwargs):
+        called.append((method, path, kwargs.get("params") or {}))
+        return open_prs
+
+    monkeypatch.setattr("makemoney.scouts.bounty_scout.github_api_request", fake_api)
+    assert has_competing_open_pr("org/repo", 99) is True
+    assert called == [("GET", "/repos/org/repo/pulls", {"state": "open", "per_page": 100})]

@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "japan-corporate-ir-press-extractor",
+  "title": "Japan Corporate IR, TDnet & Financial Disclosure Extractor",
+  "description": "Extract structured Japanese listed-company timely disclosures (TDnet), JPX market news, Bank of Japan announcements, and corporate IR/PR RSS/Atom/JSON feeds with TSE stock code parsing (7203, 141A), NTA Corporate Number check-digit enrichment, and disclosure categorization.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

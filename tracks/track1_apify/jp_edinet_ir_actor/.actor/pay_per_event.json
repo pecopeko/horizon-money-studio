@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "filing_extracted": {
+        "eventTitle": "Disclosure / Filing Extracted",
+        "eventDescription": "Charged per Japanese corporate disclosure, IR release, or market announcement parsed, categorized, and enriched.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

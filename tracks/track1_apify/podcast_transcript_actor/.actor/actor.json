@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "podcast-rss-transcript-extractor",
+  "title": "Podcast RSS, Show Notes, Chapters & Transcript Extractor",
+  "description": "Resolve Apple Podcasts IDs or search queries via iTunes API and extract structured episode metadata, clean show notes, audio enclosures, chapters, and normalized Podcasting 2.0 transcripts (SRT, WebVTT, JSON, TXT) directly from RSS XML without headless browsers.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}
