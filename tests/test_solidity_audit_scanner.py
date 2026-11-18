@@ -56,3 +56,51 @@ def test_ignores_comments_and_safe_oracle_vault_patterns(tmp_path: Path) -> None
     summary = scan_solidity_tree(tmp_path)
     assert summary["scanned_files"] == 1
     assert summary["findings_count"] == 0
+
+
+def test_ignores_interfaces_erc721_and_checked_tuple_calls(tmp_path: Path) -> None:
+    iface_dir = tmp_path / "src" / "interfaces"
+    iface_dir.mkdir(parents=True)
+    (iface_dir / "IERC7575.sol").write_text(
+        "interface IERC7575 { function convertToShares(uint256 assets) external view returns (uint256); }",
+        encoding="utf-8",
+    )
+    (tmp_path / "src" / "IStandalone.sol").write_text(
+        "interface IStandalone { function totalAssets() external view returns (uint256); }",
+        encoding="utf-8",
+    )
+    safe_contracts = """
+    pragma solidity ^0.8.20;
+    contract SafeRouter {
+        IERC721 public immutable loansNft;
+        function transferLoan(address from, address to, uint256 id) external {
+            loansNft.safeTransferFrom(from, to, id);
+        }
+        function safeForward(address target, bytes calldata data) external payable {
+            bool ok;
+            bytes memory ret;
+            (ok, ret) = target.call{ value: msg.value }(data);
+            if (!ok) revert();
+        }
+        function uncheckedForward(address target) external payable {
+            bool ok;
+            bytes memory ret;
+            (ok, ret) = target.call{ value: msg.value }("");
+        }
+    }
+    """
+    (tmp_path / "src" / "SafeRouter.sol").write_text(safe_contracts, encoding="utf-8")
+
+    iface_findings = scan_solidity_source(
+        (tmp_path / "src" / "IStandalone.sol").read_text(encoding="utf-8"),
+        "src/IStandalone.sol",
+    )
+    assert iface_findings == []
+
+    summary = scan_solidity_tree(tmp_path)
+    assert summary["scanned_files"] == 2
+    rule_ids = [f["rule_id"] for f in summary["findings"]]
+    assert "SOL-ERC4626-06" not in rule_ids
+    assert "SOL-FOT-04" not in rule_ids
+    assert rule_ids == ["SOL-CALL-05"]
+    assert summary["findings"][0]["line_number"] == 17

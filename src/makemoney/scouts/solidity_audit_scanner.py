@@ -111,7 +111,9 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         rationale="Calling latestRoundData() without checking answer > 0 and updatedAt recency risks stale/zero oracle pricing.",
                     )
                 )
-        if _TRANSFER_FROM_RE.search(stripped):
+        if _TRANSFER_FROM_RE.search(stripped) and not re.search(
+            r"(?i)\b(?:ierc721|erc721|\w*nft)\b", stripped
+        ):
             window = "\n".join(lines[max(0, idx - 4) : min(len(lines), idx + 4)])
             if "balanceOf" not in window:
                 findings.append(
@@ -126,9 +128,27 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                     )
                 )
         if _UNCHECKED_LOW_LEVEL_RE.search(stripped) and not re.search(
-            r"(=\s*\(|require\s*\(|if\s*\(!?\s*\()", stripped
+            r"(require\s*\(|if\s*\(!?\s*\()", stripped
         ):
-            if "(bool" not in stripped:
+            m_tuple = re.search(
+                r"\(\s*(?:bool\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*,[^)]*\)\s*=",
+                stripped,
+            )
+            bool_validated = False
+            if m_tuple is not None:
+                esc_var = re.escape(m_tuple.group(1))
+                post_window = "\n".join(lines[idx : min(len(lines), idx + 6)])
+                # Check whether the captured call status boolean is validated in nearby lines.
+                bool_pat = (
+                    r"(?:if\s*\([^)]*\b"
+                    + esc_var
+                    + r"\b|(?:require|assert)\s*\([^;)]*\b"
+                    + esc_var
+                    + r"\b)"
+                )
+                if re.search(bool_pat, post_window):
+                    bool_validated = True
+            if not bool_validated:
                 findings.append(
                     SolidityFinding(
                         rule_id="SOL-CALL-05",
@@ -141,7 +161,14 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                     )
                 )
 
-    if _ERC4626_HEADER_RE.search(joined) and not _ERC4626_OFFSET_RE.search(joined):
+    is_concrete_or_abstract_contract = bool(
+        re.search(r"\b(?:abstract\s+)?contract\s+[A-Za-z_]", joined)
+    )
+    if (
+        is_concrete_or_abstract_contract
+        and _ERC4626_HEADER_RE.search(joined)
+        and not _ERC4626_OFFSET_RE.search(joined)
+    ):
         findings.append(
             SolidityFinding(
                 rule_id="SOL-ERC4626-06",
@@ -164,8 +191,11 @@ def scan_solidity_tree(root_dir: str | Path) -> dict[str, Any]:
     scanned_files = 0
     for sol_file in sorted(root.rglob("*.sol")):
         rel = str(sol_file.relative_to(root))
-        low_rel = rel.lower()
-        if any(skip in low_rel for skip in ("/test/", "/tests/", "node_modules/", "/lib/", "/mock", ".t.sol")):
+        low_rel = f"/{rel.lower()}"
+        if any(
+            skip in low_rel
+            for skip in ("/test/", "/tests/", "/interfaces/", "node_modules/", "/lib/", "/mock", ".t.sol")
+        ):
             continue
         try:
             text = sol_file.read_text(encoding="utf-8", errors="ignore")

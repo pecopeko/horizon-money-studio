@@ -77,6 +77,22 @@
   - `bun run check-circular-deps`: **No circular dependency found** (230 files)
   - `bun test`: **788 pass, 0 fail** (8 snapshots, 3713 `expect()` calls, 204 files)
 
+### 6. `tscircuit/tscircuit#6096` -> [PR #5697](https://github.com/tscircuit/core/pull/5697) (Open)
+- **Repository**: `tscircuit/core` (eligible for `tscircuit/contribution-tracker` weekly GitHub Sponsors cash payouts)
+- **Target Issue**: https://github.com/tscircuit/tscircuit/issues/6096 (`Schematic section auto-layout overflows sheet horizontally even when vertical space is available`)
+- **Pre-Submission Competition Audit**: `0` competing open PRs (`has_competing_open_pr("tscircuit/tscircuit", 6096) == False` and `has_competing_open_pr("tscircuit/core", 6096) == False`)
+- **Fork & Branch**: `pecopeko:fix/schematic-section-row-sheet-wrap-6096` (`649edaf`)
+- **Root Cause**: `computeSchematicSectionLayoutUsingRows` wrapped rows purely at `targetRowWidth = Math.sqrt(totalArea) * 2` without clamping to the enclosing `<schematicsheet>` drawable content width, causing A4 sheets with multiple auto-laid-out sections to overflow horizontally and trigger `schematic_element_outside_sheet_warning`.
+- **Fix Summary**:
+  - Exported `SCHEMATIC_UNIT_TO_MM`, `SCHEMATIC_SHEET_INNER_MARGIN`, and `getSchematicSheetContentSize` in `lib/utils/schematic/warn-if-schematic-elements-outside-sheet.ts`.
+  - Added optional `maxRowWidth?: number` parameter to `computeSchematicSectionLayoutUsingRows` (`effectiveMaxRowWidth = Math.min(targetRowWidth, maxRowWidth)` when defined). Circuits without an enclosing single sheet remain 100% unchanged.
+  - Resolved the single shared `schematic_sheet_id` across unanchored sections in `lib/components/primitive-components/Group/Group_doInitialSchematicLayoutSections.ts` and passed its `getSchematicSheetContentSize` width as `maxRowWidth`.
+  - Added regression coverage in `tests/features/schematic-sheet/schematic-sheet-section-row-wrap.test.tsx`.
+- **Local Verification (100% Pass Before Opening PR)**:
+  - `./node_modules/.bin/biome check` (4 touched/added files): **Checked 4 files, 0 issues**
+  - `bun test --timeout 90000 tests/features/schematic-sheet/schematic-sheet-section-row-wrap.test.tsx tests/features/schematic-sheet/schematic-sheet-outside-warning.test.tsx tests/features/schematic-sheet/schematic-sheet-sections.test.tsx`: **4 pass, 0 fail** (16 `expect()` calls)
+  - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
+
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`
 - Flagged non-cash credit-only org: `hanzoai` (rewards in platform credits rather than cash)

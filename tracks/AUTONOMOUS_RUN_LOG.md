@@ -1,12 +1,12 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–2)
+# Autonomous Multi-Track Studio Run Log (Waves 1–3)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
 
 ---
 
-## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`8` Actors Shipped)
-- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`a6af713`)
+## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`10` Actors Shipped)
+- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`19c296a`)
 - **Wave 1 (`3` Actors)**:
   1. `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   2. `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
@@ -17,8 +17,11 @@
   6. `shopify-public-catalog-feed-extractor` (`product_extracted` @ `$0.002`)
   7. `sec-edgar-8k-10k-item-extractor` (`filing_extracted` @ `$0.004`)
   8. `mcp-registry-llms-txt-auditor` (`domain_audited` @ `$0.002`)
+- **Wave 3 / Hourly Tick 2 (`2` Actors)**:
+  9. `jp-b2b-contract-keiyaku-auditor` (`contract_audited` @ `$0.004`)
+  10. `geo-sitemap-jsonld-citation-auditor` (`site_audited` @ `$0.002`)
 
-## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`3` Live Web Apps)
+## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`4` Live Web Apps)
 1. **KUROGATE（黒門）**:
    - Web App: https://pecopeko.github.io/kurogate/
    - Chrome MV3 Extension ZIP: https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip
@@ -28,14 +31,18 @@
 3. **ZENGINGATE（全銀門）**:
    - Web App: https://pecopeko.github.io/zengingate/
    - Offline Kit ZIP: https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip
+4. **KEIYAKUGATE（契約門）**:
+   - Web App: https://pecopeko.github.io/keiyakugate/
+   - Offline Kit ZIP: https://github.com/pecopeko/keiyakugate/releases/download/v1.0.0/keiyakugate-offline-kit-v1.0.0.zip
 
-## Track 3 — Open-Source Cash / Sponsor Pull Requests (`5` Open PRs)
+## Track 3 — Open-Source Cash / Sponsor Pull Requests (`6` Open PRs)
 - All targets screened for `has_competing_open_pr == False` and excluded honeypot orgs. See `tracks/track3_bounties/SUBMITTED_PRS.md`.
   1. `tscircuit/cli#5654` -> https://github.com/tscircuit/cli/pull/5858 (`c8345f0`)
   2. `tscircuit/core#5677` -> https://github.com/tscircuit/core/pull/5680 (`2c03e61`)
   3. `tscircuit/core#3982` -> https://github.com/tscircuit/core/pull/5684 (`58ed612`)
   4. `tscircuit/core#3521` -> https://github.com/tscircuit/core/pull/5689 (`41ba5c6`)
   5. `tscircuit/tscircuit#6430` -> https://github.com/tscircuit/props/pull/1038 (`fbff781`)
+  6. `tscircuit/tscircuit#6096` -> https://github.com/tscircuit/core/pull/5697 (`649edaf`)
 
 ## Track 4 — `macroTomicro` Read-Only Empirical AFML & Pruned Alpha Proposal
 - **Audit Reports**: `tracks/track4_m2m_colab/REAL_PANEL_AFML_AUDIT_REPORT.md`, `tracks/track4_m2m_colab/M2M_ACTIONABLE_ALPHA_PATCH_PROPOSAL.md`, `tracks/track4_m2m_colab/pruned_alpha_results.json`.
@@ -52,11 +59,13 @@
   - CLI (`batch_compliance_suite_cli.py`) + Listing Copy (`tracks/track5_direct_sales/booth_pro_pack/BOOTH_LISTING_JA.md`)
 
 ## Track 6 — Solidity Smart Contract Audit Competition Pre-Screener & Triage
-- **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py`
-- **Live Scan Triage (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md`)**:
-  - `sherlock-audit/2026-07-tare`: `41` non-test `.sol` files scanned, `10` static pattern hits (`SOL-FOT-04`, `SOL-ERC4626-06`).
-  - `Cyfrin/battlechain-safe-harbor-contracts`: `29` non-test `.sol` files scanned, `6` static pattern hits (`SOL-FOT-04`, `SOL-CALL-05`).
-  - `code-423n4/2026-04-monetrix`: `21` non-test `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
+- **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py` (upgraded to skip pure interfaces and ERC721 NFT transfers, and validate tuple-captured `.call` return checks across 6 lines)
+- **Live Scan Triage (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` — `5` Contest Repos)**:
+  - `sherlock-audit/2026-07-tare`: `22` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
+  - `Cyfrin/battlechain-safe-harbor-contracts`: `27` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`, `SOL-CALL-05`).
+  - `code-423n4/2026-04-monetrix`: `15` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
+  - `sherlock-audit/2025-07-malda`: `105` non-test/non-interface `.sol` files scanned, `6` static pattern hits (`SOL-PRECISION-01`, `SOL-FOT-04`, `SOL-ORACLE-03`).
+  - `sherlock-audit/2025-06-notional-exponent`: `35` non-test/non-interface `.sol` files scanned, `8` static pattern hits (`SOL-PRECISION-01`, `SOL-FOT-04`, `SOL-ORACLE-03`).
 
 ## Track 7 — Fast-Cash Freelance Automation Deliverables & Playbook
 - **Pre-Built Tested Engines (`tracks/track7_freelance_kit/deliverables/`)**:
