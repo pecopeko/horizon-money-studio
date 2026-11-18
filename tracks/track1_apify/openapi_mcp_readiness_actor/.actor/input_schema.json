@@ -1,0 +1,41 @@
+{
+  "title": "OpenAPI & MCP Agent Tool Readiness Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "OpenAPI Specs or MCP Tool Arrays to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "spec": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Billing API",
+              "description": "Manage customer invoices and payment intents."
+            },
+            "servers": [{"url": "https://api.service.example"}],
+            "paths": {
+              "/v1/invoices": {
+                "get": {
+                  "operationId": "listInvoices",
+                  "summary": "List recent customer invoices filtered by status",
+                  "parameters": [
+                    {
+                      "name": "status",
+                      "in": "query",
+                      "description": "Invoice payment state filter",
+                      "schema": {"type": "string"}
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

@@ -104,3 +104,22 @@ def test_ignores_interfaces_erc721_and_checked_tuple_calls(tmp_path: Path) -> No
     assert "SOL-FOT-04" not in rule_ids
     assert rule_ids == ["SOL-CALL-05"]
     assert summary["findings"][0]["line_number"] == 17
+
+
+def test_ignores_typed_interface_call_but_flags_raw_call() -> None:
+    src = """
+    pragma solidity ^0.8.20;
+    contract CallSample {
+        function ok(address subvault, bytes memory data) external {
+            bytes memory approveResponse = ICallModule(subvault).call(data);
+        }
+        function bad(address target, bytes memory data) external {
+            target.call(data);
+        }
+    }
+    """
+    findings = scan_solidity_source(src, "src/CallSample.sol")
+    call_findings = [f for f in findings if f.rule_id == "SOL-CALL-05"]
+    assert len(call_findings) == 1
+    assert call_findings[0].line_number == 8
+

@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "spec_audited": {
+        "eventTitle": "OpenAPI / MCP Spec Audited",
+        "eventDescription": "Charged per OpenAPI specification or MCP tool catalog audited for LLM tool-calling readiness.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

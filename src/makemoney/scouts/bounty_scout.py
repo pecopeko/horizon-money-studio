@@ -28,10 +28,11 @@ HONEYPOT_ORGS: frozenset[str] = frozenset(
         "clankernation",
         "ies-boilerroom",
         "zhangjiayang6835-cyber",
+        "wholetroutmedia",
     }
 )
 
-NON_CASH_ORGS: frozenset[str] = frozenset({"hanzoai"})
+NON_CASH_ORGS: frozenset[str] = frozenset({"hanzoai", "zoo-apps"})
 
 SUSPICIOUS_BAIT_LABELS: frozenset[str] = frozenset(
     {
@@ -51,7 +52,16 @@ _USD_PREFIX_WORD_RE = re.compile(
     r"(?i)\bUSD\s*([0-9]{1,3}(?:,[0-9]{3})+|[0-9]+(?:\.[0-9]{1,2})?)"
 )
 
-_CONTESTED_OR_CLAIMED_LABELS = {"claimed", "assigned", "wip", "in progress", "in-progress"}
+_CONTESTED_OR_CLAIMED_LABELS = {
+    "claimed",
+    "assigned",
+    "wip",
+    "in progress",
+    "in-progress",
+    "💰 rewarded",
+    "rewarded",
+    "paid",
+}
 _CLAIMED_BODY_RE = re.compile(r"(?i)\b(claimed by|already claimed|assigned to)\b")
 
 
@@ -273,6 +283,52 @@ def has_competing_open_pr(
 
         if len(pulls) < 100:
             break
+
+    return False
+
+
+def has_cross_repo_timeline_open_pr(
+    repo_full_name: str,
+    issue_number: int,
+    timeout_sec: float = 15.0,
+    client: httpx.Client | None = None,
+) -> bool:
+    """Return True if the issue timeline shows an open cross-referenced PR (including other repos)."""
+    headers = _build_github_headers()
+    own_client = client is None
+    active_client = client or httpx.Client(timeout=timeout_sec)
+    url = f"https://api.github.com/repos/{repo_full_name}/issues/{issue_number}/timeline"
+
+    try:
+        for page in range(1, 6):
+            resp = active_client.get(
+                url,
+                headers=headers,
+                params={"per_page": 100, "page": page},
+            )
+            if resp.status_code != 200:
+                break
+            events = resp.json()
+            if not isinstance(events, list) or not events:
+                break
+            for ev in events:
+                if not isinstance(ev, dict):
+                    continue
+                if ev.get("event") == "cross-referenced":
+                    src = ev.get("source")
+                    if isinstance(src, dict):
+                        src_issue = src.get("issue")
+                        if (
+                            isinstance(src_issue, dict)
+                            and src_issue.get("pull_request")
+                            and str(src_issue.get("state") or "").lower() == "open"
+                        ):
+                            return True
+            if len(events) < 100:
+                break
+    finally:
+        if own_client:
+            active_client.close()
 
     return False
 

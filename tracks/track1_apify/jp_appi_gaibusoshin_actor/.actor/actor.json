@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-appi-privacy-gaibusoshin-auditor",
+  "title": "Japan APPI Privacy Policy & Art. 27-12 External Transmission Auditor",
+  "description": "Audit Japanese privacy policies against APPI (Art.17/23/27/28/32) and extract third-party SDKs (GA4, Meta, LINE, Yahoo, TikTok, Sentry, Stripe) under Telecom Business Act Art. 27-12 Gaibusoshin rules.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

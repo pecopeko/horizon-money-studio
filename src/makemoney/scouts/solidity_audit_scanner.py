@@ -127,8 +127,16 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         rationale="Fee-on-transfer or rebasing ERC20 tokens credit less than nominal transferFrom amount if balance delta is omitted.",
                     )
                 )
-        if _UNCHECKED_LOW_LEVEL_RE.search(stripped) and not re.search(
-            r"(require\s*\(|if\s*\(!?\s*\()", stripped
+        if (
+            _UNCHECKED_LOW_LEVEL_RE.search(stripped)
+            and not re.search(r"(require\s*\(|if\s*\(!?\s*\()", stripped)
+            and not (
+                "{" not in stripped
+                and re.search(
+                    r"\bI[A-Z][A-Za-z0-9_]*\s*\([^)]*\)\s*\.call\s*\(",
+                    stripped,
+                )
+            )
         ):
             m_tuple = re.search(
                 r"\(\s*(?:bool\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*,[^)]*\)\s*=",

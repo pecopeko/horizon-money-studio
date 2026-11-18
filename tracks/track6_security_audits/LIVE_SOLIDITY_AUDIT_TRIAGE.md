@@ -147,13 +147,29 @@ _Showing top 40 of 42 deterministic pattern hits._
 
 ## Repository: `https://github.com/sherlock-audit/2025-07-mellow-flexible-vaults.git`
 - Non-test/non-interface `.sol` files scanned: `39`
-- Candidate pattern hits: `6`
+- Candidate pattern hits: `2` (re-scanned after typed interface `.call()` filter refinement; removed 4 `ICallModule(subvault).call(...)` false positives)
 
 | Rule ID | Severity | File | Line | Snippet |
 |---|---|---|---:|---|
 | `SOL-FOT-04` | Low/Medium | `flexible-vaults/src/libraries/TransferLibrary.sol` | 46 | `IERC20(asset).safeTransferFrom(from, address(this), assets);` |
 | `SOL-ERC4626-06` | High | `flexible-vaults/src/managers/RiskManager.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
-| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 31 | `bytes memory approveReponse = ICallModule(subvault).call(` |
-| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 37 | `ICallModule(subvault).call(` |
-| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 48 | `ICallModule(subvault).call(` |
-| `SOL-CALL-05` | Medium | `flexible-vaults/src/strategies/SymbioticStrategy.sol` | 59 | `ICallModule(subvault).call(` |
+
+## Repository: `https://github.com/sherlock-audit/2025-07-debank.git`
+- Non-test/non-interface `.sol` files scanned: `49`
+- Candidate pattern hits: `3`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `swap-router-v1/src/aggregatorRouter/DexSwap.sol` | 138 | `IERC20(params.fromToken).safeTransferFrom(msg.sender, address(spender), params.fromTokenAmount);` |
+| `SOL-FOT-04` | Low/Medium | `swap-router-v1/src/library/UniversalERC20.sol` | 30 | `token.safeTransferFrom(from, to, amount);` |
+| `SOL-FOT-04` | Low/Medium | `swap-router-v1/src/router/Router.sol` | 77 | `IERC20(fromToken).safeTransferFrom(msg.sender, address(executor), fromTokenAmount);` |
+
+## Repository: `https://github.com/sherlock-audit/2025-05-yearn-ybold.git`
+- Non-test/non-interface `.sol` files scanned: `7`
+- Candidate pattern hits: `3`
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-PRECISION-01` | Medium | `yv3-liquityv2-sp-strategy/src/Strategy.sol` | 241 | `AUCTION.setStartingPrice(_available * _price / WAD * _bufferPercentage / WAD / WAD);` |
+| `SOL-ERC4626-06` | High | `yv3-liquityv2-sp-strategy/src/periphery/Accountant.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-PRECISION-01` | Medium | `yv3-liquityv2-sp-strategy/src/periphery/StrategyAprOracle.sol` | 115 | `return _weightedInterestRate / _totalDebt * _totalDebt / uint256(int256(_stabilityPoolDeposits) + _delta)` |

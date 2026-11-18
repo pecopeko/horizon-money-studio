@@ -1,12 +1,12 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–5)
+# Autonomous Multi-Track Studio Run Log (Waves 1–6)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
 
 ---
 
-## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`14` Actors Shipped)
-- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`c7052e3`)
+## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`16` Actors Shipped)
+- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`30fe497`)
 - **Wave 1 (`3` Actors)**:
   1. `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   2. `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
@@ -26,8 +26,11 @@
 - **Wave 5 / Hourly Tick 4 (`2` Actors)**:
   13. `jp-denchoho-filename-ledger-validator` (`record_validated` @ `$0.001`)
   14. `oss-sbom-copyleft-license-auditor` (`manifest_audited` @ `$0.003`)
+- **Wave 6 / Hourly Tick 5 (`2` Actors)**:
+  15. `jp-appi-privacy-gaibusoshin-auditor` (`policy_audited` @ `$0.003`)
+  16. `openapi-agent-tool-readiness-auditor` (`spec_audited` @ `$0.003`)
 
-## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`6` Live Web Apps)
+## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`7` Live Web Apps)
 1. **KUROGATE（黒門）**:
    - Web App: https://pecopeko.github.io/kurogate/
    - Chrome MV3 Extension ZIP: https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip
@@ -46,6 +49,9 @@
 6. **DENCHOGATE（電帳門）**:
    - Web App: https://pecopeko.github.io/denchogate/
    - Offline Kit ZIP: https://github.com/pecopeko/denchogate/releases/download/v1.0.0/denchogate-offline-kit-v1.0.0.zip
+7. **KOJINGATE（個情門）**:
+   - Web App: https://pecopeko.github.io/kojingate/
+   - Offline Kit ZIP: https://github.com/pecopeko/kojingate/releases/download/v1.0.0/kojingate-offline-kit-v1.0.0.zip
 
 ## Track 3 — Open-Source Cash / Sponsor Pull Requests (`8` Open PRs)
 - All targets screened for multi-page `has_competing_open_pr == False` (`max_pages=4`) and excluded honeypot orgs. See `tracks/track3_bounties/SUBMITTED_PRS.md`.
@@ -70,11 +76,11 @@
   - Free Lead Articles (`3`): `kurogate-yakkigate-local-compliance.md`, `quant-backtest-uniform-shrinkage-trap.md`, `jp-b2b-6gates-offline-compliance.md`
 - **BOOTH / Gumroad Pro Suite Bundle (`¥3,980` recommended)**:
   - Release ZIP (`4,662,158` bytes): https://github.com/pecopeko/horizon-money-studio/releases/download/v1.0.0-pro-kit/japan-b2b-compliance-pro-suite-v1.0.0.zip
-  - CLI (`batch_compliance_suite_cli.py`, upgraded for Contract/Tokushoho/Dencho-ho CSV columns) + Listing Copy (`tracks/track5_direct_sales/booth_pro_pack/BOOTH_LISTING_JA.md`)
+  - CLI (`batch_compliance_suite_cli.py`, upgraded for 7-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI CSV columns) + Listing Copy (`tracks/track5_direct_sales/booth_pro_pack/BOOTH_LISTING_JA.md`)
 
 ## Track 6 — Solidity Smart Contract Audit Competition Pre-Screener & Triage
-- **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py` (upgraded to skip pure interfaces and ERC721 NFT transfers, and validate tuple-captured `.call` return checks across 6 lines)
-- **Live Scan Triage (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` — `9` Contest Repos)**:
+- **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py` (upgraded to skip pure interfaces, ERC721 NFT transfers, and typed interface `.call()` invocations without low-level `{}` options, and validate tuple-captured `.call` return checks across 6 lines)
+- **Live Scan Triage (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` — `11` Contest Repos)**:
   - `sherlock-audit/2026-07-tare`: `22` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
   - `Cyfrin/battlechain-safe-harbor-contracts`: `27` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`, `SOL-CALL-05`).
   - `code-423n4/2026-04-monetrix`: `15` non-test/non-interface `.sol` files scanned, `5` static pattern hits (`SOL-FOT-04`).
@@ -83,11 +89,14 @@
   - `sherlock-audit/2026-01-fluid-dex-v2`: `431` non-test/non-interface `.sol` files scanned, `42` static pattern hits (`SOL-ORACLE-03`, `SOL-PRECISION-01`, `SOL-FOT-04`, `SOL-ERC4626-06`).
   - `sherlock-audit/2025-07-oku-trade-order-types`: `15` non-test/non-interface `.sol` files scanned, `4` static pattern hits (`SOL-FOT-04`).
   - `sherlock-audit/2025-07-cap`: `105` non-test/non-interface `.sol` files scanned, `12` static pattern hits (`SOL-AUTH-02`, `SOL-FOT-04`, `SOL-PRECISION-01`, `SOL-ORACLE-03`, `SOL-ERC4626-06`).
-  - `sherlock-audit/2025-07-mellow-flexible-vaults`: `39` non-test/non-interface `.sol` files scanned, `6` static pattern hits (`SOL-FOT-04`, `SOL-ERC4626-06`, `SOL-CALL-05`).
+  - `sherlock-audit/2025-07-mellow-flexible-vaults`: `39` non-test/non-interface `.sol` files scanned, `2` static pattern hits (`SOL-FOT-04`, `SOL-ERC4626-06`; removed 4 typed-interface `SOL-CALL-05` false positives).
+  - `sherlock-audit/2025-07-debank`: `49` non-test/non-interface `.sol` files scanned, `3` static pattern hits (`SOL-FOT-04`).
+  - `sherlock-audit/2025-05-yearn-ybold`: `7` non-test/non-interface `.sol` files scanned, `3` static pattern hits (`SOL-PRECISION-01`, `SOL-ERC4626-06`).
 
 ## Track 7 — Fast-Cash Freelance Automation Deliverables & Playbook
 - **Pre-Built Tested Engines (`tracks/track7_freelance_kit/deliverables/`)**:
   - `dirty_csv_to_zengin120.py` (CSV -> 120-byte Zengin fixed-length + T-number check)
   - `polite_feed_price_diff.py` (Shopify/RSS snapshot catalog price & stock diff CSV)
   - `folder_pii_vault_sanitizer.py` (Local directory PII reversible tokenizer + vault JSON)
-- **Sales Playbook**: `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (3 ready-to-send Lancers / CrowdWorks / Coconala templates, `¥30,000–¥150,000` range)
+  - `dencho_folder_renamer_indexer.py` (Dencho-ho Art.7 filename normalizer + NTA Modulo-9 T-number CSV indexer)
+- **Sales Playbook**: `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (4 ready-to-send Lancers / CrowdWorks / Coconala templates 案A–案D, `¥30,000–¥150,000` range)

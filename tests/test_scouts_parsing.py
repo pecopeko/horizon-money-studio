@@ -19,6 +19,7 @@ from makemoney.scouts.bounty_scout import (
     NON_CASH_ORGS,
     SUSPICIOUS_BAIT_LABELS,
     has_competing_open_pr,
+    has_cross_repo_timeline_open_pr,
     is_honeypot_or_bait,
     is_non_cash_org,
 )
@@ -353,3 +354,88 @@ def test_has_competing_open_pr_paginates_beyond_100_open_prs() -> None:
         assert has_competing_open_pr("org/repo", 99999, client=mock_client, max_pages=2) is False
 
     assert pages_requested == [None, "2", None, "2"]
+
+
+def test_wave6_honeypot_non_cash_and_rewarded_filters() -> None:
+    assert "wholetroutmedia" in HONEYPOT_ORGS
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/WholeTroutMedia/bait-repo",
+                "title": "Simple task",
+                "labels": [],
+            }
+        )
+        is True
+    )
+
+    assert "zoo-apps" in NON_CASH_ORGS
+    assert is_non_cash_org("zoo-apps/desktop") is True
+
+    rewarded_issue = {
+        "number": 42,
+        "html_url": "https://github.com/org/repo/issues/42",
+        "repository_url": "https://api.github.com/repos/org/repo",
+        "title": "Fix parser regression $150",
+        "body": "Bounty: $150 USD",
+        "labels": [{"name": "💰 Rewarded"}],
+        "comments": 1,
+        "created_at": "2026-11-18T00:00:00Z",
+    }
+    scored = score_bounty_issue(rewarded_issue)
+    assert scored.contested_flag is True
+
+
+def test_has_cross_repo_timeline_open_pr_with_mock_transport() -> None:
+    def open_pr_handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/repos/tscircuit/tscircuit/issues/999/timeline"
+        return httpx.Response(
+            200,
+            json=[
+                {"event": "labeled"},
+                {
+                    "event": "cross-referenced",
+                    "source": {
+                        "type": "issue",
+                        "issue": {
+                            "state": "closed",
+                            "pull_request": {"url": "https://api.github.com/repos/tscircuit/core/pulls/1"},
+                        },
+                    },
+                },
+                {
+                    "event": "cross-referenced",
+                    "source": {
+                        "type": "issue",
+                        "issue": {
+                            "state": "open",
+                            "pull_request": {"url": "https://api.github.com/repos/tscircuit/core/pulls/2"},
+                        },
+                    },
+                },
+            ],
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(open_pr_handler)) as client:
+        assert has_cross_repo_timeline_open_pr("tscircuit/tscircuit", 999, client=client) is True
+
+    def closed_only_handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json=[
+                {
+                    "event": "cross-referenced",
+                    "source": {
+                        "type": "issue",
+                        "issue": {
+                            "state": "closed",
+                            "pull_request": {"url": "https://api.github.com/repos/tscircuit/core/pulls/3"},
+                        },
+                    },
+                }
+            ],
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(closed_only_handler)) as client:
+        assert has_cross_repo_timeline_open_pr("tscircuit/tscircuit", 1000, client=client) is False
+

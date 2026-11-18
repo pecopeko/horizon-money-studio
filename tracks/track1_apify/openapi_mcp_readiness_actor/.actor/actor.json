@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "openapi-agent-tool-readiness-auditor",
+  "title": "OpenAPI & MCP Agent Tool Readiness Auditor",
+  "description": "Audit OpenAPI 3.0/3.1 JSON specs and MCP tool schemas for LLM function-calling clarity, parameter bloat, unbounded object/array schemas, HTTPS security, and auth annotations.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_jp_business_text
+from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
@@ -33,8 +34,10 @@ def run_offline_compliance_audit(
     contract_column: str = "contract_text",
     tokusho_column: str = "tokusho_text",
     dencho_column: str = "dencho_record",
+    privacy_column: str = "privacy_text",
+    scripts_column: str = "script_tags_text",
 ) -> dict[str, Any]:
-    """Audit rows across PII, Yakki/Keihyo, Invoice Mod-9, Zengin kana, Contract, Tokushoho, and Dencho-ho."""
+    """Audit rows across PII, Yakki/Keihyo, Invoice Mod-9, Zengin kana, Contract, Tokushoho, Dencho-ho, and APPI."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -43,6 +46,7 @@ def run_offline_compliance_audit(
     keiyaku_flagged = 0
     tokusho_flagged = 0
     dencho_noncompliant = 0
+    appi_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -70,6 +74,14 @@ def run_offline_compliance_audit(
         raw_dencho = str(row.get(dencho_column) or "").strip()
         dencho_res = validate_denchoho_record(raw_dencho) if raw_dencho else None
 
+        raw_privacy = str(row.get(privacy_column) or "").strip()
+        raw_scripts = str(row.get(scripts_column) or "").strip()
+        appi_res = (
+            audit_appi_policy_item(raw_privacy, script_tags_text=raw_scripts)
+            if (raw_privacy or raw_scripts)
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -82,6 +94,8 @@ def run_offline_compliance_audit(
             tokusho_flagged += 1
         if dencho_res and not dencho_res["compliant"]:
             dencho_noncompliant += 1
+        if appi_res and appi_res["status"] != "pass":
+            appi_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -99,6 +113,8 @@ def run_offline_compliance_audit(
             row_entry["tokusho_audit"] = tokusho_res
         if dencho_res is not None:
             row_entry["dencho_check"] = dencho_res
+        if appi_res is not None:
+            row_entry["appi_audit"] = appi_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -111,6 +127,7 @@ def run_offline_compliance_audit(
         "keiyaku_flagged_rows": keiyaku_flagged,
         "tokusho_flagged_rows": tokusho_flagged,
         "dencho_noncompliant_rows": dencho_noncompliant,
+        "appi_flagged_rows": appi_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
