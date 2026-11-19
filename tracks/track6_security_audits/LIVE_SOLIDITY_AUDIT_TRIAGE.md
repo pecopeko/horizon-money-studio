@@ -531,3 +531,47 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapThreePool.sol` | 789 | `IERC20(coin_address).safeTransferFrom(msg.sender, address(this), value);` |
 | `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapTwoPool.sol` | 660 | `IERC20(iAddress).safeTransferFrom(msg.sender, address(this), dx);` |
 | `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapTwoPool.sol` | 790 | `IERC20(coin_address).safeTransferFrom(msg.sender, address(this), value);` |
+
+## Repository: `https://github.com/code-423n4/2025-07-lido-finance.git`
+- Non-test/non-interface `.sol` files scanned: `17`
+- Candidate pattern hits: `17` (`SOL-UNSAFECAST-13`: `16`, `SOL-FOT-04`: `1`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 440 | `no.targetLimit = uint32(targetLimit);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 510 | `no.totalVettedKeys = uint32(vettedSigningKeysCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 563 | `no.totalAddedKeys = uint32(newTotalSigningKeys);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 567 | `no.totalVettedKeys = uint32(newTotalSigningKeys);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 916 | `no.enqueuedCount -= uint32(keysInBatch);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 923 | `no.enqueuedCount -= uint32(keysCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 950 | `uint32(keysCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 962 | `uint32(keysCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 980 | `_depositableValidatorsCount -= uint64(depositsCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 981 | `_totalDepositedValidators += uint64(depositsCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 1364 | `uint32 totalVettedKeys = no.totalVettedKeys + uint32(keysCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 1373 | `no.totalAddedKeys = uint32(newTotalAddedKeys);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 1413 | `uint64(exitedValidatorsCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 1416 | `no.totalExitedKeys = uint32(exitedValidatorsCount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/CSModule.sol` | 1465 | `uint64(newCount);` |
+
+## Repository: `https://github.com/code-423n4/2023-05-maia.git`
+- Non-test/non-interface `.sol` files scanned: `92`
+- Candidate pattern hits: `77` (`SOL-FOT-04`: `41`, `SOL-INIT-08`: `9`, `SOL-ERC4626-06`: `8`, `SOL-UNSAFECAST-13`: `7`, `SOL-ENCODEPACKED-12`: `6`, `SOL-PRECISION-01`: `5`, `SOL-RECOVER-11`: `1`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `src/erc-20/ERC20Boost.sol` | 329 | `return super.transferFrom(from, to, amount);` |
+| `SOL-PRECISION-01` | Medium | `src/erc-20/ERC20Gauges.sol` | 77 | `return (nowPlusOneCycle / gaugeCycleLength) * gaugeCycleLength;` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-20/ERC20Gauges.sol` | 510 | `return super.transferFrom(from, to, amount);` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-20/ERC20MultiVotes.sol` | 305 | `return super.transferFrom(from, to, amount);` |
+| `SOL-RECOVER-11` | High | `src/erc-20/ERC20MultiVotes.sol` | 365 | `address signer = ecrecover(` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/ERC4626.sol` | 37 | `address(asset).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/ERC4626.sol` | 51 | `address(asset).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-ERC4626-06` | High | `src/erc-4626/ERC4626.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/ERC4626DepositOnly.sol` | 37 | `address(asset).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/ERC4626DepositOnly.sol` | 51 | `address(asset).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-ERC4626-06` | High | `src/erc-4626/ERC4626DepositOnly.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/ERC4626MultiToken.sol` | 69 | `assets[i].safeTransferFrom(msg.sender, address(this), assetsAmounts[i]);` |
+| `SOL-ERC4626-06` | High | `src/erc-4626/ERC4626MultiToken.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/UlyssesERC4626.sol` | 36 | `asset.safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `src/erc-4626/UlyssesERC4626.sol` | 52 | `asset.safeTransferFrom(msg.sender, address(this), assets);` |

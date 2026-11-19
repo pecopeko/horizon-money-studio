@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANPOGATE 安保門 | 経済安全保障推進法・セキュリティクリアランス 事前届出＆保全管理監査</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで経済安全保障推進法（特定社会基盤15業種・特定重要設備事前届出・特定重要物資・特許非公開）および重要経済安保情報保護・活用法（セキュリティクリアランス・適性評価）を監査します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">安保</span>
+        <div>
+          <h1>ANPOGATE <span class="title-sub">安保門</span></h1>
+          <p class="subtitle">経済安全保障推進法（事前届出・特定重要物資）＆ 重要経済安保情報セキュリティ・クリアランス（2025年5月施行）ローカル監査</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル計算</span>
+        <span class="trust-pill" data-ui="badge">設備計画・適性評価情報 社外送信ゼロ</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 業種・事前届出・適性評価・重要物資依存度</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">無届委託・未クリアランス例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">経済安保・SC 完全準拠例</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            事業者名 / 安全保障管理部門
+            <input id="in-org" type="text" value="関東通信基盤株式会社" />
+          </label>
+          <label>
+            対象システム / 委託先 / 重要物資名
+            <input id="in-vendor" type="text" value="基幹光伝送網クラウド監視運用" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            事業業種 (特定社会基盤15業種判定)
+            <select id="in-sector">
+              <option value="telecom" selected>telecom (電気通信)</option>
+              <option value="electricity">electricity (電気)</option>
+              <option value="gas">gas (ガス)</option>
+              <option value="water">water (水道)</option>
+              <option value="railways">railways (鉄道)</option>
+              <option value="aviation">aviation (航空)</option>
+              <option value="maritime">maritime (外航貨物/海運)</option>
+              <option value="banking">banking (銀行/決済/金融)</option>
+              <option value="general">general (一般事業者)</option>
+            </select>
+          </label>
+          <label>
+            特定重要物資 単一国依存比率 (%)
+            <input id="in-dep" type="number" min="0" max="100" step="5" value="80" />
+          </label>
+          <label class="inline-check" style="margin-top:24px;">
+            <input id="in-critical-item" type="checkbox" checked />
+            <span>特定重要物資該当 (半導体/電池/クラウド等)</span>
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label class="inline-check">
+            <input id="in-infra-op" type="checkbox" checked />
+            <span>特定社会基盤事業者該当</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-equip" type="checkbox" checked />
+            <span>特定重要設備の導入あり</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-outsource" type="checkbox" checked />
+            <span>維持管理等委託・再委託あり</span>
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label class="inline-check">
+            <input id="in-notified" type="checkbox" />
+            <span>主務大臣への事前届出・審査完了</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-classified" type="checkbox" checked />
+            <span>重要経済安保情報を取扱う案件</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-cleared" type="checkbox" />
+            <span>全取扱担当者が適性評価(SC)完了済</span>
+          </label>
+        </div>
+
+        <label class="field-block">
+          経済安全保障・セキュリティクリアランス保全規程・契約条件メモ
+          <textarea id="in-policy" rows="9" placeholder="特定重要設備の事前届出、維持管理等委託の再委託審査、重要経済安保情報の適性評価・本人同意・適合事業者電磁的遮断、特定重要物資分散、特許出願非公開、SBOM・外国アクセス遮断を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">経済安保・クリアランス監査を実行</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. 事前届出義務・適性評価・依存リスク判定</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">基準適合スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">事前届出 ＆ SC状態</span>
+            <strong id="m-clearance" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">特定物資 単一国依存</span>
+            <strong id="m-dep" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出された経済安全保障・SC法上の課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『事前届出・保全管理計画書』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>ANPOGATE 安保門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・経済安全保障推進法＆セキュリティクリアランス監査ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

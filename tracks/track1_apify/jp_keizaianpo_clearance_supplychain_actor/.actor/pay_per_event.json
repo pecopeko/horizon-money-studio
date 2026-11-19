@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "security_clearance_audited": {
+        "eventTitle": "Economic Security / Security Clearance Policy Audited",
+        "eventDescription": "Charged per vendor/facility record screened for Essential Infrastructure prior notification, Security Clearance Act 2025 assessment compliance, and supply-chain concentration risk.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

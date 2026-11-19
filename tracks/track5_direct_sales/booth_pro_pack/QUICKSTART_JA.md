@@ -1,10 +1,10 @@
-# 日本B2Bコンプライアンス 20連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
+# 日本B2Bコンプライアンス 21連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
 
 本アーカイブに含まれるすべてのWebアプリ・Chrome拡張・Python CLI・業務自動化スクリプトは、**外部クラウド・外部LLMへ機密データを1バイトも送信せず**、貴社PCまたは閉域網ローカル環境のみで完結動作します。
 
 ---
 
-## 1. Webツール 20種（ブラウザで即起動）
+## 1. Webツール 21種（ブラウザで即起動）
 
 ES Modules を読み込むため、ZIP解凍後のフォルダ直下でローカルHTTPサーバーを1行で起動してブラウザから開いてください。
 
@@ -34,6 +34,7 @@ python3 -m http.server 8080
 18. **TORIHIKIGATE（取適門・2026年取適法 / 従業員300人・100人基準 / 手形廃止・価格転嫁協議・金型管理）**: `http://localhost:8080/tracks/track2_micro_saas/torihikigate/docs/`
 19. **KINYUGATE（金融門・資金決済法50%供託 / 第2種100万円 / トラベルルール・犯収法7年KYC）**: `http://localhost:8080/tracks/track2_micro_saas/kinyugate/docs/`
 20. **LEASEGATE（リース門・新リース会計基準第34号 / PV試算・短期12か月/少額300万免除・組込リース）**: `http://localhost:8080/tracks/track2_micro_saas/leasegate/docs/`
+21. **ANPOGATE（安保門・経済安全保障推進法 / 基幹インフラ事前届出・セキュリティクリアランス適性評価・特定重要物資分散）**: `http://localhost:8080/tracks/track2_micro_saas/anpogate/docs/`
 
 ---
 
@@ -47,7 +48,7 @@ python3 -m http.server 8080
 
 ---
 
-## 3. 20ゲート統合オフライン一括処理 Python CLI
+## 3. 21ゲート統合オフライン一括処理 Python CLI
 
 Python 3.11+（`pydantic` のみ推奨・外部有料API不要）で解凍フォルダ直下から実行できます。
 
@@ -79,10 +80,11 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `toriteki_contract_text` / `transaction_category` / `buyer_capital_jpy` / `supplier_capital_jpy` / `buyer_employees` / `supplier_employees` / `payment_cycle_days` / `payment_method` / `has_unilateral_price_freeze` / `unpaid_mold_storage_months`: 2026年取適法（従業員300/100人基準・手形禁止・60日現金払・価格転嫁協議・金型無償保管）監査
 - `kinyu_aml_text` / `business_type` / `unused_prepaid_balance_jpy` / `deposited_guarantee_jpy` / `single_transfer_jpy` / `has_type1_license` / `is_crypto_cross_border_transfer` / `has_travel_rule_notice` / `str_detected_days_elapsed` / `kyc_record_retention_years`: 資金決済法（50%供託・第2種100万円）・犯収法7年KYC・トラベルルール監査
 - `lease_contract_text` / `monthly_lease_jpy` / `lease_term_months` / `annual_discount_rate_pct` / `underlying_new_value_jpy` / `has_purchase_option` / `controls_identified_asset` / `already_on_balance_sheet`: 新リース会計基準（企業会計基準第34号）PV試算・短期/少額免除・オンバランス漏れ監査
+- `keizaianpo_policy_text` / `sector` / `is_specified_infrastructure_operator` / `introduces_critical_equipment` / `outsources_critical_maintenance` / `prior_notification_filed` / `handles_classified_econ_info` / `all_handlers_cleared` / `is_critical_commodity` / `single_country_dependency_pct`: 経済安全保障推進法（事前届出・特定重要物資）＆セキュリティ・クリアランス適性評価監査
 
 ---
 
-## 4. 用途別 単体自動化バッチエンジン 17種（`tracks/track7_freelance_kit/deliverables/`）
+## 4. 用途別 単体自動化バッチエンジン 18種（`tracks/track7_freelance_kit/deliverables/`）
 
 - `dirty_csv_to_zengin120.py`: 会計/給与CSV → 120バイト全銀振込ファイル＋T番号検証
 - `polite_feed_price_diff.py`: Shopify/RSS 公開フィード価格・在庫差分CSV出力
@@ -101,3 +103,4 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `toriteki_shitauke_2026_auditor.py`: 取引先・委託案件CSV（2026年取適法 従業員300/100人基準・手形/割引料禁止・60日現金・価格転嫁協議・金型管理）一括監査
 - `fintech_kinyu_aml_2026_auditor.py`: 決済/Crypto規程CSV（資金決済法50%供託不足・第2種100万円・トラベルルール・STR遅延・7年保存）一括監査
 - `asbj34_new_lease_auditor.py`: 賃貸/リース契約CSV（企業会計基準第34号PVオンバランス・初年度償却/利息・短期12か月/少額300万免除）一括監査
+- `keizaianpo_clearance_auditor.py`: 基幹インフラ委託/重要経済安保情報CSV（事前届出漏れ・適性評価未了アクセス・単一国50%超集中リスク）一括監査

@@ -31,6 +31,7 @@ HONEYPOT_ORGS: frozenset[str] = frozenset(
         "wholetroutmedia",
         "relayhop",
         "limitlessprojects",
+        "phankhoa95",
     }
 )
 
@@ -108,7 +109,7 @@ def is_non_cash_org(repo_full_name: str) -> bool:
 
 _NUMERIC_OWNER_RE = re.compile(r"^\d+$")
 _SANDBOX_REPO_NAME_RE = re.compile(
-    r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+|(?:bot|bounty|algora|webhook)[-_](?:test|sandbox|demo)|(?:test|sandbox|demo)[-_](?:bot|repo|app))$"
+    r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+|(?:.*[-_])?bot[-_]?trap(?:[-_].*)?|(?:bot|bounty|algora|webhook)[-_](?:test|sandbox|demo)|(?:test|sandbox|demo)[-_](?:bot|repo|app))$"
 )
 _POINTS_ONLY_LABEL_RE = re.compile(r"(?i)^(?:points?|xp|kudos)\s*[:=-]?\s*\d+$")
 _PAID_CLOUD_INFRA_RE = re.compile(
@@ -522,9 +523,9 @@ def scan_bounty_issues(
                 retry_after = resp.headers.get("Retry-After")
                 if remaining != "0":
                     try:
-                        parsed_wait = float(retry_after) if retry_after is not None else 2.5
+                        parsed_wait = float(retry_after) if retry_after is not None else 6.0
                     except ValueError:
-                        parsed_wait = 2.5
+                        parsed_wait = 6.0
                     sleep_sec = min(max(parsed_wait, 0.0), max(retry_sleep_cap_sec, 0.0))
                     if sleep_sec > 0:
                         time.sleep(sleep_sec)

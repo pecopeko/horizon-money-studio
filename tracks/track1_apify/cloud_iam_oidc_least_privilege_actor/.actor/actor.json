@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "cloud-iam-oidc-least-privilege-auditor",
+  "title": "Cloud IAM & GitHub OIDC Trust Policy Least-Privilege Auditor",
+  "description": "Audit AWS/GCP IAM policies, GitHub Actions OIDC AssumeRoleWithWebIdentity sub claims, cross-account Trust Policies, IAM PassRole privilege-escalation paths, NotAction bypasses, and Kubernetes IRSA/Workload Identity wildcards offline.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

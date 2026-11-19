@@ -801,6 +801,24 @@ def test_wave19_default_bounty_query_avoids_expensive_dollar_search_operator() -
     assert any("label:bounty sort:created-desc" in q for q in DEFAULT_BOUNTY_QUERIES)
 
 
+def test_wave20_filters_bot_trap_benchmark_honeypot() -> None:
+    assert "phankhoa95" in HONEYPOT_ORGS
+    assert is_honeypot_or_bait(
+        {
+            "repository_url": "https://api.github.com/repos/PhanKhoa95/oss-bot-trap-benchmark",
+            "title": "[Wave 11] fix(xdr): ledger validation [$35]",
+            "labels": [{"name": "bounty"}],
+        }
+    ) is True
+    assert is_honeypot_or_bait(
+        {
+            "repository_url": "https://api.github.com/repos/someuser/ai-bot-trap-eval",
+            "title": "Fix bug [$50]",
+            "labels": [{"name": "bounty"}],
+        }
+    ) is True
+
+
 
 
 

@@ -126,6 +126,6 @@
   - `NODE_OPTIONS="--max-old-space-size=3584" ./node_modules/.bin/tsc --noEmit`: **exit 0**
 
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
-- Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`, `WholeTroutMedia`, `relayhop`, `limitlessprojects`
+- Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`, `WholeTroutMedia`, `relayhop`, `limitlessprojects`, `phankhoa95` (plus regex guard blocking `*-bot-trap-*` repos such as `PhanKhoa95/oss-bot-trap-benchmark`)
 - Flagged non-cash credit-only orgs: `hanzoai` (platform credits), `zoo-apps` (non-cash rewards), `CaravanaCloud` (stale un-funded hack/non-cash issues)
 - Skipped contested `tscircuit` issues that already had open competing PRs (`tscircuit/jlcsearch#653`, `tscircuit/circuit-json-to-spice#73`, `tscircuit/core#6066`), filtered numeric-owner, Algora webhook test / compound `bot-test` / `"Hello world"` sandbox repos (`_NUMERIC_OWNER_RE`, `_SANDBOX_REPO_NAME_RE`, `_SPAM_TITLE_RE`), points-only reward labels (`points:50` -> `non_cash_only`), unfunded `algora-io` platform meta-issues, paid cloud-cluster bounties (`requires_paid_infra` down-ranking), and off-topic/meta monetization/project-update threads, and multi-page PR + cross-repo `/timeline` scans across `110+` `tscircuit` repos verified `0` new uncontested bug candidates in Iterations 5–12.

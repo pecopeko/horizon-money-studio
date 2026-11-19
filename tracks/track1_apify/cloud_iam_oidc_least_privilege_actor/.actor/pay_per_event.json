@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "iam_policy_audited": {
+        "eventTitle": "IAM / OIDC Policy Audited",
+        "eventDescription": "Charged per cloud IAM policy, trust policy, or Kubernetes IRSA binding screened for wildcard privileges and OIDC trust misconfigurations.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}
