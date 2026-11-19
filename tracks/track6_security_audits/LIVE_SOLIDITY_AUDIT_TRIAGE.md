@@ -494,3 +494,40 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/pools/LockReleaseTokenPool.sol` | 108 | `i_token.safeTransferFrom(msg.sender, address(this), amount);` |
 | `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/pools/TokenPool.sol` | 170 | `if (IRMN(i_rmnProxy).isCursed(bytes16(uint128(lockOrBurnIn.remoteChainSelector)))) revert CursedByRMN();` |
 | `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/pools/TokenPool.sol` | 190 | `if (IRMN(i_rmnProxy).isCursed(bytes16(uint128(releaseOrMintIn.remoteChainSelector)))) revert CursedByRMN();` |
+
+## Repository: `https://github.com/code-423n4/2025-12-panoptic.git`
+- Non-test/non-interface `.sol` files scanned: `31`
+- Candidate pattern hits: `35` (`SOL-INIT-08`: `2`, `SOL-FOT-04`: `11`, `SOL-UNSAFECAST-13`: `21`, `SOL-DELEGATECALL-10`: `1`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-INIT-08` | High | `contracts/CollateralTracker.sol` | 285 | `function initialize() external {` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 430 | `return ERC20Minimal.transferFrom(from, to, amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 467 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 569 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 580 | `s_depositedAssets += uint128(assets);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 623 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 635 | `s_depositedAssets += uint128(assets);` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 713 | `s_depositedAssets -= uint128(assets);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 719 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 767 | `s_depositedAssets -= uint128(assets);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 776 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 840 | `s_depositedAssets -= uint128(assets);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 845 | `SafeTransferLib.safeTransferFrom(` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/CollateralTracker.sol` | 1073 | `uint128(netBorrows),` |
+| `SOL-FOT-04` | Low/Medium | `contracts/CollateralTracker.sol` | 1285 | `SafeTransferLib.safeTransferFrom(` |
+
+## Repository: `https://github.com/hats-finance/Thorn-protocol-0x1286ecdac50215a366458a14968fbca4bd95067d.git`
+- Non-test/non-interface `.sol` files scanned: `15`
+- Candidate pattern hits: `8` (`SOL-FOT-04`: `5`, `SOL-CALL-05`: `1`, `SOL-ENCODEPACKED-12`: `2`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `contracts/StableSwapRouter.sol` | 238 | `TransferHelper.safeTransferFrom(token, payer, recipient, value);` |
+| `SOL-CALL-05` | Medium | `contracts/libraries/TransferHelper.sol` | 20 | `token.call(abi.encodeWithSelector(IERC20.transferFrom.selector, from, to, value));` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/stableSwap/StableSwapThreePoolDeployer.sol` | 70 | `bytes32 salt = keccak256(abi.encodePacked(t0, t1, t2, msg.sender, block.timestamp, block.chainid));` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/stableSwap/StableSwapTwoPoolDeployer.sol` | 64 | `bytes32 salt = keccak256(abi.encodePacked(t0, t1, msg.sender, block.timestamp, block.chainid));` |
+| `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapThreePool.sol` | 659 | `IERC20(iAddress).safeTransferFrom(msg.sender, address(this), dx);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapThreePool.sol` | 789 | `IERC20(coin_address).safeTransferFrom(msg.sender, address(this), value);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapTwoPool.sol` | 660 | `IERC20(iAddress).safeTransferFrom(msg.sender, address(this), dx);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/stableSwap/plain-pools/StableSwapTwoPool.sol` | 790 | `IERC20(coin_address).safeTransferFrom(msg.sender, address(this), value);` |

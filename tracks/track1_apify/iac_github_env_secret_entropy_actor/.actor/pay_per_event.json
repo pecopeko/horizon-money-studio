@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "secret_scan_audited": {
+        "eventTitle": "Config / Env Leak Scan Audited",
+        "eventDescription": "Charged per .env, CI workflow log, or application config audited for secret exposures and unsafe TLS/debug overrides.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

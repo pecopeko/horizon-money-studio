@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-asbj34-new-lease-accounting-auditor",
+  "title": "Japan New Lease Accounting Standard (ASBJ No. 34 / IFRS 16) PV & Embedded Lease Auditor",
+  "description": "Audit Japanese office, warehouse, vehicle, and SaaS agreements under ASBJ Statement No. 34 (mandatory FY2027): short-term (<=12m) & low-value (<=3M JPY) exemptions, embedded lease control identification, discounted PV Lease Liability, Year-1 interest & ROU depreciation.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

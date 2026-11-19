@@ -793,6 +793,14 @@ def test_wave17_secondary_rate_limit_single_retry_recovers() -> None:
     assert "remaining=0" in res_exhausted["warnings"][0]
 
 
+def test_wave19_default_bounty_query_avoids_expensive_dollar_search_operator() -> None:
+    from makemoney.scouts.bounty_scout import DEFAULT_BOUNTY_QUERIES
+
+    assert len(DEFAULT_BOUNTY_QUERIES) == 3
+    assert all('in:title,body' not in q and '"$"' not in q for q in DEFAULT_BOUNTY_QUERIES)
+    assert any("label:bounty sort:created-desc" in q for q in DEFAULT_BOUNTY_QUERIES)
+
+
 
 
 

@@ -1,0 +1,29 @@
+{
+  "title": "Japan ASBJ No. 34 New Lease Accounting PV & Embedded Lease Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Lease, Real Estate, Fleet, or SaaS Contracts to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "contract_name": "Tokyo HQ Floor 8",
+          "monthly_lease_jpy": 1200000,
+          "lease_term_months": 36,
+          "annual_discount_rate_pct": 1.8,
+          "underlying_new_value_jpy": 180000000,
+          "has_purchase_option": false,
+          "controls_identified_asset": true,
+          "already_on_balance_sheet": false,
+          "contract_text": "使用権資産計上せず全額オフバランス賃貸費用処理し、少額300万超でも識別判定せず注記省略とする。"
+        }
+      ],
+      "description": "List of lease/service contracts with monthly_lease_jpy, lease_term_months, annual_discount_rate_pct, underlying_new_value_jpy, purchase/control/on-balance flags, and contract_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

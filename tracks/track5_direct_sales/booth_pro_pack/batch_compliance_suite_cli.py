@@ -27,6 +27,7 @@ from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
 from tracks.track1_apify.jp_kensetsu_keiyaku_actor.main import audit_kensetsu_contract_item
 from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_meti_security_item
+from tracks.track1_apify.jp_new_lease_accounting_asbj34_actor.main import audit_asbj34_lease_item
 from tracks.track1_apify.jp_roumu_keiyaku_actor.main import audit_roumu_item
 from tracks.track1_apify.jp_ssbj_carbon_esg_actor.main import audit_ssbj_carbon_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
@@ -74,8 +75,9 @@ def run_offline_compliance_audit(
     butsuryu_column: str = "butsuryu_contract_text",
     toriteki_column: str = "toriteki_contract_text",
     kinyu_column: str = "kinyu_aml_text",
+    lease_column: str = "lease_contract_text",
 ) -> dict[str, Any]:
-    """Audit rows across 19 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025, Toriteki Act 2026, Payment Services & AML/Travel Rule)."""
+    """Audit rows across 20 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025, Toriteki Act 2026, Payment Services & AML/Travel Rule, New Lease Accounting ASBJ No. 34)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -97,6 +99,7 @@ def run_offline_compliance_audit(
     butsuryu_flagged = 0
     toriteki_flagged = 0
     kinyu_aml_flagged = 0
+    lease_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -364,6 +367,35 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_lease = str(row.get(lease_column) or "").strip()
+        raw_l_monthly = str(row.get("monthly_lease_jpy") or "").strip()
+        raw_l_months = str(row.get("lease_term_months") or "").strip()
+        raw_l_rate = str(row.get("annual_discount_rate_pct") or "").strip()
+        raw_l_newval = str(row.get("underlying_new_value_jpy") or "").strip()
+        raw_l_ctrl = str(row.get("controls_identified_asset") or "").strip()
+        has_lease_inputs = bool(
+            raw_lease
+            or raw_l_monthly
+            or raw_l_months
+            or raw_l_newval
+            or str(row.get("already_on_balance_sheet") or "").strip()
+        )
+        lease_res = (
+            audit_asbj34_lease_item(
+                raw_lease,
+                monthly_lease_jpy=_as_float(raw_l_monthly),
+                lease_term_months=int(_as_float(raw_l_months, 36.0)) if raw_l_months else 36,
+                annual_discount_rate_pct=_as_float(raw_l_rate, 1.5) if raw_l_rate else 1.5,
+                underlying_new_value_jpy=_as_float(raw_l_newval),
+                has_purchase_option=_as_bool(row.get("has_purchase_option")),
+                controls_identified_asset=_as_bool(raw_l_ctrl) if raw_l_ctrl else True,
+                already_on_balance_sheet=_as_bool(row.get("already_on_balance_sheet")),
+                contract_name=raw_payee or f"row-{idx}",
+            )
+            if has_lease_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -402,6 +434,8 @@ def run_offline_compliance_audit(
             toriteki_flagged += 1
         if kinyu_res and kinyu_res["status"] != "pass":
             kinyu_aml_flagged += 1
+        if lease_res and lease_res["status"] != "pass":
+            lease_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -445,6 +479,8 @@ def run_offline_compliance_audit(
             row_entry["toriteki_audit"] = toriteki_res
         if kinyu_res is not None:
             row_entry["kinyu_aml_audit"] = kinyu_res
+        if lease_res is not None:
+            row_entry["lease_audit"] = lease_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -470,6 +506,7 @@ def run_offline_compliance_audit(
         "butsuryu_flagged_rows": butsuryu_flagged,
         "toriteki_flagged_rows": toriteki_flagged,
         "kinyu_aml_flagged_rows": kinyu_aml_flagged,
+        "lease_flagged_rows": lease_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

@@ -18,7 +18,7 @@ GITHUB_SEARCH_ISSUES_URL = "https://api.github.com/search/issues"
 DEFAULT_BOUNTY_QUERIES: tuple[str, ...] = (
     'is:issue is:open archived:false -linked:pr no:assignee label:"💎 Bounty" sort:created-desc',
     'is:issue is:open archived:false -linked:pr no:assignee "console.algora.io/org/" in:comments sort:updated-desc',
-    'is:issue is:open archived:false -linked:pr no:assignee label:bounty "$" in:title,body sort:created-desc',
+    'is:issue is:open archived:false -linked:pr no:assignee label:bounty sort:created-desc',
 )
 
 HONEYPOT_ORGS: frozenset[str] = frozenset(
@@ -490,9 +490,9 @@ def score_bounty_issue(
 def scan_bounty_issues(
     queries: tuple[str, ...] = DEFAULT_BOUNTY_QUERIES,
     per_page: int = 40,
-    delay_sec: float = 2.6,
+    delay_sec: float = 5.2,
     timeout_sec: float = 15.0,
-    retry_sleep_cap_sec: float = 3.5,
+    retry_sleep_cap_sec: float = 8.0,
     client: httpx.Client | None = None,
 ) -> dict[str, Any]:
     """Query GitHub issues API (<=3 requests) with token/anon fallback and honeypot filtering."""

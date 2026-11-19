@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "ci-env-secret-key-leak-entropy-auditor",
+  "title": "CI/CD .env, Cloud Credential, DB DSN & TLS-Bypass Config Leak Auditor",
+  "description": "Screen .env files, JSON/YAML manifests, and CI build logs for exposed cloud access keys, hardcoded VCS/payment bearer tokens, cleartext database DSN passwords, weak default JWT secrets, and TLS/CORS safety bypasses.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}
