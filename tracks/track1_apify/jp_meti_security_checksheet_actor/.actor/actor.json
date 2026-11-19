@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-meti-supplychain-security-auditor",
+  "title": "Japan METI Supply Chain Security (Star 3/4) & SPF/DMARC Auditor",
+  "description": "Audit vendor security checksheets against Japan METI Star 3/Star 4 controls, PPC 3-5 day breach SLA, Trade Secret requirements, and SPF/DMARC DNS posture.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

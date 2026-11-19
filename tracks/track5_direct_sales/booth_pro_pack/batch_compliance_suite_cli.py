@@ -20,6 +20,7 @@ from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_
 from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
 from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
+from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_meti_security_item
 from tracks.track1_apify.jp_roumu_keiyaku_actor.main import audit_roumu_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
 from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
@@ -42,8 +43,9 @@ def run_offline_compliance_audit(
     fee_column: str = "fee_yen",
     labor_column: str = "labor_notice_text",
     html_column: str = "html_snippet",
+    security_column: str = "security_checksheet_text",
 ) -> dict[str, Any]:
-    """Audit rows across 10 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y)."""
+    """Audit rows across 11 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -56,6 +58,7 @@ def run_offline_compliance_audit(
     gensen_audited = 0
     roumu_flagged = 0
     jis_a11y_flagged = 0
+    bouheki_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -113,6 +116,20 @@ def run_offline_compliance_audit(
         raw_html = str(row.get(html_column) or "").strip()
         jis_res = audit_jis_a11y_item(raw_html) if raw_html else None
 
+        raw_security = str(row.get(security_column) or "").strip()
+        raw_spf = str(row.get("spf_record") or "").strip()
+        raw_dmarc = str(row.get("dmarc_record") or "").strip()
+        bouheki_res = (
+            audit_meti_security_item(
+                raw_security,
+                spf_record=raw_spf,
+                dmarc_record=raw_dmarc,
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if (raw_security or raw_spf or raw_dmarc)
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -133,6 +150,8 @@ def run_offline_compliance_audit(
             roumu_flagged += 1
         if jis_res and jis_res["status"] != "pass":
             jis_a11y_flagged += 1
+        if bouheki_res and bouheki_res["status"] != "pass":
+            bouheki_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -158,6 +177,8 @@ def run_offline_compliance_audit(
             row_entry["roumu_audit"] = roumu_res
         if jis_res is not None:
             row_entry["jis_a11y_audit"] = jis_res
+        if bouheki_res is not None:
+            row_entry["bouheki_security_audit"] = bouheki_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -174,6 +195,7 @@ def run_offline_compliance_audit(
         "gensen_audited_rows": gensen_audited,
         "roumu_flagged_rows": roumu_flagged,
         "jis_a11y_flagged_rows": jis_a11y_flagged,
+        "bouheki_security_flagged_rows": bouheki_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "checksheet_audited": {
+        "eventTitle": "Security Checksheet & DNS Posture Audited",
+        "eventDescription": "Charged per vendor security checksheet & SPF/DMARC posture audited.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

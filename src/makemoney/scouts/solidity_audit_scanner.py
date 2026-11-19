@@ -32,6 +32,10 @@ _ZERO_SLIPPAGE_RE = re.compile(r"\b(?:amountOutMinimum|amountOutMin|minAmountOut
 _UNPROTECTED_INIT_RE = re.compile(r"\bfunction\s+initialize\s*\(")
 _INIT_GUARD_RE = re.compile(r"\b(?:initializer|reinitializer|onlyInitializing)\b")
 _SELFDESTRUCT_RE = re.compile(r"\b(?:selfdestruct|suicide)\s*\(")
+_DELEGATECALL_RE = re.compile(r"\.\s*delegatecall\s*\(")
+_SAFE_PROXY_DELEGATE_RE = re.compile(
+    r"(?:\b_implementation\b|\bimplementation\s*\(\s*\)|\bERC1967|\bassembly\b)"
+)
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -213,6 +217,20 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                     rationale="Under EIP-6780 post-Cancun EVM rules, selfdestruct no longer clears code/storage outside creation transactions, breaking teardown invariants.",
                 )
             )
+        if is_concrete_or_abstract_contract and _DELEGATECALL_RE.search(stripped):
+            ctx_window = "\n".join(lines[max(0, idx - 4) : min(len(lines), idx + 3)])
+            if not _SAFE_PROXY_DELEGATE_RE.search(ctx_window):
+                findings.append(
+                    SolidityFinding(
+                        rule_id="SOL-DELEGATECALL-10",
+                        severity="High",
+                        title="Low-level .delegatecall in non-proxy contract logic",
+                        file_path=file_path,
+                        line_number=idx,
+                        snippet=stripped[:140],
+                        rationale="Executing delegatecall in concrete business logic risks storage slot collision or arbitrary state overwrite via untrusted target.",
+                    )
+                )
 
     if (
         is_concrete_or_abstract_contract
@@ -253,6 +271,9 @@ def scan_solidity_tree(root_dir: str | Path) -> dict[str, Any]:
                 "/dependencies/",
                 "/openzeppelin/",
                 "/vendor/",
+                "/lib/",
+                "/mocks/",
+                "/mock/",
                 "node_modules/",
                 "/lib/",
                 "/mock",

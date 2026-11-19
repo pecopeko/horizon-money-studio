@@ -1,0 +1,20 @@
+{
+  "title": "SQL Zero-Downtime Migration Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "SQL Migration Scripts to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "filename": "002_add_index.sql",
+          "dialect": "postgres",
+          "sql_text": "BEGIN; CREATE INDEX CONCURRENTLY idx_orders_user ON orders(user_id); COMMIT;"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

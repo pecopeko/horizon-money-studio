@@ -240,3 +240,31 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `src/tokens/PrincipalToken.sol` | 246 | `IERC20(ibt).safeTransferFrom(msg.sender, address(this), ibts);` |
 | `SOL-FOT-04` | Low/Medium | `src/tokens/PrincipalToken.sol` | 485 | `IERC20(_ibt).safeTransferFrom(address(_receiver), address(this), _amount + fee);` |
 | `SOL-FOT-04` | Low/Medium | `src/tokens/YieldToken.sol` | 109 | `return super.transferFrom(from, to, amount);` |
+
+## Repository: `https://github.com/hats-finance/Euro-Dollar-0xa4ccd3b6daa763f729ad59eae75f9cbff7baf2cd.git`
+- Non-test/non-interface `.sol` files scanned: `4`
+- Candidate pattern hits: `1` (`SOL-ERC4626-06`: `1`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-ERC4626-06` | High | `src/InvestToken.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+
+## Repository: `https://github.com/hats-finance/SeeR-PM-0x899bc13919880db76edf4ccd72bdfa5dfa666fb7.git`
+- Non-test/non-interface `.sol` files scanned: `22`
+- Candidate pattern hits: `13` (`SOL-FOT-04`: `11`, `SOL-ERC4626-06`: `1`, `SOL-AUTH-02`: `1`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `contracts/src/MainnetRouter.sol` | 32 | `DAI.transferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 40 | `collateralToken.transferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 62 | `wrapped1155.transferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 77 | `conditionalTokens.safeTransferFrom(address(this), address(wrapped1155Factory), tokenId, amount, data);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 117 | `wrapped1155.transferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 130 | `conditionalTokens.safeTransferFrom(address(this), address(wrapped1155Factory), tokenId, amount, data);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/Router.sol` | 205 | `conditionalTokens.safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/1155-to-20/Wrapped1155Factory.sol` | 112 | `multiToken.safeTransferFrom(address(this), recipient, tokenId, amount, data);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/conditional-tokens/ConditionalTokens.sol` | 143 | `require(collateralToken.transferFrom(msg.sender, address(this), amount), "could not receive collateral tokens");` |
+| `SOL-ERC4626-06` | High | `contracts/src/interaction/sDAI-on-Gnosis/SavingsXDai.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-AUTH-02` | High | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 24 | `if (msg.sender == tx.origin) {` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 31 | `wxdai.transferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 37 | `wxdai.transferFrom(msg.sender, address(this), sDAI.convertToAssets(shares));` |

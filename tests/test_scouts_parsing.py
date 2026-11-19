@@ -518,5 +518,47 @@ def test_wave9_caravanacloud_spam_titles_and_stale_365d_penalty() -> None:
     assert score_bounty_issue(recent, now_utc=now).ev_score > score_bounty_issue(zombie, now_utc=now).ev_score * 3.0
 
 
+def test_wave10_numeric_owners_sandbox_repos_and_keyboard_mash_titles() -> None:
+    sandbox_cases = [
+        ("18540233512/gggg", "Clean looking title"),
+        ("192600/fishwww", "Implement feature"),
+        ("Hexa-Hexagon/test", "Add parser"),
+        ("kolotikwoan/robot-001", "Refactor code"),
+    ]
+    for repo, title in sandbox_cases:
+        assert (
+            is_honeypot_or_bait(
+                {
+                    "repository_url": f"https://api.github.com/repos/{repo}",
+                    "title": title,
+                    "labels": [],
+                }
+            )
+            is True
+        )
+
+    for spam_title in ("Test 20", "dsadasa", "22222", "qweasd"):
+        assert (
+            is_honeypot_or_bait(
+                {
+                    "repository_url": "https://api.github.com/repos/legit-org/real-app",
+                    "title": spam_title,
+                    "labels": [],
+                }
+            )
+            is True
+        )
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/algora-io/algora",
+                "title": "Add dark mode toggle",
+                "labels": [],
+            }
+        )
+        is False
+    )
+
+
 
 

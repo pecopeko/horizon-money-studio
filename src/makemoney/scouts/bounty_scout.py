@@ -105,16 +105,25 @@ def is_non_cash_org(repo_full_name: str) -> bool:
     return _extract_repo_owner(repo_full_name) in NON_CASH_ORGS
 
 
+_NUMERIC_OWNER_RE = re.compile(r"^\d+$")
+_SANDBOX_REPO_NAME_RE = re.compile(
+    r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+)$"
+)
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test[a-z0-9]*$|(?:go){2,}$|ssadsa$|open bounty$)|(?:lorem ipsum|dolor sit amet)"
+    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,})"
 )
 
 
 def is_honeypot_or_bait(raw_issue: dict[str, Any]) -> bool:
     """Return True if the issue is from a blocklisted honeypot org or has bait labels."""
     repo_full_name = _extract_repo_full_name(raw_issue)
-    if _extract_repo_owner(repo_full_name) in HONEYPOT_ORGS:
+    owner = _extract_repo_owner(repo_full_name)
+    if owner in HONEYPOT_ORGS or _NUMERIC_OWNER_RE.fullmatch(owner) is not None:
         return True
+    if "/" in repo_full_name:
+        repo_name = repo_full_name.split("/", 1)[1].strip()
+        if _SANDBOX_REPO_NAME_RE.fullmatch(repo_name) is not None:
+            return True
 
     title_text = str(raw_issue.get("title") or "").strip()
     if _SPAM_TITLE_RE.search(title_text):

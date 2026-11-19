@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOUHEKIGATE 防壁門 | METI 星3・星4 サプライチェーンセキュリティ・PPC漏えい報告・SPF/DMARCローカル診断</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで経産省サプライチェーンセキュリティ対策評価（星3・星4相当）、個人情報保護委員会PPC速報(3-5日)/確報(30日)、営業秘密3要件、SPF/DMARCを診断し取引先提出用回答書Markdownを自動生成します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">防壁</span>
+        <div>
+          <h1>BOUHEKIGATE <span class="title-sub">防壁門</span></h1>
+          <p class="subtitle">経産省サプライチェーン対策評価（星3・星4相当）・PPC漏えい報告SLA・不競法営業秘密・SPF/DMARC 自己診断＆取引先回答書生成</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル検査</span>
+        <span class="trust-pill" data-ui="badge">外部送信ゼロ・回答書Markdown生成</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 社内体制記述・SPF / DMARC レコード入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">不備チェックシート例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">星4準拠体制サンプル</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            回答組織・会社名
+            <input id="in-org" type="text" value="株式会社品川精密エンジニアリング" />
+          </label>
+          <label>
+            セキュリティ連絡窓口メール
+            <input id="in-email" type="text" value="csirt@shinagawa-seimitsu.jp" />
+          </label>
+          <label>
+            SPF DNSレコード（TXT）
+            <input id="in-spf" type="text" value="v=spf1 include:_spf.google.com ~all" />
+          </label>
+          <label>
+            DMARC DNSレコード（_dmarc TXT）
+            <input id="in-dmarc" type="text" value="v=DMARC1; p=none;" />
+          </label>
+        </div>
+
+        <label class="field-block">
+          社内セキュリティ規定・取引先チェックシート回答ドラフト
+          <textarea id="in-policy" rows="12" placeholder="MFA・EDR・オフラインバックアップ・漏えい時連絡網・営業秘密管理・再委託・暗号化ログ対策を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">星3/星4診断＆取引先回答書を生成</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. 評価レベル目安・DMARC姿勢・検出課題</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">自己評価スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">METI 評価段階目安</span>
+            <strong id="m-star" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">DMARC / SPF姿勢</span>
+            <strong id="m-dmarc" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出されたセキュリティ統制・メール認証の課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『取引先提出用 情報セキュリティ対策状況回答書』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>BOUHEKIGATE 防壁門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・METIサプライチェーン対策評価 自己診断補助ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

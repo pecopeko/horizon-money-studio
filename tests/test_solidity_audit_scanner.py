@@ -204,5 +204,49 @@ def test_excludes_vendored_dependencies_and_flags_selfdestruct(tmp_path: Path) -
     assert summary["findings"][0]["line_number"] == 5
 
 
+def test_excludes_foundry_lib_mocks_and_flags_raw_delegatecall(tmp_path: Path) -> None:
+    src_dir = tmp_path / "src"
+    lib_dir = tmp_path / "lib" / "forge-std"
+    mocks_dir = tmp_path / "contracts" / "mocks"
+    src_dir.mkdir(parents=True)
+    lib_dir.mkdir(parents=True)
+    mocks_dir.mkdir(parents=True)
+
+    (lib_dir / "Vm.sol").write_text("contract Vm { function x() external { target.call(\"\"); } }", encoding="utf-8")
+    (mocks_dir / "MockToken.sol").write_text("contract MockToken { function destroy() external { selfdestruct(payable(msg.sender)); } }", encoding="utf-8")
+    (src_dir / "Router.sol").write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract Router {
+            function execModule(address mod, bytes calldata data) external returns (bytes memory) {
+                (bool ok, bytes memory res) = mod.delegatecall(data);
+                require(ok, "fail");
+                return res;
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    (src_dir / "Proxy.sol").write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract Proxy {
+            function _fallback(address _implementation) internal {
+                (bool ok, ) = _implementation.delegatecall(msg.data);
+                require(ok);
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    summary = scan_solidity_tree(tmp_path)
+    assert summary["scanned_files"] == 2
+    del_findings = [f for f in summary["findings"] if f["rule_id"] == "SOL-DELEGATECALL-10"]
+    assert len(del_findings) == 1
+    assert del_findings[0]["file_path"].endswith("Router.sol")
+    assert del_findings[0]["line_number"] == 5
+
+
 
 
