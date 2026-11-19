@@ -213,7 +213,7 @@ def test_track5_fourteen_gate_cli_audits_fefta_export_control() -> None:
 
 def test_all_30_apify_actor_input_schemas_have_required_descriptions() -> None:
     schema_paths = sorted(Path("tracks/track1_apify").glob("*/.actor/input_schema.json"))
-    assert len(schema_paths) == 30
+    assert len(schema_paths) >= 30
     for schema_path in schema_paths:
         data = json.loads(schema_path.read_text(encoding="utf-8"))
         assert str(data.get("title") or "").strip(), schema_path

@@ -1,10 +1,10 @@
-# 日本B2Bコンプライアンス 14連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
+# 日本B2Bコンプライアンス 15連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
 
 本アーカイブに含まれるすべてのWebアプリ・Chrome拡張・Python CLI・業務自動化スクリプトは、**外部クラウド・外部LLMへ機密データを1バイトも送信せず**、貴社PCまたは閉域網ローカル環境のみで完結動作します。
 
 ---
 
-## 1. Webツール 14種（ブラウザで即起動）
+## 1. Webツール 15種（ブラウザで即起動）
 
 ES Modules を読み込むため、ZIP解凍後のフォルダ直下でローカルHTTPサーバーを1行で起動してブラウザから開いてください。
 
@@ -28,6 +28,7 @@ python3 -m http.server 8080
 12. **AIGOVGATE（統治門・AI事業者ガイドライン第1.1版 / 著作権30条の4 / シャドーAI）**: `http://localhost:8080/tracks/track2_micro_saas/aigovgate/docs/`
 13. **HANSHAGATE（清廉門・暴排条項 / 犯収法UBO 25%超 / 公益通報者保護法）**: `http://localhost:8080/tracks/track2_micro_saas/hanshagate/docs/`
 14. **BOUEKIGATE（貿易門・外為法1〜15項/16項キャッチオール / みなし輸出特定類型 / 米国EAR De Minimis）**: `http://localhost:8080/tracks/track2_micro_saas/bouekigate/docs/`
+15. **TANSOGATE（炭素門・SSBJ基準S1/S2 / Scope 1〜3二重算定 / 温対法SHK 3,000t / グリーンウォッシュ）**: `http://localhost:8080/tracks/track2_micro_saas/tansogate/docs/`
 
 ---
 
@@ -41,7 +42,7 @@ python3 -m http.server 8080
 
 ---
 
-## 3. 14ゲート統合オフライン一括処理 Python CLI
+## 3. 15ゲート統合オフライン一括処理 Python CLI
 
 Python 3.11+（`pydantic` のみ推奨・外部有料API不要）で解凍フォルダ直下から実行できます。
 
@@ -67,10 +68,11 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `ai_governance_text` / `ai_use_case` / `model_license`: 社内生成AI運用規程・用途・モデルライセンス（AI事業者ガイドライン第1.1版）
 - `hansha_clause_text` / `ubo_holders_json` / `representative_name`: 反社排除条項・株主構成JSON・代表者名（暴排・犯収法UBO・公益通報）
 - `export_control_text` / `us_origin_value_jpy` / `total_product_value_jpy` / `destination_group`: 輸出管理規程・米国原産比率De Minimis・仕向地グループ（外為法/EAR/みなし輸出）
+- `ssbj_carbon_text` / `scope1_fuel_tco2` / `electricity_kwh` / `non_fossil_cert_kwh` / `scope3_spend_mjpy` / `jcredit_offset_tco2` / `claimed_carbon_neutral` / `has_shk_filing_plan`: SSBJ開示方針・Scope1〜3活動量・SHK・グリーンウォッシュ監査
 
 ---
 
-## 4. 用途別 単体自動化バッチエンジン 11種（`tracks/track7_freelance_kit/deliverables/`）
+## 4. 用途別 単体自動化バッチエンジン 12種（`tracks/track7_freelance_kit/deliverables/`）
 
 - `dirty_csv_to_zengin120.py`: 会計/給与CSV → 120バイト全銀振込ファイル＋T番号検証
 - `polite_feed_price_diff.py`: Shopify/RSS 公開フィード価格・在庫差分CSV出力
@@ -83,3 +85,4 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `ai_tool_inventory_risk_register.py`: 社内AIツール台帳CSV一括監査（シャドーAI・著作権法30条の4・EU AI Act・商用ライセンス判定）
 - `vendor_kyc_ubo_hansha_screener.py`: 取引先KYC台帳CSV（T番号Mod-9・25%超UBOツリー・PEPs・7年保存・暴排/公益通報条項）一括審査
 - `export_control_gaihi_screener.py`: 製品・研究案件CSV（外為法1〜15項/16項・外国ユーザーリスト・みなし輸出特定類型・米国EAR De Minimis・7年保存）一括審査
+- `ssbj_ghg_scope123_carbon_auditor.py`: グループ企業・拠点別GHG CSV（Scope 1/2 Location & Market二重算定・Scope 3・温対法SHK 3,000t・J-クレジット残余排出グリーンウォッシュ）一括監査

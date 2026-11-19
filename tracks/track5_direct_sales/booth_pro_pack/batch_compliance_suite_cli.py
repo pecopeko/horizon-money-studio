@@ -25,12 +25,27 @@ from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
 from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_meti_security_item
 from tracks.track1_apify.jp_roumu_keiyaku_actor.main import audit_roumu_item
+from tracks.track1_apify.jp_ssbj_carbon_esg_actor.main import audit_ssbj_carbon_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
 from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
 from tracks.track1_apify.jp_zengin_invoice_actor.main import (
     to_zengin_halfwidth,
     verify_corporate_or_invoice_id,
 )
+
+
+def _as_bool(raw: Any) -> bool:
+    return str(raw or "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _as_float(raw: Any, default: float = 0.0) -> float:
+    text = str(raw or "").replace(",", "").strip()
+    if not text:
+        return default
+    try:
+        return float(text)
+    except ValueError:
+        return default
 
 
 def run_offline_compliance_audit(
@@ -50,8 +65,9 @@ def run_offline_compliance_audit(
     ai_gov_column: str = "ai_governance_text",
     hansha_column: str = "hansha_clause_text",
     export_control_column: str = "export_control_text",
+    ssbj_carbon_column: str = "ssbj_carbon_text",
 ) -> dict[str, Any]:
-    """Audit rows across 14 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control)."""
+    """Audit rows across 15 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -68,6 +84,7 @@ def run_offline_compliance_audit(
     aigov_flagged = 0
     hansha_flagged = 0
     fefta_flagged = 0
+    ssbj_carbon_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -189,14 +206,39 @@ def run_offline_compliance_audit(
         fefta_res = (
             audit_fefta_export_item(
                 raw_export,
-                us_origin_value_jpy=us_val_f,
-                total_product_value_jpy=tot_val_f,
+                us_origin_value_jpy=_as_float(raw_us_val),
+                total_product_value_jpy=_as_float(raw_tot_val),
                 destination_group=raw_dest,
-                is_public_oss_encryption=str(row.get("is_public_oss_encryption") or "").strip().lower() in {"1", "true", "yes"},
-                has_ear_license_or_exception=str(row.get("has_ear_license_or_exception") or "").strip().lower() in {"1", "true", "yes"},
+                is_public_oss_encryption=_as_bool(row.get("is_public_oss_encryption")),
+                has_ear_license_or_exception=_as_bool(row.get("has_ear_license_or_exception")),
                 org_name=raw_payee or f"row-{idx}",
             )
             if has_export_inputs
+            else None
+        )
+
+        raw_carbon = str(row.get(ssbj_carbon_column) or "").strip()
+        raw_s1 = str(row.get("scope1_fuel_tco2") or "").strip()
+        raw_elec = str(row.get("electricity_kwh") or "").strip()
+        raw_nonfossil = str(row.get("non_fossil_cert_kwh") or "").strip()
+        raw_s3 = str(row.get("scope3_spend_mjpy") or "").strip()
+        raw_jcredit = str(row.get("jcredit_offset_tco2") or "").strip()
+        has_carbon_inputs = bool(
+            raw_carbon or raw_s1 or raw_elec or raw_nonfossil or raw_s3 or raw_jcredit
+        )
+        ssbj_res = (
+            audit_ssbj_carbon_item(
+                raw_carbon,
+                scope1_fuel_tco2=_as_float(raw_s1),
+                electricity_kwh=_as_float(raw_elec),
+                non_fossil_cert_kwh=_as_float(raw_nonfossil),
+                scope3_spend_mjpy=_as_float(raw_s3),
+                jcredit_offset_tco2=_as_float(raw_jcredit),
+                claimed_carbon_neutral=_as_bool(row.get("claimed_carbon_neutral")),
+                has_shk_filing_plan=_as_bool(row.get("has_shk_filing_plan")),
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_carbon_inputs
             else None
         )
 
@@ -228,6 +270,8 @@ def run_offline_compliance_audit(
             hansha_flagged += 1
         if fefta_res and fefta_res["status"] != "pass":
             fefta_flagged += 1
+        if ssbj_res and ssbj_res["status"] != "pass":
+            ssbj_carbon_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -261,6 +305,8 @@ def run_offline_compliance_audit(
             row_entry["hansha_kyc_audit"] = hansha_res
         if fefta_res is not None:
             row_entry["fefta_export_audit"] = fefta_res
+        if ssbj_res is not None:
+            row_entry["ssbj_carbon_audit"] = ssbj_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -281,6 +327,7 @@ def run_offline_compliance_audit(
         "aigov_flagged_rows": aigov_flagged,
         "hansha_kyc_flagged_rows": hansha_flagged,
         "fefta_export_flagged_rows": fefta_flagged,
+        "ssbj_carbon_flagged_rows": ssbj_carbon_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

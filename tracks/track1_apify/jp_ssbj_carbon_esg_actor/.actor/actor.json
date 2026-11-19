@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-ssbj-ghg-carbon-greenwash-auditor",
+  "title": "Japan SSBJ Sustainability, SHK GHG Scope 1-3 & Greenwash Auditor",
+  "description": "Audit Japanese SSBJ S1/S2 sustainability disclosures, SHK 3,000 t-CO2 Act on Promotion of Global Warming Countermeasures, Scope 1/2 Location vs Market methods, Non-Fossil/J-Credit offsets, and Japan Consumer Affairs Agency Greenwash claims.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

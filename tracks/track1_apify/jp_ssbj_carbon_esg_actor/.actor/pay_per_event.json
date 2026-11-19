@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "ghg_disclosure_audited": {
+        "eventTitle": "SSBJ GHG Scope 1-3 & Greenwash Disclosure Audited",
+        "eventDescription": "Charged per entity GHG Scope 1-3 inventory calculation, SHK 3,000t check, and SSBJ/Greenwash disclosure audited.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

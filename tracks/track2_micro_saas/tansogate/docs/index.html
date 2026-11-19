@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TANSOGATE 炭素門 | SSBJ基準 GHG Scope 1〜3・温対法SHK・グリーンウォッシュ ローカル監査</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロでSSBJ開示基準S1/S2・GHG Scope 1/2（ロケーション/マーケット二重算定＋非化石証書）・Scope 3・温対法3,000t SHK報告・グリーンウォッシュ防止を監査し算定証明書を生成します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">炭素</span>
+        <div>
+          <h1>TANSOGATE <span class="title-sub">炭素門</span></h1>
+          <p class="subtitle">SSBJ S1/S2・温対法SHK(3,000t)・Scope 1〜3二重算定＆グリーンウォッシュ ローカル監査ツール</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル計算</span>
+        <span class="trust-pill" data-ui="badge">光熱費・調達額データ社外送信ゼロ</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 活動量（Scope 1〜3・証書・オフセット）＆開示方針入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">SHK超過・グリーンウォッシュ例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">SSBJ / SHK 基準準拠例</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            対象事業者・グループ法人名
+            <input id="in-org" type="text" value="関東精密マニュファクチャリング株式会社" />
+          </label>
+          <label>
+            算定対象年度 / レポート期
+            <input id="in-period" type="text" value="2026年度 (FY2026)" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            Scope 1 直接燃料 (t-CO2)
+            <input id="in-s1" type="number" min="0" step="1" value="1850" />
+          </label>
+          <label>
+            Scope 2 使用電力量 (kWh)
+            <input id="in-elec" type="number" min="0" step="1000" value="3200000" />
+          </label>
+          <label>
+            非化石証書充当分 (kWh)
+            <input id="in-nonfossil" type="number" min="0" step="1000" value="0" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            電力排出係数 Loc/Mkt (kg/kWh)
+            <input id="in-factor" type="number" min="0" step="0.001" value="0.434" />
+          </label>
+          <label>
+            Scope 3 調達支出額 (百万円)
+            <input id="in-s3-spend" type="number" min="0" step="10" value="450" />
+          </label>
+          <label>
+            J-クレジット償却量 (t-CO2)
+            <input id="in-jcredit" type="number" min="0" step="1" value="500" />
+          </label>
+        </div>
+
+        <div class="check-row">
+          <label class="inline-check">
+            <input id="in-shk-plan" type="checkbox" />
+            <span>温対法SHK制度 特定排出者（EEGS定期報告）提出計画・算定担当登録済み</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-cn-claim" type="checkbox" checked />
+            <span>HP/カタログ等で「カーボンニュートラル / 実質ゼロ」訴求を実施中</span>
+          </label>
+        </div>
+
+        <label class="field-block">
+          SSBJ開示方針・算定バウンダリ・証書管理・第三者保証規程テキスト
+          <textarea id="in-policy" rows="9" placeholder="SSBJ S1/S2ガバナンス、Scope 1/2ロケーション＆マーケット基準、Scope 3カテゴリ、温対法3,000t EEGS、非化石証書シリアル管理、環境表示ガイドライン、第三者限定的保証、証憑7年保存を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">GHG算定＆SSBJ監査を実行</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. GHG排出量サマリ・SHK判定・環境表示リスク</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">SSBJ / 表示スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">S1+S2 Loc (SHK基準)</span>
+            <strong id="m-shk" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">Net残余排出 (Mkt+S3-オフ)</span>
+            <strong id="m-net" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出された算定・SHK報告・グリーンウォッシュ上の課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『SSBJ GHG算定・環境表示監査証明書』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>TANSOGATE 炭素門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・SSBJ/SHK/GHG自己点検ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

@@ -1,12 +1,12 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–13)
+# Autonomous Multi-Track Studio Run Log (Waves 1–14)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
 
 ---
 
-## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`30` Actors Shipped)
-- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`9fc4067`)
+## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`32` Actors Shipped)
+- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`c39fca9`)
 - **Wave 1 (`3` Actors)**:
   1. `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   2. `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
@@ -50,8 +50,11 @@
 - **Wave 13 / Hourly Tick 12 (`2` Actors)**:
   29. `jp-fefta-export-control-deemed-export-auditor` (`export_screening_audited` @ `$0.004`)
   30. `oauth2-oidc-jwt-security-hardening-auditor` (`auth_config_audited` @ `$0.003`)
+- **Wave 14 / Hourly Tick 15 (`2` Actors)**:
+  31. `jp-ssbj-ghg-carbon-greenwash-auditor` (`ghg_disclosure_audited` @ `$0.004`)
+  32. `mcp-agent-tool-poisoning-security-auditor` (`mcp_config_audited` @ `$0.003`)
 
-## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`14` Live Web Apps)
+## Track 2 — Zero-Backend Japanese B2B Micro-SaaS & Chrome Extensions (`15` Live Web Apps)
 1. **KUROGATE（黒門）**:
    - Web App: https://pecopeko.github.io/kurogate/
    - Chrome MV3 Extension ZIP: https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip
@@ -94,8 +97,11 @@
 14. **BOUEKIGATE（貿易門）**:
     - Web App: https://pecopeko.github.io/bouekigate/
     - Offline Kit ZIP: https://github.com/pecopeko/bouekigate/releases/download/v1.0.0/bouekigate-offline-kit-v1.0.0.zip
+15. **TANSOGATE（炭素門）**:
+    - Web App: https://pecopeko.github.io/tansogate/ (`6d4120b`)
+    - Offline Kit ZIP: https://github.com/pecopeko/tansogate/releases/download/v1.0.0/tansogate-offline-kit-v1.0.0.zip
 
-## Track 3 — Open-Source Cash / Sponsor Pull Requests (`8` Open PRs)
+## Track 3 — Open-Source Cash / Sponsor Pull Requests (`8` Open PRs — Verified Clean & Green CI, Tick 15)
 - All targets screened for multi-page `has_competing_open_pr == False` (`max_pages=4`) and excluded honeypot orgs. See `tracks/track3_bounties/SUBMITTED_PRS.md`.
   1. `tscircuit/cli#5654` -> https://github.com/tscircuit/cli/pull/5858 (`c8345f0`)
   2. `tscircuit/core#5677` -> https://github.com/tscircuit/core/pull/5680 (`2c03e61`)
@@ -113,12 +119,12 @@
   - Continuous 3-tier conviction lot scaling (`800k / 1.6M / 2.4M JPY` within the `2,400,000 JPY` cap, `mean_cap_jpy = 1,683,271 JPY`) achieved `+2,646,201 JPY` net PnL (`Sharpe 2.501`) vs exact mean-capital Uniform-Cap Control `+2,100,950 JPY` (`Sharpe 2.328`) — **`+545,251 JPY` verified edge (`PASS`)**.
 
 ## Track 5 — Direct Digital Products (Zenn Paid Book/Articles + BOOTH Pro Suite)
-- **Zenn Content GitHub Repo**: https://github.com/pecopeko/zenn-content (`9ad8f77`)
-  - Paid Book (`¥2,400`, 6 chapters + `700x980` `cover.png`): `books/afml-quant-and-local-ai-guard/`
-  - Free Lead Articles (`10`, all `published: true`): `kurogate-yakkigate-local-compliance.md`, `quant-backtest-uniform-shrinkage-trap.md`, `jp-b2b-6gates-offline-compliance.md`, `kojingate-gensengate-8gates-local.md`, `roumugate-fixed-overtime-36-local-audit.md`, `jisgate-wcag-10gates-local-compliance.md`, `bouhekigate-meti-star3-11gates-local.md`, `aigovgate-copyright304-12gates-local.md`, `hanshagate-ubo-whistleblower-13gates.md`, `bouekigate-fefta-ear-deemed-export-14gates.md`
+- **Zenn Content GitHub Repo**: https://github.com/pecopeko/zenn-content (`f925ebd`)
+  - Paid Book (`¥2,400`, 6 chapters + `700x980` `cover.png`, `published: true`): `books/afml-quant-and-local-ai-guard/`
+  - Free Lead Articles (`11`, all `published: true`, <=62 char titles): `kurogate-yakkigate-local-compliance.md`, `quant-backtest-uniform-shrinkage-trap.md`, `jp-b2b-6gates-offline-compliance.md`, `kojingate-gensengate-8gates-local.md`, `roumugate-fixed-overtime-36-local-audit.md`, `jisgate-wcag-10gates-local-compliance.md`, `bouhekigate-meti-star3-11gates-local.md`, `aigovgate-copyright304-12gates-local.md`, `hanshagate-ubo-whistleblower-13gates.md`, `bouekigate-fefta-ear-deemed-export-14gates.md`, `tansogate-ssbj-scope123-greenwash-15gates.md`
 - **BOOTH / Gumroad Pro Suite Bundle (`¥3,980` recommended)**:
-  - Release ZIP (`4,934,117` bytes, `157` entries: all `14` Web Apps + `2` Chrome MV3 Extensions + 14-Gate CLI + `11` Track 7 deliverables): https://github.com/pecopeko/horizon-money-studio/releases/download/v1.0.0-pro-kit/japan-b2b-compliance-pro-suite-v1.0.0.zip
-  - CLI (`batch_compliance_suite_cli.py`, upgraded for 14-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding/Labor/JIS X 8341-3/METI Security/AI Governance/Anti-Social Forces & UBO KYC/FEFTA & US EAR Export Control CSV columns) + `tracks/track5_direct_sales/booth_pro_pack/{BOOTH_LISTING_JA.md,QUICKSTART_JA.md}`
+  - Release ZIP (`4,955,078` bytes, `165` entries: all `15` Web Apps + `2` Chrome MV3 Extensions + 15-Gate CLI + `12` Track 7 deliverables): https://github.com/pecopeko/horizon-money-studio/releases/download/v1.0.0-pro-kit/japan-b2b-compliance-pro-suite-v1.0.0.zip
+  - CLI (`batch_compliance_suite_cli.py`, upgraded for 15-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding/Labor/JIS X 8341-3/METI Security/AI Governance/Anti-Social Forces & UBO KYC/FEFTA & US EAR Export Control/SSBJ GHG Scope 1-3 & Greenwash CSV columns) + `tracks/track5_direct_sales/booth_pro_pack/{BOOTH_LISTING_JA.md,QUICKSTART_JA.md}`
 
 ## Track 6 — Solidity Smart Contract Audit Competition Pre-Screener & Triage
 - **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py` (upgraded to skip pure interfaces, ERC721 NFT transfers, `/script/` deployment files, `/dependencies/`/`/openzeppelin/`/`/vendor/`/`/lib/`/`/mocks/` libraries, typed interface `.call()` invocations without low-level `{}` options, and non-vault `vault.totalAssets()` callers, validate tuple-captured `.call` checks across 6 lines, and flag zero-slippage swap params via `SOL-SLIPPAGE-07`, unguarded upgradeable `initialize()` via `SOL-INIT-08`, `selfdestruct`/`suicide` via `SOL-SELFDESTRUCT-09`, non-proxy `.delegatecall` via `SOL-DELEGATECALL-10`, unchecked `ecrecover()` via `SOL-RECOVER-11`, packed-encoding hash collision via `SOL-ENCODEPACKED-12`, & unchecked narrowing uint casts via `SOL-UNSAFECAST-13`)
@@ -162,4 +168,5 @@
   - `ai_tool_inventory_risk_register.py` (Shadow AI inventory CSV risk register flagging personal/no-opt-out plans, Copyright Act Art. 30-4 style mimicry, EU AI Act risk tiers & non-commercial licenses)
   - `vendor_kyc_ubo_hansha_screener.py` (`audit_vendor_kyc_csv` CSV/JSONL vendor KYC, beneficial ownership UBO, anti-social forces / hansha, and whistleblower readiness screener)
   - `export_control_gaihi_screener.py` (`audit_export_control_csv` CSV FEFTA Lists 1-15/Catch-All 16, Deemed Export Categories 1-3, Foreign User List, US EAR De Minimis 25%/0% & TSU exemption screener)
-- **Sales Playbook**: `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (11 ready-to-send Lancers / CrowdWorks / Coconala templates 案A–案K, `¥30,000–¥200,000` range)
+  - `ssbj_ghg_scope123_carbon_auditor.py` (`audit_ssbj_ghg_csv` CSV Scope 1/2 Location vs Market minus non-fossil, Scope 3 Cat.1, SHK 3,000 t-CO2 EEGS flag, J-Credit & Greenwash auditor)
+- **Sales Playbook**: `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (12 ready-to-send Lancers / CrowdWorks / Coconala templates 案A–案L, `¥30,000–¥200,000` range)
