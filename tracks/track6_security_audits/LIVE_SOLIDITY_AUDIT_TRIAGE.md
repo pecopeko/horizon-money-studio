@@ -373,3 +373,7 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-ENCODEPACKED-12` | Medium | `protocol-v2/src/lens/PortfolioLens.sol` | 155 | `salt = keccak256(abi.encodePacked(owner, salt));` |
 | `SOL-ORACLE-03` | High | `protocol-v2/src/oracle/ChainlinkEthOracle.sol` | 88 | `(, int256 answer, uint256 startedAt,,) = ARB_SEQ_FEED.latestRoundData();` |
 | `SOL-ORACLE-03` | High | `protocol-v2/src/oracle/ChainlinkUsdOracle.sol` | 103 | `(, int256 answer, uint256 startedAt,,) = ARB_SEQ_FEED.latestRoundData();` |
+
+## Repository: `https://github.com/Cyfrin/battlechain-lib.git`
+- Non-test/non-interface `.sol` files scanned: `8`
+- Candidate pattern hits: `0`

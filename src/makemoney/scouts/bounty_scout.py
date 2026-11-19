@@ -16,9 +16,9 @@ from makemoney.github_client import get_github_token, github_api_request
 GITHUB_SEARCH_ISSUES_URL = "https://api.github.com/search/issues"
 
 DEFAULT_BOUNTY_QUERIES: tuple[str, ...] = (
-    'is:issue is:open -linked:pr no:assignee label:"💎 Bounty" sort:created-desc',
-    'is:issue is:open -linked:pr no:assignee "algora.io" in:comments sort:updated-desc',
-    'is:issue is:open -linked:pr no:assignee label:bounty "$" in:title,body sort:created-desc',
+    'is:issue is:open archived:false -linked:pr no:assignee label:"💎 Bounty" sort:created-desc',
+    'is:issue is:open archived:false -linked:pr no:assignee "console.algora.io" in:comments sort:updated-desc',
+    'is:issue is:open archived:false -linked:pr no:assignee label:bounty "$" in:title,body sort:created-desc',
 )
 
 HONEYPOT_ORGS: frozenset[str] = frozenset(
@@ -234,6 +234,8 @@ def _build_github_headers() -> dict[str, str]:
 def _normalize_search_query(query: str) -> str:
     parts = [query.strip()]
     lower = query.lower()
+    if "archived:" not in lower:
+        parts.append("archived:false")
     if "linked:pr" not in lower:
         parts.append("-linked:pr")
     if "assignee" not in lower:

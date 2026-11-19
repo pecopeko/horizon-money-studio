@@ -23,6 +23,7 @@ from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_i
 from tracks.track1_apify.jp_hansha_kyc_whistleblower_actor.main import audit_hansha_kyc_item
 from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
+from tracks.track1_apify.jp_kensetsu_keiyaku_actor.main import audit_kensetsu_contract_item
 from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_meti_security_item
 from tracks.track1_apify.jp_roumu_keiyaku_actor.main import audit_roumu_item
 from tracks.track1_apify.jp_ssbj_carbon_esg_actor.main import audit_ssbj_carbon_item
@@ -66,8 +67,9 @@ def run_offline_compliance_audit(
     hansha_column: str = "hansha_clause_text",
     export_control_column: str = "export_control_text",
     ssbj_carbon_column: str = "ssbj_carbon_text",
+    kensetsu_column: str = "kensetsu_contract_text",
 ) -> dict[str, Any]:
-    """Audit rows across 15 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon)."""
+    """Audit rows across 16 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -85,6 +87,7 @@ def run_offline_compliance_audit(
     hansha_flagged = 0
     fefta_flagged = 0
     ssbj_carbon_flagged = 0
+    kensetsu_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -242,6 +245,27 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_kensetsu = str(row.get(kensetsu_column) or "").strip()
+        raw_k_amt = str(row.get("contract_amount_jpy") or "").strip()
+        raw_k_labor = str(row.get("estimated_labor_welfare_jpy") or "").strip()
+        raw_k_sub = str(row.get("subcontract_total_jpy") or "").strip()
+        has_kensetsu_inputs = bool(raw_kensetsu or raw_k_amt or raw_k_labor or raw_k_sub)
+        kensetsu_res = (
+            audit_kensetsu_contract_item(
+                raw_kensetsu,
+                contract_amount_jpy=_as_float(raw_k_amt),
+                estimated_labor_welfare_jpy=_as_float(raw_k_labor),
+                subcontract_total_jpy=_as_float(raw_k_sub),
+                construction_type=str(row.get("construction_type") or "general").strip() or "general",
+                has_tokutei_license=_as_bool(row.get("has_tokutei_license")),
+                monthly_overtime_hours=_as_float(row.get("monthly_overtime_hours")),
+                rolling_avg_overtime_hours=_as_float(row.get("rolling_avg_overtime_hours")),
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_kensetsu_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -272,6 +296,8 @@ def run_offline_compliance_audit(
             fefta_flagged += 1
         if ssbj_res and ssbj_res["status"] != "pass":
             ssbj_carbon_flagged += 1
+        if kensetsu_res and kensetsu_res["status"] != "pass":
+            kensetsu_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -307,6 +333,8 @@ def run_offline_compliance_audit(
             row_entry["fefta_export_audit"] = fefta_res
         if ssbj_res is not None:
             row_entry["ssbj_carbon_audit"] = ssbj_res
+        if kensetsu_res is not None:
+            row_entry["kensetsu_audit"] = kensetsu_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -328,6 +356,7 @@ def run_offline_compliance_audit(
         "hansha_kyc_flagged_rows": hansha_flagged,
         "fefta_export_flagged_rows": fefta_flagged,
         "ssbj_carbon_flagged_rows": ssbj_carbon_flagged,
+        "kensetsu_flagged_rows": kensetsu_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

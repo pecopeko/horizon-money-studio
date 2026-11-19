@@ -43,6 +43,7 @@ def github_api_request(
     params: dict[str, Any] | None = None,
     require_auth: bool = False,
     timeout_sec: float = 20.0,
+    rate_limit_sleep_cap_sec: float = 4.0,
 ) -> Any:
     """Call GitHub REST API v3 cleanly without ever logging or persisting credentials."""
     token = get_github_token()
@@ -66,11 +67,26 @@ def github_api_request(
         for attempt in range(len(backoffs) + 1):
             try:
                 resp = client.request(method.upper(), url, json=payload, params=params)
-                break
             except httpx.TransportError:
                 if attempt >= len(backoffs):
                     raise
                 time.sleep(backoffs[attempt])
+                continue
+
+            retry_after = resp.headers.get("Retry-After")
+            is_rate_limit = resp.status_code in (403, 429) and (
+                resp.status_code == 429
+                or "secondary rate limit" in resp.text.lower()
+                or bool(retry_after)
+            )
+            if is_rate_limit and attempt < len(backoffs):
+                try:
+                    raw_delay = float(retry_after) if retry_after else backoffs[attempt]
+                except ValueError:
+                    raw_delay = backoffs[attempt]
+                time.sleep(min(max(raw_delay, 0.0), max(rate_limit_sleep_cap_sec, 0.0)))
+                continue
+            break
 
         assert resp is not None
         if resp.status_code >= 400:

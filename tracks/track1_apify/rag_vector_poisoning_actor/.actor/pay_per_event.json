@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "rag_chunk_audited": {
+        "eventTitle": "RAG Chunk & Vector Config Audited",
+        "eventDescription": "Charged per RAG ingestion chunk, HTML source, or vector DB config audited for injection, exfiltration, and tenant isolation.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

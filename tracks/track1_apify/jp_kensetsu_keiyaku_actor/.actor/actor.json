@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-construction-kensetsugyo-2024-compliance-auditor",
+  "title": "Japan Revised Construction Business Act & 2024 Overtime Cap Auditor",
+  "description": "Audit Japanese construction subcontracts against the Revised Construction Business Act (Art. 19 written terms, Standard Labor Cost / Statutory Welfare breakdown & no-dumping, price escalation consultation, 2025 Tokutei 50M/80M JPY thresholds, blanket subcontracting ban, 50-day payment) and the 2024 Labor Standards overtime caps.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

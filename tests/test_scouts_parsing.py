@@ -674,5 +674,47 @@ def test_wave13_bot_test_hello_world_and_unfunded_algora_meta_filter() -> None:
     assert scored_funded.ev_score > scored_meta.ev_score * 10.0
 
 
+def test_wave15_archived_query_and_secondary_rate_limit_retry(monkeypatch) -> None:
+    from makemoney.github_client import github_api_request
+    from makemoney.scouts.bounty_scout import DEFAULT_BOUNTY_QUERIES, _normalize_search_query
+
+    assert any('"console.algora.io"' in q for q in DEFAULT_BOUNTY_QUERIES)
+    assert all("archived:false" in q for q in DEFAULT_BOUNTY_QUERIES)
+    normalized = _normalize_search_query('is:issue is:open label:"bounty"')
+    assert "archived:false" in normalized
+    assert "-linked:pr" in normalized
+    assert "no:assignee" in normalized
+
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(
+                403,
+                headers={"Retry-After": "60"},
+                json={"message": "You have exceeded a secondary rate limit."},
+            )
+        return httpx.Response(200, json={"ok": True})
+
+    orig_client = httpx.Client
+
+    def client_factory(*args, **kwargs):
+        kwargs["transport"] = httpx.MockTransport(handler)
+        return orig_client(*args, **kwargs)
+
+    monkeypatch.setattr("makemoney.github_client.get_github_token", lambda: None)
+    monkeypatch.setattr("makemoney.github_client.httpx.Client", client_factory)
+    out = github_api_request(
+        "GET",
+        "/rate_limit",
+        rate_limit_sleep_cap_sec=0.01,
+    )
+    assert out == {"ok": True}
+    assert calls == 2
+
+
+
 
 
