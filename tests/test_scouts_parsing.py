@@ -728,6 +728,71 @@ def test_wave16_excludes_unfunded_bounty_create_prompts() -> None:
     )
 
 
+def test_wave17_secondary_rate_limit_single_retry_recovers() -> None:
+    transient_calls = 0
+
+    def handler_transient(request: httpx.Request) -> httpx.Response:
+        nonlocal transient_calls
+        transient_calls += 1
+        if transient_calls == 1:
+            return httpx.Response(
+                403,
+                headers={"X-RateLimit-Remaining": "27", "Retry-After": "1"},
+                json={"message": "secondary rate limit"},
+            )
+        return httpx.Response(
+            200,
+            json={
+                "total_count": 1,
+                "items": [
+                    {
+                        "repository_url": "https://api.github.com/repos/tscircuit/core",
+                        "number": 9001,
+                        "html_url": "https://github.com/tscircuit/core/issues/9001",
+                        "title": "Fix footprint rotation [$120]",
+                        "body": "Repro included",
+                        "comments": 0,
+                        "created_at": "2026-11-18T00:00:00Z",
+                        "labels": [{"name": "💎 Bounty"}],
+                    }
+                ],
+            },
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(handler_transient)) as c1:
+        res_ok = scan_bounty_issues(
+            queries=('is:issue is:open label:"💎 Bounty"',),
+            delay_sec=0.0,
+            retry_sleep_cap_sec=0.0,
+            client=c1,
+        )
+    assert transient_calls == 2
+    assert res_ok["warnings"] == []
+    assert [c.issue_number for c in res_ok["candidates"]] == [9001]
+
+    exhausted_calls = 0
+
+    def handler_exhausted(request: httpx.Request) -> httpx.Response:
+        nonlocal exhausted_calls
+        exhausted_calls += 1
+        return httpx.Response(
+            403,
+            headers={"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": "1795083657"},
+            json={"message": "API rate limit exceeded"},
+        )
+
+    with httpx.Client(transport=httpx.MockTransport(handler_exhausted)) as c2:
+        res_exhausted = scan_bounty_issues(
+            queries=("is:issue is:open q1", "is:issue is:open q2"),
+            delay_sec=0.0,
+            retry_sleep_cap_sec=0.0,
+            client=c2,
+        )
+    assert exhausted_calls == 1
+    assert len(res_exhausted["warnings"]) == 1
+    assert "remaining=0" in res_exhausted["warnings"][0]
+
+
 
 
 

@@ -1,10 +1,10 @@
-# 日本B2Bコンプライアンス 17連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
+# 日本B2Bコンプライアンス 18連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
 
 本アーカイブに含まれるすべてのWebアプリ・Chrome拡張・Python CLI・業務自動化スクリプトは、**外部クラウド・外部LLMへ機密データを1バイトも送信せず**、貴社PCまたは閉域網ローカル環境のみで完結動作します。
 
 ---
 
-## 1. Webツール 17種（ブラウザで即起動）
+## 1. Webツール 18種（ブラウザで即起動）
 
 ES Modules を読み込むため、ZIP解凍後のフォルダ直下でローカルHTTPサーバーを1行で起動してブラウザから開いてください。
 
@@ -31,6 +31,7 @@ python3 -m http.server 8080
 15. **TANSOGATE（炭素門・SSBJ基準S1/S2 / Scope 1〜3二重算定 / 温対法SHK 3,000t / グリーンウォッシュ）**: `http://localhost:8080/tracks/track2_micro_saas/tansogate/docs/`
 16. **KENSETSUGATE（建設門・改正建設業法 / 標準労務費ダンピング / 特定建設業5,000万・8,000万 / 2024年上限）**: `http://localhost:8080/tracks/track2_micro_saas/kensetsugate/docs/`
 17. **BUTSURYUGATE（物流門・改正物流効率化法 / 9万t CLO / 荷待ち2h / 標準的運賃・2024改善基準告示）**: `http://localhost:8080/tracks/track2_micro_saas/butsuryugate/docs/`
+18. **TORIHIKIGATE（取適門・2026年取適法 / 従業員300人・100人基準 / 手形廃止・価格転嫁協議・金型管理）**: `http://localhost:8080/tracks/track2_micro_saas/torihikigate/docs/`
 
 ---
 
@@ -44,7 +45,7 @@ python3 -m http.server 8080
 
 ---
 
-## 3. 17ゲート統合オフライン一括処理 Python CLI
+## 3. 18ゲート統合オフライン一括処理 Python CLI
 
 Python 3.11+（`pydantic` のみ推奨・外部有料API不要）で解凍フォルダ直下から実行できます。
 
@@ -73,10 +74,11 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `ssbj_carbon_text` / `scope1_fuel_tco2` / `electricity_kwh` / `non_fossil_cert_kwh` / `scope3_spend_mjpy` / `jcredit_offset_tco2` / `claimed_carbon_neutral` / `has_shk_filing_plan`: SSBJ開示方針・Scope1〜3活動量・SHK・グリーンウォッシュ監査
 - `kensetsu_contract_text` / `contract_amount_jpy` / `estimated_labor_welfare_jpy` / `subcontract_total_jpy` / `construction_type` / `has_tokutei_license` / `monthly_overtime_hours` / `rolling_avg_overtime_hours`: 建設請負契約条項・標準労務費/法定福利費・特定許可閾値・2024年時間外上限監査
 - `butsuryu_contract_text` / `annual_cargo_tons` / `has_clo_appointed` / `contract_fare_jpy` / `standard_tariff_jpy` / `wait_and_handling_hours` / `monthly_binding_hours` / `daily_rest_hours` / `subcontract_tier`: 物流効率化法9万t CLO・標準的運賃比較・荷待ち2h・2024年運転者拘束/休息・実運送階層監査
+- `toriteki_contract_text` / `transaction_category` / `buyer_capital_jpy` / `supplier_capital_jpy` / `buyer_employees` / `supplier_employees` / `payment_cycle_days` / `payment_method` / `has_unilateral_price_freeze` / `unpaid_mold_storage_months`: 2026年取適法（従業員300/100人基準・手形禁止・60日現金払・価格転嫁協議・金型無償保管）監査
 
 ---
 
-## 4. 用途別 単体自動化バッチエンジン 14種（`tracks/track7_freelance_kit/deliverables/`）
+## 4. 用途別 単体自動化バッチエンジン 15種（`tracks/track7_freelance_kit/deliverables/`）
 
 - `dirty_csv_to_zengin120.py`: 会計/給与CSV → 120バイト全銀振込ファイル＋T番号検証
 - `polite_feed_price_diff.py`: Shopify/RSS 公開フィード価格・在庫差分CSV出力
@@ -92,3 +94,4 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `ssbj_ghg_scope123_carbon_auditor.py`: グループ企業・拠点別GHG CSV（Scope 1/2 Location & Market二重算定・Scope 3・温対法SHK 3,000t・J-クレジット残余排出グリーンウォッシュ）一括監査
 - `construction_kensetsugyo_2024_auditor.py`: 工事・下請案件CSV（2025年特定建設業5,000万/8,000万閾値・労務費ダンピング・資材価格協議・4週8休・2024年時間外上限）一括監査
 - `logistics_butsuryu_2025_auditor.py`: 荷主・輸送ルートCSV（9万t特定荷主CLO・標準的運賃90%・荷待ち2h・実運送管理簿2次請け・運転者拘束/休息）一括監査
+- `toriteki_shitauke_2026_auditor.py`: 取引先・委託案件CSV（2026年取適法 従業員300/100人基準・手形/割引料禁止・60日現金・価格転嫁協議・金型管理）一括監査

@@ -407,3 +407,47 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `contracts/partners/tokenWrappers/PufferPointTokenWrapper.sol` | 95 | `IERC20(underlying).safeTransferFrom(from, feeRecipient, amount);` |
 | `SOL-UNSAFECAST-13` | Medium | `contracts/partners/tokenWrappers/PufferPointTokenWrapper.sol` | 113 | `userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));` |
 | `SOL-FOT-04` | Low/Medium | `contracts/partners/tokenWrappers/PullTokenWrapperAllow.sol` | 65 | `if (from == distributor \|\| to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);` |
+
+## Repository: `https://github.com/code-423n4/2026-03-intuition.git`
+- Non-test/non-interface `.sol` files scanned: `21`
+- Candidate pattern hits: `17` (`SOL-AUTH-02`: `1`, `SOL-PRECISION-01`: `4`, `SOL-FOT-04`: `1`, `SOL-UNSAFECAST-13`: `3`, `SOL-ERC4626-06`: `5`, `SOL-ENCODEPACKED-12`: `3`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-AUTH-02` | High | `src/external/curve/VotingEscrow.sol` | 129 | `if (msg.sender != tx.origin) {` |
+| `SOL-PRECISION-01` | Medium | `src/external/curve/VotingEscrow.sol` | 236 | `uint256 t_i = (last_checkpoint / WEEK) * WEEK;` |
+| `SOL-FOT-04` | Low/Medium | `src/external/curve/VotingEscrow.sol` | 355 | `IERC20(token).safeTransferFrom(_addr, address(this), _value);` |
+| `SOL-PRECISION-01` | Medium | `src/external/curve/VotingEscrow.sol` | 390 | `uint256 unlock_time = (_unlock_time / WEEK) * WEEK;` |
+| `SOL-PRECISION-01` | Medium | `src/external/curve/VotingEscrow.sol` | 428 | `uint256 unlock_time = (_unlock_time / WEEK) * WEEK;` |
+| `SOL-UNSAFECAST-13` | Medium | `src/external/curve/VotingEscrow.sol` | 694 | `return uint256(uint128(upoint.bias));` |
+| `SOL-PRECISION-01` | Medium | `src/external/curve/VotingEscrow.sol` | 706 | `uint256 t_i = (last_point.ts / WEEK) * WEEK;` |
+| `SOL-UNSAFECAST-13` | Medium | `src/external/curve/VotingEscrow.sol` | 726 | `return uint256(uint128(last_point.bias));` |
+| `SOL-ERC4626-06` | High | `src/protocol/MultiVault.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/protocol/MultiVaultCore.sol` | 274 | `return keccak256(abi.encodePacked(ATOM_SALT, keccak256(data)));` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/protocol/MultiVaultCore.sol` | 291 | `return keccak256(abi.encodePacked(TRIPLE_SALT, subjectId, predicateId, objectId));` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/protocol/MultiVaultCore.sol` | 298 | `return bytes32(keccak256(abi.encodePacked(COUNTER_SALT, tripleId)));` |
+| `SOL-ERC4626-06` | High | `src/protocol/curves/BaseCurve.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ERC4626-06` | High | `src/protocol/curves/BondingCurveRegistry.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ERC4626-06` | High | `src/protocol/curves/OffsetProgressiveCurve.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+
+## Repository: `https://github.com/code-423n4/2025-10-sequence.git`
+- Non-test/non-interface `.sol` files scanned: `37`
+- Candidate pattern hits: `23` (`SOL-DELEGATECALL-10`: `3`, `SOL-CALL-05`: `4`, `SOL-ENCODEPACKED-12`: `11`, `SOL-RECOVER-11`: `4`, `SOL-UNSAFECAST-13`: `1`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-DELEGATECALL-10` | High | `src/Estimator.sol` | 73 | `(success) = LibOptim.delegatecall(` |
+| `SOL-CALL-05` | Medium | `src/Estimator.sol` | 87 | `(success) = LibOptim.call(call.to, call.value, gasLimit == 0 ? gasleft() : gasLimit, call.data);` |
+| `SOL-CALL-05` | Medium | `src/Guest.sol` | 54 | `bool success = LibOptim.call(call.to, call.value, gasLimit == 0 ? gasleft() : gasLimit, call.data);` |
+| `SOL-DELEGATECALL-10` | High | `src/Simulator.sol` | 69 | `(success) = LibOptim.delegatecall(` |
+| `SOL-CALL-05` | Medium | `src/Simulator.sol` | 79 | `(success) = LibOptim.call(call.to, call.value, gasLimit == 0 ? gasleft() : gasLimit, call.data);` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/extensions/recovery/Recovery.sol` | 73 | `return keccak256(abi.encodePacked("Sequence recovery leaf:\n", _signer, _requiredDeltaTime, _minTimestamp));` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/extensions/recovery/Recovery.sol` | 146 | `return keccak256(abi.encodePacked("\x19\x01", domain, structHash));` |
+| `SOL-RECOVER-11` | High | `src/extensions/recovery/Recovery.sol` | 203 | `address addr = ecrecover(rPayloadHash, v, r, s);` |
+| `SOL-RECOVER-11` | High | `src/extensions/sessions/SessionSig.sol` | 116 | `address recoveredIdentitySigner = ecrecover(attestationHash, v, r, s);` |
+| `SOL-DELEGATECALL-10` | High | `src/modules/Calls.sol` | 86 | `(success) = LibOptim.delegatecall(` |
+| `SOL-CALL-05` | Medium | `src/modules/Calls.sol` | 100 | `(success) = LibOptim.call(call.to, call.value, gasLimit == 0 ? gasleft() : gasLimit, call.data);` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/modules/Payload.sol` | 269 | `return keccak256(abi.encodePacked("\x19\x01", domain, structHash));` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/modules/Payload.sol` | 275 | `return keccak256(abi.encodePacked("\x19\x01", domain, structHash));` |
+| `SOL-UNSAFECAST-13` | Medium | `src/modules/auth/BaseAuth.sol` | 43 | `return (address(uint160(word >> 96)), uint256(uint96(word)));` |
+| `SOL-ENCODEPACKED-12` | Medium | `src/modules/auth/BaseSig.sol` | 44 | `return keccak256(abi.encodePacked("Sequence signer:\n", _addr, _weight));` |

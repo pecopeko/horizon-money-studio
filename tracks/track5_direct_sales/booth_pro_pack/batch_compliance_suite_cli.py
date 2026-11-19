@@ -29,6 +29,7 @@ from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_met
 from tracks.track1_apify.jp_roumu_keiyaku_actor.main import audit_roumu_item
 from tracks.track1_apify.jp_ssbj_carbon_esg_actor.main import audit_ssbj_carbon_item
 from tracks.track1_apify.jp_tokusho_ec_actor.main import audit_tokusho_item
+from tracks.track1_apify.jp_toriteki_shitauke_2026_actor.main import audit_toriteki_contract_item
 from tracks.track1_apify.jp_yakki_ad_actor.main import audit_ad_copy_item
 from tracks.track1_apify.jp_zengin_invoice_actor.main import (
     to_zengin_halfwidth,
@@ -70,8 +71,9 @@ def run_offline_compliance_audit(
     ssbj_carbon_column: str = "ssbj_carbon_text",
     kensetsu_column: str = "kensetsu_contract_text",
     butsuryu_column: str = "butsuryu_contract_text",
+    toriteki_column: str = "toriteki_contract_text",
 ) -> dict[str, Any]:
-    """Audit rows across 17 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025)."""
+    """Audit rows across 18 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025, Toriteki Act 2026)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -91,6 +93,7 @@ def run_offline_compliance_audit(
     ssbj_carbon_flagged = 0
     kensetsu_flagged = 0
     butsuryu_flagged = 0
+    toriteki_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -293,6 +296,37 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_toriteki = str(row.get(toriteki_column) or "").strip()
+        raw_t_bemp = str(row.get("buyer_employees") or "").strip()
+        raw_t_cycle = str(row.get("payment_cycle_days") or "").strip()
+        raw_t_method = str(row.get("payment_method") or "").strip()
+        raw_t_mold = str(row.get("unpaid_mold_storage_months") or "").strip()
+        has_toriteki_inputs = bool(
+            raw_toriteki
+            or raw_t_bemp
+            or raw_t_cycle
+            or raw_t_method
+            or raw_t_mold
+            or str(row.get("buyer_capital_jpy") or "").strip()
+        )
+        toriteki_res = (
+            audit_toriteki_contract_item(
+                raw_toriteki,
+                transaction_category=str(row.get("transaction_category") or "manufacturing_or_logistics").strip() or "manufacturing_or_logistics",
+                buyer_capital_jpy=_as_float(row.get("buyer_capital_jpy")),
+                supplier_capital_jpy=_as_float(row.get("supplier_capital_jpy")),
+                buyer_employees=int(_as_float(raw_t_bemp)),
+                supplier_employees=int(_as_float(row.get("supplier_employees"))),
+                payment_cycle_days=int(_as_float(raw_t_cycle, 30.0)) if raw_t_cycle else 30,
+                payment_method=raw_t_method or "bank_transfer",
+                has_unilateral_price_freeze=_as_bool(row.get("has_unilateral_price_freeze")),
+                unpaid_mold_storage_months=int(_as_float(raw_t_mold)),
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_toriteki_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -327,6 +361,8 @@ def run_offline_compliance_audit(
             kensetsu_flagged += 1
         if butsuryu_res and butsuryu_res["status"] != "pass":
             butsuryu_flagged += 1
+        if toriteki_res and toriteki_res["status"] != "pass":
+            toriteki_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -366,6 +402,8 @@ def run_offline_compliance_audit(
             row_entry["kensetsu_audit"] = kensetsu_res
         if butsuryu_res is not None:
             row_entry["butsuryu_audit"] = butsuryu_res
+        if toriteki_res is not None:
+            row_entry["toriteki_audit"] = toriteki_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -389,6 +427,7 @@ def run_offline_compliance_audit(
         "ssbj_carbon_flagged_rows": ssbj_carbon_flagged,
         "kensetsu_flagged_rows": kensetsu_flagged,
         "butsuryu_flagged_rows": butsuryu_flagged,
+        "toriteki_flagged_rows": toriteki_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

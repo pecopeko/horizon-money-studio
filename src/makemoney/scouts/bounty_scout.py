@@ -490,8 +490,9 @@ def score_bounty_issue(
 def scan_bounty_issues(
     queries: tuple[str, ...] = DEFAULT_BOUNTY_QUERIES,
     per_page: int = 40,
-    delay_sec: float = 2.2,
+    delay_sec: float = 2.6,
     timeout_sec: float = 15.0,
+    retry_sleep_cap_sec: float = 3.5,
     client: httpx.Client | None = None,
 ) -> dict[str, Any]:
     """Query GitHub issues API (<=3 requests) with token/anon fallback and honeypot filtering."""
@@ -518,11 +519,28 @@ def scan_bounty_issues(
             )
             if resp.status_code in (403, 429):
                 remaining = resp.headers.get("X-RateLimit-Remaining", "?")
-                reset = resp.headers.get("X-RateLimit-Reset", "?")
-                warnings.append(
-                    f"GitHub API rate limit/access notice (HTTP {resp.status_code}, remaining={remaining}, reset={reset}) on query: {query}"
-                )
-                break
+                retry_after = resp.headers.get("Retry-After")
+                if remaining != "0":
+                    try:
+                        parsed_wait = float(retry_after) if retry_after is not None else 2.5
+                    except ValueError:
+                        parsed_wait = 2.5
+                    sleep_sec = min(max(parsed_wait, 0.0), max(retry_sleep_cap_sec, 0.0))
+                    if sleep_sec > 0:
+                        time.sleep(sleep_sec)
+                    resp = active_client.get(
+                        GITHUB_SEARCH_ISSUES_URL,
+                        params={"q": query, "per_page": per_page},
+                    )
+                if resp.status_code in (403, 429):
+                    remaining = resp.headers.get("X-RateLimit-Remaining", "?")
+                    reset = resp.headers.get("X-RateLimit-Reset", "?")
+                    warnings.append(
+                        f"GitHub API rate limit/access notice (HTTP {resp.status_code}, remaining={remaining}, reset={reset}) on query: {query}"
+                    )
+                    if remaining == "0":
+                        break
+                    continue
             resp.raise_for_status()
             payload = resp.json()
             query_totals[query] = int(payload.get("total_count") or 0)
