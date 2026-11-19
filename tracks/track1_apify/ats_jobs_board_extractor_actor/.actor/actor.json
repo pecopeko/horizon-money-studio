@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "ats-greenhouse-lever-ashby-jobs-extractor",
+  "title": "Greenhouse, Lever & Ashby ATS Jobs Board Extractor",
+  "description": "Fast, browserless extraction of structured job postings from official public Greenhouse, Lever, and Ashby ATS JSON APIs with automatic remote/hybrid detection, seniority classification, compensation parsing, and 35+ tech stack tags — $1.00 per 1,000 jobs.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

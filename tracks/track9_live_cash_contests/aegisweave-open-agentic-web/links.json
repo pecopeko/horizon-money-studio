@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "networks": {
+    "aegisweave_hub": {
+      "nordic_compute": "./peers/nordic_compute/nordic_compute",
+      "kyoto_studio": "./peers/kyoto_studio/kyoto_studio"
+    }
+  }
+}

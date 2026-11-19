@@ -1,15 +1,17 @@
 # Horizon-Money Studio
 
-A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket spend** with strict read-only boundaries on `macroTomicro`. See [`tracks/AUTONOMOUS_RUN_LOG.md`](tracks/AUTONOMOUS_RUN_LOG.md) for the full asset inventory.
+A 9-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket spend** with strict read-only boundaries on `macroTomicro`. See [`tracks/AUTONOMOUS_RUN_LOG.md`](tracks/AUTONOMOUS_RUN_LOG.md) for the full asset inventory.
 
-## Live Shipped Outputs Across All 7 Tracks
+## Live Shipped Outputs Across All 9 Tracks
 
-- **Track 1 — Apify Store PPE Actor Suite (`45` Actors — Top 4 Production-Verified Winners, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
-  - **Top 4 Production-Verified Global Winners (Live Smoke-Tested, Zero-CAPTCHA, Zero-Browser)**:
+- **Track 1 — Apify Store PPE Actor Suite (`47` Actors — Top 6 Production-Verified Winners, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
+  - **Top 6 Production-Verified Global Winners (Live Smoke-Tested, Zero-CAPTCHA, Zero-Browser, Built on Apify Cloud)**:
     - `shopify-public-catalog-feed-extractor` v2.0 (`product_extracted` @ `$0.001` — multi-store batch, SSRF/redirect safe, 429 backoff, full variants/discounts & `/collections.json`)
     - `podcast-rss-transcript-extractor` v2.0 (`episode_extracted` `$0.002` + `transcript_extracted` `$0.002` — RSS `<itunes:owner>` host emails, Apple Reviews JSON, Podcasting 2.0 VTT/SRT/JSON)
     - `substack-newsletter-posts-extractor` v1.0 (`post_extracted` @ `$0.001` — public `/api/v1/archive` + `/feed` RAG Markdown/text, honest paywall flagging)
     - `sec-edgar-8k-10k-item-extractor` v2.0 (`filing_extracted` @ `$0.004` — SEC Fair Access email UA `200 OK`, ASC 606 annual vs quarterly XBRL, `efts.sec.gov` Form D startup funding search)
+    - `ats-greenhouse-lever-ashby-jobs-extractor` v1.0 (`job_extracted` @ `$0.001` — public Greenhouse / Lever / Ashby JSON job boards, remote/salary/department normalization)
+    - `website-tech-stack-sitemap-extractor` v1.0 (`site_profiled` @ `$0.002` — HTTP headers/HTML/DNS-free tech fingerprinting across 40+ SaaS/analytics/CDN signatures + `robots.txt`/`sitemap.xml` URL inventory + `llms.txt` detection)
   - Plus 41 archived/domain actors in repo:
   - `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   - `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
@@ -55,7 +57,7 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - `ci-env-secret-key-leak-entropy-auditor` (`secret_scan_audited` @ `$0.003`)
   - `jp-keizaianpo-clearance-supplychain-auditor` (`security_clearance_audited` @ `$0.004`)
   - `cloud-iam-oidc-least-privilege-auditor` (`iam_policy_audited` @ `$0.003`)
-- **Track 2 — Zero-Backend Japanese B2B Micro-SaaS (`21` Live Web Apps + Releases)**:
+- **Track 2 — Zero-Backend Micro-SaaS & High-Volume Utilities (`23` Live Web Apps + Releases)**:
   - **KUROGATE（黒門 v1.1.0）**: https://pecopeko.github.io/kurogate/ ([Edge/Chrome/Firefox MV3 v1.1.0](https://github.com/pecopeko/kurogate/releases/download/v1.1.0/kurogate-extension-v1.1.0.zip))
   - **YAKKIGATE（薬影）**: https://pecopeko.github.io/yakkigate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/yakkigate/releases/download/v1.0.0/yakkigate-chrome-extension-v1.0.0.zip))
   - **ZENGINGATE（全銀門 v2.0 — Shift-JIS CP932 120B）**: https://pecopeko.github.io/zengingate/ ([Offline Kit v2.0.0](https://github.com/pecopeko/zengingate/releases/download/v2.0.0/zengingate-offline-kit-v2.0.0.zip))
@@ -77,6 +79,8 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - **KINYUGATE（金融門）**: https://pecopeko.github.io/kinyugate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/kinyugate/releases/download/v1.0.0/kinyugate-offline-kit-v1.0.0.zip))
   - **LEASEGATE（リース門）**: https://pecopeko.github.io/leasegate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/leasegate/releases/download/v1.0.0/leasegate-offline-kit-v1.0.0.zip))
   - **ANPOGATE（安保門）**: https://pecopeko.github.io/anpogate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/anpogate/releases/download/v1.0.0/anpogate-offline-kit-v1.0.0.zip))
+  - **TEDORIGATE（手取り門 — 2026–2027 個人事業主・ふるさと納税上限・インボイス50%＆法人成り損益分岐点）**: https://pecopeko.github.io/tedorigate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/tedorigate/releases/download/v1.0.0/tedorigate-offline-kit-v1.0.0.zip))
+  - **TOKENLENS（EN/JP LLM Token Cost & Lossless JSON→Compact Tabular Optimizer）**: https://pecopeko.github.io/tokenlens/ ([Offline Kit v1.0.0](https://github.com/pecopeko/tokenlens/releases/download/v1.0.0/tokenlens-offline-kit-v1.0.0.zip))
 - **Track 3 — Live OSS Cash/Sponsor Pull Requests (`8` Open PRs)**:
   - `tscircuit/cli#5654`: https://github.com/tscircuit/cli/pull/5858
   - `tscircuit/core#5677`: https://github.com/tscircuit/core/pull/5680
@@ -93,17 +97,24 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
 - **Track 5 — Direct Digital Sales (`Zenn` Reboot + `BOOTH` Top-5 Back-Office Pro Kit v2.0)**:
   - **Zenn Content Repo (`pecopeko/zenn-content`)**: https://github.com/pecopeko/zenn-content — Cleaned up 16 thin promo stubs (`published: false`); published **3 deep code-packed Flagship Articles** (AFML backtest traps, Zengin Shift-JIS/Mod-9/Mod-11, Chrome MV3 PII Vault with measured `-91.67%` FP reduction) + focused **`¥1,200` 8-chapter Paid Book** (`jp-quant-backtest-audit-afml`, Ch. 1–2 `free: true`, Hiragino Sans editorial cover).
   - **BOOTH Top-5 Back-Office Pro Kit v2.0 (`¥1,980` / `¥4,980`)**: Curated `tracks/track5_direct_sales/booth_pro_pack/dist/jp-backoffice-top5-pro-kit-v2.0.0.zip` (`ZENGINGATE v2.0` Shift-JIS CP932, `DENCHOGATE Studio v2.0` PDF extractor & ZIP, `GENSENGATE` + 2026 Invoice 50%/支払調書 CLI, `KUROGATE v1.1.0` MV3 ext, `YAKKIGATE`) + working `samples/` + `verify_quickstart.sh` + `1000x1000` Japanese cover (`jp-backoffice-top5-cover.png`). Public free Pro ZIP leak removed from `v1.0.0-pro-kit`.
+  - **Organic Distribution Launch Pack**: `tracks/track5_direct_sales/DISTRIBUTION_LAUNCH_PACK.md` (Note flagship post + 4 weighted-length-verified X posts + Qiita cross-post checklist funneling into Zenn/BOOTH/GitHub Sponsors).
 - **Track 6 — Solidity Smart Contract Security Audits**:
   - Live Immunefi Deep Manual Audit Dossier (`39,759 LOC` across `Base Everest` + `Metricxyz`): `tracks/track6_security_audits/IMMUNEFI_LIVE_AUDIT_DOSSIER_2026_11.md` (`0` High/Critical; `2` confirmed Low + `5` Info)
   - Static Pre-Screener (`src/makemoney/scouts/solidity_audit_scanner.py`) + historical triage log (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md`)
 - **Track 7 — Productized "List-and-Wait" Coconala / Lancers Packages & Upgraded Engines**:
   - Ready-to-paste storefront pack: `tracks/track7_freelance_kit/COCONALA_LANCERS_READY_LISTINGS.md` (3 high-demand SME automation services `¥15,000–¥43,000` + Edge/Firefox `$0` extension checklist)
   - Upgraded core automation engines: `dirty_csv_to_zengin120.py` (true CP932 Shift-JIS), `dencho_folder_renamer_indexer.py` (PDF extraction + SHA-256 dedup + rollback), `polite_feed_price_diff.py` (Shopify/RSS/Atom fetcher + Slack/Discord/Chatwork webhooks + JSON config), `shiharai_chosho_csv_aggregator.py` + legacy deliverables & playbook (`tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md`).
+- **Track 8 — Open-Source Zero-API-Key MCP Public Intel Server (`pecopeko/mcp-public-intel`)**:
+  - **Public Repository**: https://github.com/pecopeko/mcp-public-intel (`ce25c3c`, Python stdlib + `httpx`, `48.3ms` cold start, `22` tests)
+  - **6 Live Zero-Key MCP Tools**: `sec_company_financials`, `sec_form_d_funding_search`, `ats_company_jobs`, `shopify_store_catalog`, `substack_public_posts`, `podcast_rss_transcripts` (organic developer acquisition funnel into Apify PPE Actors & GitHub Sponsors).
+- **Track 9 — Live Cash Contest Submissions (`AegisWeave` — `$10,000 USD` Open Agentic Web Challenge)**:
+  - **Public Repository & Live Demo**: https://github.com/pecopeko/aegisweave (`af3cea5`) / https://pecopeko.github.io/aegisweave/ (serving `/.well-known/nsdeploy-agent.json` & `/.well-known/agent-card.json` cleanly via `.nojekyll`)
+  - **Contest Dossier & Submission Pack**: `tracks/track9_live_cash_contests/CONTEST_OPPORTUNITIES_2026_11.md` & `tracks/track9_live_cash_contests/aegisweave-open-agentic-web/SUBMISSION_GUIDE.md` (Cognizant AI Lab · MIT Media Lab NANDA · Mozilla · AWS on Devpost, deadline `2027-01-11`; `20/20` security benchmark vs `1/20` naive, `+67.4%` utility uplift, `100/100` SHA-256 receipts verified).
 
 ## Local Verification
 
 ```bash
 .venv/bin/pytest -v
-node --test tracks/track2_micro_saas/kurogate/test/engine.test.mjs tracks/track2_micro_saas/yakkigate/test/yakki-engine.test.mjs tracks/track2_micro_saas/zengingate/test/zengin-engine.test.mjs tracks/track2_micro_saas/keiyakugate/test/keiyaku-engine.test.mjs tracks/track2_micro_saas/tokushogate/test/tokusho-engine.test.mjs tracks/track2_micro_saas/denchogate/test/dencho-engine.test.mjs tracks/track2_micro_saas/kojingate/test/kojin-engine.test.mjs tracks/track2_micro_saas/gensengate/test/gensen-engine.test.mjs tracks/track2_micro_saas/roumugate/test/roumu-engine.test.mjs tracks/track2_micro_saas/jisgate/test/jis-engine.test.mjs tracks/track2_micro_saas/bouhekigate/test/bouheki-engine.test.mjs tracks/track2_micro_saas/aigovgate/test/aigov-engine.test.mjs tracks/track2_micro_saas/hanshagate/test/hansha-engine.test.mjs tracks/track2_micro_saas/bouekigate/test/boueki-engine.test.mjs tracks/track2_micro_saas/tansogate/test/tanso-engine.test.mjs tracks/track2_micro_saas/kensetsugate/test/kensetsu-engine.test.mjs tracks/track2_micro_saas/butsuryugate/test/butsuryu-engine.test.mjs tracks/track2_micro_saas/torihikigate/test/torihiki-engine.test.mjs tracks/track2_micro_saas/kinyugate/test/kinyu-engine.test.mjs tracks/track2_micro_saas/leasegate/test/lease-engine.test.mjs tracks/track2_micro_saas/anpogate/test/anpo-engine.test.mjs
+node --test tracks/track2_micro_saas/kurogate/test/engine.test.mjs tracks/track2_micro_saas/yakkigate/test/yakki-engine.test.mjs tracks/track2_micro_saas/zengingate/test/zengin-engine.test.mjs tracks/track2_micro_saas/keiyakugate/test/keiyaku-engine.test.mjs tracks/track2_micro_saas/tokushogate/test/tokusho-engine.test.mjs tracks/track2_micro_saas/denchogate/test/dencho-engine.test.mjs tracks/track2_micro_saas/kojingate/test/kojin-engine.test.mjs tracks/track2_micro_saas/gensengate/test/gensen-engine.test.mjs tracks/track2_micro_saas/roumugate/test/roumu-engine.test.mjs tracks/track2_micro_saas/jisgate/test/jis-engine.test.mjs tracks/track2_micro_saas/bouhekigate/test/bouheki-engine.test.mjs tracks/track2_micro_saas/aigovgate/test/aigov-engine.test.mjs tracks/track2_micro_saas/hanshagate/test/hansha-engine.test.mjs tracks/track2_micro_saas/bouekigate/test/boueki-engine.test.mjs tracks/track2_micro_saas/tansogate/test/tanso-engine.test.mjs tracks/track2_micro_saas/kensetsugate/test/kensetsu-engine.test.mjs tracks/track2_micro_saas/butsuryugate/test/butsuryu-engine.test.mjs tracks/track2_micro_saas/torihikigate/test/torihiki-engine.test.mjs tracks/track2_micro_saas/kinyugate/test/kinyu-engine.test.mjs tracks/track2_micro_saas/leasegate/test/lease-engine.test.mjs tracks/track2_micro_saas/anpogate/test/anpo-engine.test.mjs tracks/track2_micro_saas/tedorigate/test/tedori-engine.test.mjs tracks/track2_micro_saas/tokenlens/test/tokenlens-engine.test.mjs tracks/track9_live_cash_contests/aegisweave-open-agentic-web/tests/runtime.test.mjs
 .venv/bin/python scripts/run_studio_scan.py
 ```

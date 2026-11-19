@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "website-tech-stack-sitemap-extractor",
+  "title": "Website Tech Stack, Recursive Sitemap & SEO Intelligence Extractor",
+  "description": "Fast, browserless website profiler detecting 75+ technology signatures across 7 categories (frameworks, CMS, analytics, payments, CDN, CRM, auth), recursively extracting robots.txt & XML/gzip sitemaps, and parsing JSON-LD, SEO metadata, and public contact/social links — $2.00 per 1,000 sites.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

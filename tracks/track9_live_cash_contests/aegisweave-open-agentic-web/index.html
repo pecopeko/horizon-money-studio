@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self' http://localhost:* http://127.0.0.1:* https:; style-src 'self' 'unsafe-inline'; script-src 'self';"
+    />
+    <title>AegisWeave — Policy-Bound Agentic Commerce &amp; Peer Firewall (MVP Profile 0.3)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">AW</div>
+        <div>
+          <h1>AegisWeave</h1>
+          <p class="subtitle">
+            Policy-Bound Multi-Agent Commerce, Destination-Scoped <code>sly_data</code> Firewall &amp; MVP Profile 0.3 Reference Runtime
+          </p>
+        </div>
+      </div>
+      <div class="status-pills">
+        <span class="pill pill-spec">MVP Profile 0.3</span>
+        <span class="pill pill-router" id="active-router-pill">Router: Local Deterministic ($0)</span>
+        <span class="pill pill-safe" id="key-isolation-pill">BYOK Isolation: Active</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="primary-column">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>1. Open Agentic Web Scenarios</h2>
+            <span class="hint">100% browser-executed · zero backend · click any scenario</span>
+          </div>
+          <div class="scenario-grid">
+            <button type="button" class="scenario-btn" id="btn-scenario-procurement">
+              <strong>Policy-Bound Sealed-Bid Sprint</strong>
+              <span>Compose Nordic Compute + Kyoto Studio peers, filter sly_data, score Pareto frontier, issue SHA-256 receipt.</span>
+            </button>
+            <button type="button" class="scenario-btn" id="btn-scenario-audit-legit">
+              <strong>15-Check Audit: Legit Peer</strong>
+              <span>Audit <code>nordic_compute</code> against MVP Profile 0.3 MUST/MUST NOT rules &amp; pin SHA-256 digest.</span>
+            </button>
+            <button type="button" class="scenario-btn scenario-warn" id="btn-scenario-audit-rogue">
+              <strong>Fail-Closed Test: Rogue Peer</strong>
+              <span>Inspect adversarial <code>rogue_peer</code>: catch prompt injection, router hijack, SRI mismatch &amp; cycle.</span>
+            </button>
+            <button type="button" class="scenario-btn" id="btn-scenario-interop7">
+              <strong>Run All 7 §6 Interop Checks</strong>
+              <span>Verify multi-agent load, BYOK isolation, sly_data deny-default, cycle, budget, &amp; denied origin live.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>2. Mandate &amp; Peer Procurement Console</h2>
+            <span class="hint">Declarative policy ceilings enforced deterministically by <code>policy_arbiter</code></span>
+          </div>
+          <form id="procurement-form" class="mandate-form">
+            <div class="field-row">
+              <label>
+                <span>Max Budget (USD)</span>
+                <input type="number" id="input-budget" value="480" min="50" max="5000" step="10" required />
+              </label>
+              <label>
+                <span>Minimum SLA (%)</span>
+                <input type="number" id="input-sla" value="99.5" min="90" max="99.99" step="0.05" required />
+              </label>
+              <label>
+                <span>Max Delivery (Hours)</span>
+                <input type="number" id="input-delivery" value="24" min="4" max="168" step="2" required />
+              </label>
+            </div>
+            <label class="full-field">
+              <span>Request / Peer URL to Compose or Audit</span>
+              <input
+                type="text"
+                id="input-request"
+                value="Compare renewable GPU & bilingual QA sprint quotes under $480 with >= 99.5% SLA and issue a SHA-256 receipt."
+              />
+            </label>
+            <div class="field-row">
+              <label class="grow">
+                <span>Custom Peer Network URL (for Direct Audit)</span>
+                <input type="text" id="input-peer-url" value="./peers/nordic_compute/nordic_compute" />
+              </label>
+              <div class="action-buttons">
+                <button type="submit" class="btn-primary">Run Sealed-Bid Workflow</button>
+                <button type="button" class="btn-secondary" id="btn-audit-custom">Audit Peer URL</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-header">
+            <h2>3. Agent Output &amp; Validated CRUSE v1 Interface</h2>
+            <div class="header-actions">
+              <a href="./agent-manifest.json" target="_blank" rel="noopener">agent-manifest.json</a>
+              <a href="./aegisweave_hub.network.json" target="_blank" rel="noopener">aegisweave_hub.network.json</a>
+              <a href="./links.json" target="_blank" rel="noopener">links.json</a>
+            </div>
+          </div>
+          <div id="agent-answer" class="agent-answer">
+            Select a scenario above or submit a mandate to execute the portable multi-agent network directly in your browser.
+          </div>
+          <div id="cruse-mount" class="cruse-mount"></div>
+        </div>
+      </section>
+
+      <aside class="inspector-column">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Pluggable Inference &amp; BYOK</h2>
+            <span class="hint">Section 4 · Key stays in your browser</span>
+          </div>
+          <div class="byok-controls">
+            <label>
+              <span>Active Inference Router</span>
+              <select id="select-router"></select>
+            </label>
+            <label>
+              <span>Model Name</span>
+              <input type="text" id="input-model" value="aegisweave/local-deterministic-v1" />
+            </label>
+            <label>
+              <span>BYOK API Key (Origin-Scoped localStorage Only)</span>
+              <input type="password" id="input-byok-key" placeholder="Leave blank for $0 Local Deterministic Engine" autocomplete="off" />
+            </label>
+            <div class="byok-buttons">
+              <button type="button" class="btn-primary" id="btn-save-byok">Apply Router Profile</button>
+              <button type="button" class="btn-danger-ghost" id="btn-delete-byok">Delete Stored Key</button>
+            </div>
+            <p class="security-note">
+              BYOK credentials are attached <strong>only</strong> to requests sent to your selected router origin and are strictly blocked from URLs, peer fetches, prompts, and traces.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>SHA-256 Artifact Pins &amp; Receipts</h2>
+            <span class="hint">Section 7 · Tamper &amp; drift detection</span>
+          </div>
+          <div id="pins-list" class="mono-list empty">No peer artifacts pinned yet.</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Observable Execution Trace</h2>
+            <button type="button" class="btn-tiny" id="btn-clear-trace">Clear</button>
+          </div>
+          <div id="trace-log" class="trace-log empty">Awaiting execution events…</div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Explicit Origin Consent & Write Confirmation Modal -->
+    <dialog id="consent-dialog" class="consent-dialog">
+      <form method="dialog" class="dialog-card">
+        <div class="dialog-badge" id="dialog-badge">CONSENT GATE</div>
+        <h3 id="dialog-title">Confirm External Peer Contact</h3>
+        <p id="dialog-summary"></p>
+        <div id="dialog-details" class="dialog-details"></div>
+        <div class="dialog-actions">
+          <button type="button" class="btn-danger-ghost" id="btn-dialog-deny">Decline (Fail Closed)</button>
+          <button type="button" class="btn-primary" id="btn-dialog-approve">Approve &amp; Proceed</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

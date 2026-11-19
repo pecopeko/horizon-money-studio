@@ -1,0 +1,153 @@
+{
+  "spec_profile": "worldwide-agentic-web-mvp/0.3",
+  "brand": "AegisWeave — Policy-Bound Agentic Commerce & Peer Firewall",
+  "version": "1.0.0",
+  "license": "MIT",
+  "networks": [
+    {
+      "name": "aegisweave_hub",
+      "front_man": "procurement_concierge",
+      "hocon": "./aegisweave_hub.network.json",
+      "description": "Policy-bound multi-agent procurement, sealed-bid arbitration, destination-scoped sly_data firewall, and MVP Profile 0.3 peer conformance auditor running 100% in the browser.",
+      "tags": [
+        "open-agentic-web",
+        "mvp-profile-0.3",
+        "agent-commerce",
+        "privacy-firewall",
+        "conformance-auditor",
+        "cruse"
+      ],
+      "sample_queries": [
+        "Compare quotes from Nordic Compute and Kyoto Studio for an urgent GPU + localization sprint under $480 with >= 99.5% SLA, and issue a SHA-256 mandate receipt.",
+        "Audit the peer network at ./peers/nordic_compute/nordic_compute for MVP Profile 0.3 conformance and prompt safety.",
+        "Test our firewall against the adversarial peer at ./peers/rogue_peer/rogue_peer — verify BYOK key isolation, sly_data blocking, and cycle protection.",
+        "Run the 7-check MVP Profile 0.3 Interoperability Suite and show the live CRUSE compliance table and chart."
+      ]
+    }
+  ],
+  "llm_router": {
+    "base_url": "local-browser://aegisweave-deterministic-v1",
+    "model_name": "aegisweave/local-deterministic-v1",
+    "mock": false,
+    "byok_router": "https://api.otari.ai/api/v1",
+    "supported_byok_routers": [
+      {
+        "id": "local-deterministic",
+        "label": "Local Deterministic Engine ($0, Offline, Zero Key)",
+        "base_url": "local-browser://aegisweave-deterministic-v1",
+        "requires_key": false,
+        "default_model": "aegisweave/local-deterministic-v1"
+      },
+      {
+        "id": "mozilla-otari",
+        "label": "Mozilla Otari (OpenAI-Compatible BYOK)",
+        "base_url": "https://api.otari.ai/api/v1",
+        "requires_key": true,
+        "default_model": "alibaba/qwen3.8-flash"
+      },
+      {
+        "id": "openrouter",
+        "label": "OpenRouter (OpenAI-Compatible BYOK)",
+        "base_url": "https://openrouter.ai/api/v1",
+        "requires_key": true,
+        "default_model": "openai/gpt-4o-mini"
+      },
+      {
+        "id": "openai",
+        "label": "OpenAI API (Direct BYOK)",
+        "base_url": "https://api.openai.com/v1",
+        "requires_key": true,
+        "default_model": "gpt-4o-mini"
+      },
+      {
+        "id": "ollama",
+        "label": "Local Ollama (Loopback, $0)",
+        "base_url": "http://localhost:11434/v1",
+        "requires_key": false,
+        "default_model": "qwen2.5:7b"
+      }
+    ]
+  },
+  "allowed_peers": [
+    "http://localhost:8781",
+    "http://localhost:8782",
+    "http://127.0.0.1:8781",
+    "http://127.0.0.1:8782"
+  ],
+  "peer_policy": {
+    "mode": "allow-with-consent",
+    "deny_origins": [
+      "http://blocked-untrusted.invalid",
+      "https://blocked-untrusted.invalid"
+    ],
+    "require_reconsent_on_hash_drift": true,
+    "treat_cross_origin_redirect_as_new_origin": true,
+    "note": "Every third-party origin requires explicit visitor approval showing destination origin, network name, purpose, SHA-256 pin status, and untrusted-instruction risk scan."
+  },
+  "execution_limits": {
+    "max_depth": 4,
+    "max_agent_invocations": 16,
+    "max_remote_calls": 6,
+    "max_concurrency": 3,
+    "max_elapsed_ms": 15000
+  },
+  "agent_mcp": {
+    "protocol": "nsdeploy-agent-mcp/v1",
+    "network": "aegisweave_hub",
+    "front_man": "procurement_concierge",
+    "available": false,
+    "reason": "Static browser-first bundle; MCP tool descriptors are validated and consent-gated directly in the browser runtime."
+  },
+  "theme": {
+    "primary": "#0f766e",
+    "accent": "#b45309",
+    "surface": "#f8f7f4"
+  },
+  "linking": {
+    "protocol": "nsdeploy-link/v1",
+    "exports": [
+      {
+        "network": "aegisweave_hub",
+        "front_man": "procurement_concierge",
+        "aliases": [
+          "aegisweave_hub",
+          "procurement_concierge",
+          "aegisweave"
+        ],
+        "url": "aegisweave_hub"
+      }
+    ],
+    "imports": [
+      {
+        "alias": "nordic_compute",
+        "purpose": "Fetch sealed compute-sprint quotes and SLA guarantees"
+      },
+      {
+        "alias": "kyoto_studio",
+        "purpose": "Fetch sealed localization and design-QA quotes"
+      }
+    ],
+    "link_updates": {
+      "mode": "browser-local"
+    }
+  },
+  "deployment": {
+    "mode": "static",
+    "self_contained_runtime": true,
+    "browser_mock": false,
+    "direct_byok": true,
+    "direct_mcp_requires_cors": true,
+    "public_mcp_facade": false
+  },
+  "actions": {
+    "version": 1,
+    "module": "./runtime/actions.mjs",
+    "agentTools": [
+      "create_spending_mandate",
+      "evaluate_sealed_bids",
+      "issue_settlement_receipt",
+      "audit_peer_manifest",
+      "list_receipts"
+    ]
+  }
+}

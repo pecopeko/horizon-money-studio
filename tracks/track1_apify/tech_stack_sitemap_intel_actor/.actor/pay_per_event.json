@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "site_profiled": {
+        "eventTitle": "Website Profiled",
+        "eventDescription": "Charged per website profiled with tech stack detection, recursive sitemap extraction, and SEO/public metadata ($2.00 per 1,000 sites). Failed site error records are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.002
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

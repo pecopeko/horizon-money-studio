@@ -1,7 +1,34 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–20 + v2.0 Strategic Pivot)
+# Autonomous Multi-Track Studio Run Log (Waves 1–20 + v2.0 Pivot + Phase B Expansion)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
+
+---
+
+## Phase B Expansion — 4 New Zero-Cost Revenue Engines (2026-11-20)
+Expanded beyond the Japanese B2B compliance lane into 4 independent global + high-search-volume revenue engines:
+- **Track 1 — Apify Global Production Winners #5 & #6 (`pecopeko/apify-ppe-actors` `cf98c13`, `47` Actors total, `6/6` Cloud-Verified)**:
+  - **NEW #5 `ats-greenhouse-lever-ashby-jobs-extractor`** (`ZHlqs9oLcW5TQA2Gu`, `job_extracted` @ `$0.001`): official public Greenhouse / Lever / Ashby JSON job boards with remote/hybrid, salary, seniority, department & 45+ tech-tag normalization (`11` unit tests in `tests/test_apify_new_winners_5_6.py`).
+  - **NEW #6 `website-tech-stack-sitemap-extractor`** (`5JvTo62JolQgtk3EM`, `site_profiled` @ `$0.002`): HTTP headers/HTML tech fingerprinting (40+ SaaS/analytics/CDN/payment signatures) + `robots.txt`/`sitemap.xml` URL inventory + `llms.txt` readiness.
+  - **All 6 Production Winners Built & Live Smoke-Tested on Apify Cloud (`$0.00` Free plan, total usage `$0.04/$5.00`, `$4.96` remaining; combined smoke-run cost `$0.004`)**:
+    1. `N0i9ILxkdAj64Kw25` (`shopify-public-catalog-feed-extractor`): Build `0.0.1` `Succeeded` (`14s`), Run `cDo2rrQyJA3go10ei` **`Succeeded`** (`8s`, `$0.002`, `250` items)
+    2. `3unf9MzzaYIsmWD7E` (`podcast-rss-transcript-extractor`): Build `0.0.1` `Succeeded` (`15s`), Run `dkIC2g7Cf7lVURTJE` **`Succeeded`** (`9s`, `$0.001`, `10` items)
+    3. `M1H4sYWZsCcACbA2J` (`substack-newsletter-posts-extractor`): Build `0.0.1` `Succeeded` (`13s`), Run `YnVDcsv060jsQzD5v` **`Succeeded`** (`5s`, `$0.000`, `25` items)
+    4. `psiLHBVhGgMDMLyhS` (`sec-edgar-8k-10k-item-extractor`): Build `0.0.1` `Succeeded` (`12s`), Run `Foqa7At8GeEBgQn79` **`Succeeded`** (`3s`, `$0.000`, `1` item)
+    5. `ZHlqs9oLcW5TQA2Gu` (`ats-greenhouse-lever-ashby-jobs-extractor`): Build `0.0.1` `Succeeded` (`13s`), Run `gIPDG35E627NslmW4` **`Succeeded`** (`8s`, `$0.001`, `15` items across Stripe/Spotify/Linear)
+    6. `5JvTo62JolQgtk3EM` (`website-tech-stack-sitemap-extractor`): Build `0.0.1` `Succeeded` (`13s`), Run `4oW11x7eDhujTVaVv` **`Succeeded`** (`7s`, `$0.000`, `2` items across Stripe/Vercel)
+- **Track 8 — Open-Source Zero-API-Key MCP Public Intel Server (`pecopeko/mcp-public-intel` `ce25c3c`)**:
+  - Public Repo: https://github.com/pecopeko/mcp-public-intel (10 MCP discovery topics, MIT, stdlib + `httpx`, `48.3ms` cold start, `22` unit tests in `tests/test_mcp_public_intel.py` + live stdio JSON-RPC smoke test on SEC Form D & Anthropic Greenhouse jobs).
+  - 6 zero-key tools (`sec_company_financials`, `sec_form_d_funding_search`, `ats_company_jobs`, `shopify_store_catalog`, `substack_public_posts`, `podcast_rss_transcripts`) funneling batch users into `apify.com/pecopeko` and `github.com/sponsors/pecopeko`.
+- **Track 9 — Live Cash Contest Entry (`AegisWeave` — `pecopeko/aegisweave` `af3cea5`)**:
+  - Contest Dossier: `tracks/track9_live_cash_contests/CONTEST_OPPORTUNITIES_2026_11.md` (primary-source vetted Top 5 `$0.00` global cash contests; disqualified paid-gas/APN-only traps).
+  - Live Site: https://pecopeko.github.io/aegisweave/ (GitHub Pages `200 OK`, `.nojekyll` serving `/.well-known/nsdeploy-agent.json` & `/.well-known/agent-card.json` cleanly) for **The Open Agentic Web Challenge** (`$10,000 USD` cash + `$2,750` Mozilla Otari credits + Davos showcase, Devpost deadline `2027-01-11 16:00 UTC`).
+  - Measured Benchmarks (`benchmarks/BENCHMARK_REPORT.md`): **`20/20 (100.0%)`** vs naive **`1/20 (5.0%)`** on live multi-origin security suite (`0.414 ms p50`), **`+67.4%`** procurement utility uplift (`0.5398` vs `0.3225`), `100/100` SHA-256 settlement receipts verified (`5/5` pytest + `10/10` Node runtime tests).
+- **Track 2 & Track 5 — High-Search-Volume Browser Utilities (`23` Live Web Apps) + Organic Launch Pack**:
+  - **TEDORIGATE (`pecopeko/tedorigate` `a60007b`)**: https://pecopeko.github.io/tedorigate/ (`v1.0.0` ZIP `29,543` bytes, `10/10` Node tests) — 2026–2027 個人事業主・フリーランス 手取り・ふるさと納税安全上限・インボイス50%＆法人成り損益分岐点シミュレーター.
+  - **TOKENLENS (`pecopeko/tokenlens` `eb664b1`)**: https://pecopeko.github.io/tokenlens/ (`v1.0.0` ZIP `24,999` bytes, `6/6` Node tests) — EN/JP LLM Token/Cost Calculator + Lossless JSON→Compact Tabular `@schema` optimizer (`-69.8%` pretty / `-65.4%` minified token reduction, `roundTripVerified: true`).
+  - **Organic Launch Pack**: `tracks/track5_direct_sales/DISTRIBUTION_LAUNCH_PACK.md` (1 complete Note article + 4 weighted-char-verified X posts + Qiita cross-post checklist).
+- **Post-Edit Full Verification Suite**: `.venv/bin/pytest -q` -> **`188 passed`** (`0` failed); `node --test` across all `23` Track 2 Web Apps + Track 9 `AegisWeave` -> **`121 passed`** (`0` failed); `verify_quickstart.sh` -> all `3/3` offline BOOTH v2.0 workflows exited `0`.
 
 ---
 

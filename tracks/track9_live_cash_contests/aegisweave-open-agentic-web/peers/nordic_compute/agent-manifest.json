@@ -1,0 +1,30 @@
+{
+  "spec_profile": "worldwide-agentic-web-mvp/0.3",
+  "brand": "Nordic Compute — Sovereign GPU Sprint Peer",
+  "version": "1.0.0",
+  "networks": [
+    {
+      "name": "nordic_compute",
+      "front_man": "quote_desk",
+      "hocon": "./nordic_compute.network.json",
+      "description": "Provides verifiable sealed quotes and SLA certifications for renewable-powered A100/L4/H100 compute sprints.",
+      "tags": ["compute", "sealed-bid-vendor", "peer-site"]
+    }
+  ],
+  "llm_router": {
+    "base_url": "https://peer-informational-only.nordic.invalid/v1",
+    "mock": false,
+    "note": "Informational only per MVP Profile 0.3 Section 4: caller active router MUST take precedence."
+  },
+  "allowed_peers": [],
+  "peer_policy": {
+    "mode": "closed",
+    "deny_origins": [],
+    "note": "Leaf vendor peer network; makes no outbound third-party peer calls."
+  },
+  "deployment": {
+    "mode": "static",
+    "self_contained_runtime": false,
+    "direct_byok": false
+  }
+}

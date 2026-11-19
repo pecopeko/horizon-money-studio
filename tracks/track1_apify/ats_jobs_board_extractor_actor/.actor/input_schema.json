@@ -1,0 +1,64 @@
+{
+  "title": "ATS Jobs Board Extractor Input (Greenhouse, Lever & Ashby)",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "boards": {
+      "title": "ATS Boards (Objects, Board URLs, or provider:slug)",
+      "type": "array",
+      "editor": "json",
+      "description": "List of target job boards as objects (e.g. {\"provider\": \"greenhouse\", \"slug\": \"stripe\"}), full board URLs (e.g. \"https://boards.greenhouse.io/stripe\", \"https://jobs.lever.co/spotify\", \"https://jobs.ashbyhq.com/linear\"), or shorthands (\"ashby:linear\").",
+      "prefill": [
+        {
+          "provider": "greenhouse",
+          "slug": "stripe"
+        },
+        {
+          "provider": "lever",
+          "slug": "spotify"
+        },
+        {
+          "provider": "ashby",
+          "slug": "linear"
+        }
+      ]
+    },
+    "remoteOnly": {
+      "title": "Remote Jobs Only",
+      "type": "boolean",
+      "default": false,
+      "description": "When enabled, return only jobs classified as workplace_type='remote'."
+    },
+    "keywordFilter": {
+      "title": "Keyword Filter (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional case-insensitive keyword filter matched against job title, department, team, location, tech_tags, and description_text."
+    },
+    "departmentFilter": {
+      "title": "Department / Team Filter (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional case-insensitive substring filter matched against normalized department and team names."
+    },
+    "maxJobsPerBoard": {
+      "title": "Max Jobs Per Board",
+      "type": "integer",
+      "default": 100,
+      "minimum": 1,
+      "maximum": 5000,
+      "description": "Maximum number of matching job records to output per ATS board."
+    },
+    "requestDelayMs": {
+      "title": "Polite Delay Between Boards (ms)",
+      "type": "integer",
+      "default": 250,
+      "minimum": 0,
+      "maximum": 5000,
+      "description": "Polite delay in milliseconds between consecutive ATS board API requests. 429/503 responses automatically trigger Retry-After backoff."
+    }
+  },
+  "required": [
+    "boards"
+  ]
+}
