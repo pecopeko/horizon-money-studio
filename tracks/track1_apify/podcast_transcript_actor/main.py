@@ -1,16 +1,20 @@
-"""Apify Pay-Per-Event Actor: Podcast RSS, Show Notes & Podcasting 2.0 Transcript Extractor."""
+"""Apify Pay-Per-Event Actor: Podcast RSS, Show Metadata, Apple Reviews & Podcasting 2.0 Transcript Extractor."""
 
 from __future__ import annotations
 
 import asyncio
 import email.utils
 import html
+import ipaddress
 import json
 import math
 import re
+import socket
+import time
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from html.parser import HTMLParser
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urljoin, urlparse
 
 import httpx
@@ -22,7 +26,7 @@ except ImportError:  # Allow local unit testing without apify SDK installed.
 
 ITUNES_LOOKUP_URL = "https://itunes.apple.com/lookup"
 ITUNES_SEARCH_URL = "https://itunes.apple.com/search"
-USER_AGENT = "HorizonPodcastExtractor/1.0 (+https://github.com/pecopeko/apify-ppe-actors)"
+USER_AGENT = "HorizonPodcastExtractor/2.0 (+https://github.com/pecopeko/apify-ppe-actors)"
 
 _CDATA_RE = re.compile(r"<!\[CDATA\[.*?\]\]>", re.DOTALL)
 _UNSAFE_DTD_RE = re.compile(r"<!\s*(?:DOCTYPE|ENTITY)\b", re.IGNORECASE)
@@ -31,6 +35,7 @@ _XML_ENCODING_RE = re.compile(
     re.IGNORECASE,
 )
 _APPLE_ID_RE = re.compile(r"(?:id|^)(\d{5,15})(?:\D|$)")
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _TIMING_LINE_RE = re.compile(
     r"^\s*(\d{1,3}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?)\s*-->\s*(\d{1,3}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?)(?:\s+.*)?$"
 )
@@ -39,6 +44,21 @@ _INLINE_TAG_RE = re.compile(r"<[^>]+>")
 _TXT_TIMESTAMP_LINE_RE = re.compile(
     r"^\s*[\[(](\d{1,3}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?)[\])]\s*(.+)$"
 )
+
+_REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
+_RETRY_STATUSES = frozenset({429, 503})
+_FORBIDDEN_HOSTS = frozenset(
+    {
+        "localhost",
+        "localhost.localdomain",
+        "ip6-localhost",
+        "ip6-loopback",
+        "metadata.google.internal",
+        "metadata.goog",
+        "metadata",
+    }
+)
+_FORBIDDEN_HOST_SUFFIXES = (".local", ".internal", ".localhost")
 
 _TRANSCRIPT_FORMAT_PRIORITY: dict[str, int] = {
     "json": 0,
@@ -52,7 +72,9 @@ class _HTMLTextExtractor(HTMLParser):
     """Lightweight HTML-to-plain-text converter preserving paragraph/line breaks."""
 
     _BREAK_TAGS = frozenset({"br", "hr", "li", "tr"})
-    _BLOCK_TAGS = frozenset({"p", "div", "section", "article", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"})
+    _BLOCK_TAGS = frozenset(
+        {"p", "div", "section", "article", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"}
+    )
     _SKIP_TAGS = frozenset({"script", "style"})
 
     def __init__(self) -> None:
@@ -67,9 +89,7 @@ class _HTMLTextExtractor(HTMLParser):
             return
         if self._skip_depth:
             return
-        if lower in self._BREAK_TAGS:
-            self._parts.append("\n")
-        elif lower in self._BLOCK_TAGS:
+        if lower in self._BREAK_TAGS or lower in self._BLOCK_TAGS:
             self._parts.append("\n")
 
     def handle_endtag(self, tag: str) -> None:
@@ -103,13 +123,134 @@ def strip_html_to_text(raw_html: str | None) -> str:
     return html.unescape(text)
 
 
-def validate_http_url(url: str) -> str:
-    """Validate that a URL uses HTTP(S) with a valid network host."""
-    cleaned = url.strip()
+def _is_public_ip(addr: str) -> bool:
+    """Return True strictly for globally routable public IPv4/IPv6 addresses."""
+    ip_obj = ipaddress.ip_address(addr.split("%")[0])
+    if isinstance(ip_obj, ipaddress.IPv6Address) and ip_obj.ipv4_mapped is not None:
+        ip_obj = ip_obj.ipv4_mapped
+    return bool(
+        ip_obj.is_global
+        and not ip_obj.is_private
+        and not ip_obj.is_loopback
+        and not ip_obj.is_link_local
+        and not ip_obj.is_multicast
+        and not ip_obj.is_reserved
+        and not ip_obj.is_unspecified
+    )
+
+
+def assert_safe_public_url(url: str) -> str:
+    """Validate an HTTP(S) URL and block localhost, private, loopback, link-local, or metadata IPs."""
+    cleaned = str(url or "").strip()
     parsed = urlparse(cleaned)
     if parsed.scheme.lower() not in {"http", "https"} or not parsed.netloc:
         raise ValueError(f"Unsupported or invalid HTTP(S) URL: {url!r}")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError(f"Credentials in URL are disallowed: {url!r}")
+
+    host = (parsed.hostname or "").strip().lower().rstrip(".")
+    if (
+        not host
+        or host in _FORBIDDEN_HOSTS
+        or any(host.endswith(suffix) for suffix in _FORBIDDEN_HOST_SUFFIXES)
+    ):
+        raise ValueError(f"Forbidden local or internal host: {host!r}")
+
+    is_literal_ip = False
+    try:
+        ip_obj = ipaddress.ip_address(host)
+        is_literal_ip = True
+        if not _is_public_ip(str(ip_obj)):
+            raise ValueError(f"Forbidden non-public IP: {host}")
+    except ValueError as ip_err:
+        if "Forbidden" in str(ip_err):
+            raise
+
+    if not is_literal_ip:
+        port = parsed.port or (443 if parsed.scheme.lower() == "https" else 80)
+        try:
+            infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+        except socket.gaierror:
+            infos = []
+        for info in infos:
+            addr = info[4][0]
+            if not _is_public_ip(addr):
+                raise ValueError(f"Host {host} resolved to non-public IP {addr}")
+
     return cleaned
+
+
+def validate_http_url(url: str) -> str:
+    """Validate that a URL uses HTTP(S) with a safe public network host (SSRF protected)."""
+    return assert_safe_public_url(url)
+
+
+def _parse_retry_after(header_value: str | None, max_backoff: float) -> float | None:
+    if not header_value:
+        return None
+    text = header_value.strip()
+    if not text:
+        return None
+    try:
+        return max(0.0, min(float(text), max_backoff))
+    except ValueError:
+        pass
+    try:
+        dt = email.utils.parsedate_to_datetime(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        delta = (dt - datetime.now(timezone.utc)).total_seconds()
+        return max(0.0, min(delta, max_backoff))
+    except (TypeError, ValueError):
+        return None
+
+
+def safe_http_get(
+    client: httpx.Client,
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    max_redirects: int = 5,
+    max_retries: int = 2,
+    base_backoff: float = 1.0,
+    max_backoff: float = 10.0,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> httpx.Response:
+    """Fetch HTTP(S) URL with SSRF re-validation on every redirect hop and 429/503 backoff."""
+    current_url = assert_safe_public_url(url)
+    current_params = dict(params) if params else None
+
+    for hop in range(max_redirects + 1):
+        resp: httpx.Response | None = None
+        for attempt in range(max_retries + 1):
+            resp = client.get(current_url, params=current_params, follow_redirects=False)
+            if resp.status_code in _RETRY_STATUSES and attempt < max_retries:
+                retry_after = _parse_retry_after(resp.headers.get("Retry-After"), max_backoff)
+                delay = (
+                    retry_after
+                    if retry_after is not None
+                    else min(max_backoff, base_backoff * (2**attempt))
+                )
+                if delay > 0:
+                    sleep_fn(delay)
+                continue
+            break
+
+        assert resp is not None
+        if resp.status_code in _REDIRECT_STATUSES:
+            location = (resp.headers.get("location") or "").strip()
+            if not location:
+                return resp
+            if hop >= max_redirects:
+                raise ValueError(f"Exceeded maximum redirects ({max_redirects}) for {url}")
+            next_url = urljoin(current_url, location)
+            current_url = assert_safe_public_url(next_url)
+            current_params = None
+            continue
+
+        return resp
+
+    raise ValueError(f"Exceeded maximum redirects ({max_redirects}) for {url}")
 
 
 def normalize_apple_podcast_id(raw_value: str) -> str:
@@ -169,7 +310,38 @@ def _parse_iso_pubdate(raw_date: str) -> str | None:
         dt = email.utils.parsedate_to_datetime(raw_date)
         return dt.isoformat()
     except (TypeError, ValueError):
+        pass
+    try:
+        normalized = raw_date.strip().replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
+        return dt.isoformat()
+    except ValueError:
         return raw_date
+
+
+def _parse_datetime_utc(raw_value: str | None) -> datetime | None:
+    if not raw_value:
+        return None
+    text = str(raw_value).strip()
+    if not text:
+        return None
+    try:
+        normalized = text.replace("Z", "+00:00")
+        if len(normalized) == 10 and re.match(r"^\d{4}-\d{2}-\d{2}$", normalized):
+            normalized = f"{normalized}T00:00:00+00:00"
+        dt = datetime.fromisoformat(normalized)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except ValueError:
+        pass
+    try:
+        dt = email.utils.parsedate_to_datetime(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        return None
 
 
 def parse_timestamp_seconds(raw_ts: str | int | float | None) -> float | None:
@@ -460,28 +632,118 @@ def parse_chapters_json(content: str) -> list[dict[str, Any]]:
     return chapters
 
 
+def _extract_people(parent: ET.Element, feed_url: str) -> list[dict[str, Any]]:
+    """Extract Podcasting 2.0 `<podcast:person>` tags from a channel or episode element."""
+    people: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for child in parent:
+        if _local_name(child.tag) != "person":
+            continue
+        name = "".join(child.itertext()).strip()
+        if not name:
+            continue
+        role = (child.attrib.get("role") or "").strip() or None
+        group = (child.attrib.get("group") or "").strip() or None
+        raw_href = (child.attrib.get("href") or "").strip()
+        raw_img = (child.attrib.get("img") or "").strip()
+        key = (name.lower(), (role or "").lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        people.append(
+            {
+                "name": name,
+                "role": role,
+                "group": group,
+                "href": urljoin(feed_url, raw_href) if raw_href else None,
+                "img": urljoin(feed_url, raw_img) if raw_img else None,
+            }
+        )
+    return people
+
+
+def _extract_categories(channel: ET.Element) -> list[str]:
+    """Extract unique ordered `<itunes:category text='...'>` (including subcategories)."""
+    categories: list[str] = []
+    seen: set[str] = set()
+
+    def _walk(elem: ET.Element) -> None:
+        text = (elem.attrib.get("text") or "").strip()
+        if not text:
+            text = (elem.text or "").strip()
+        if text and text not in seen:
+            seen.add(text)
+            categories.append(text)
+        for sub in elem:
+            if _local_name(sub.tag) == "category":
+                _walk(sub)
+
+    for child in channel:
+        if _local_name(child.tag) == "category":
+            _walk(child)
+    return categories
+
+
 def _extract_channel_metadata(channel: ET.Element, feed_url: str) -> dict[str, Any]:
     image_url = ""
+    owner_name: str | None = None
+    owner_email: str | None = None
+    funding_urls: list[str] = []
+    funding: list[dict[str, str | None]] = []
+    seen_funding: set[str] = set()
+
     for child in channel:
         lname = _local_name(child.tag)
-        if lname == "image":
+        if lname == "image" and not image_url:
             href = (child.attrib.get("href") or "").strip()
             if href:
                 image_url = urljoin(feed_url, href)
-                break
-            nested_url = _child_text(child, "url")
-            if nested_url:
-                image_url = urljoin(feed_url, nested_url)
-                break
+            else:
+                nested_url = _child_text(child, "url")
+                if nested_url:
+                    image_url = urljoin(feed_url, nested_url)
+        elif lname == "owner":
+            cand_name = _child_text(child, "name")
+            cand_email = _child_text(child, "email")
+            if cand_name and not owner_name:
+                owner_name = cand_name
+            if cand_email and not owner_email:
+                owner_email = cand_email
+        elif lname == "funding":
+            raw_url = (child.attrib.get("url") or "").strip()
+            label = "".join(child.itertext()).strip() or None
+            if raw_url:
+                resolved_url = urljoin(feed_url, raw_url)
+                if resolved_url not in seen_funding:
+                    seen_funding.add(resolved_url)
+                    funding_urls.append(resolved_url)
+                    funding.append({"url": resolved_url, "label": label})
+
+    managing_editor = _child_text(channel, "managingeditor")
+    if not owner_email and managing_editor:
+        m = _EMAIL_RE.search(managing_editor)
+        if m:
+            owner_email = m.group(0)
+
+    language = _child_text(channel, "language")
+    categories = _extract_categories(channel)
+    people = _extract_people(channel, feed_url)
 
     return {
         "feed_url": feed_url,
         "podcast_title": _child_text(channel, "title"),
         "podcast_link": _child_text(channel, "link"),
         "podcast_description": strip_html_to_text(_child_text(channel, "description", "summary")),
-        "podcast_language": _child_text(channel, "language"),
+        "podcast_language": language,
+        "language": language,
         "podcast_author": _child_text(channel, "author", "managingeditor"),
         "podcast_image": image_url or None,
+        "owner_name": owner_name,
+        "owner_email": owner_email,
+        "categories": categories,
+        "people": people,
+        "funding_urls": funding_urls,
+        "funding": funding,
     }
 
 
@@ -541,9 +803,21 @@ def _extract_episode_from_item(
     pub_raw = _child_text(item, "pubdate", "published", "updated")
     ep_num = _child_text(item, "episode")
     season_num = _child_text(item, "season")
+    episode_people = _extract_people(item, feed_url)
+
+    # Merge channel-level and episode-level people without duplicating entries.
+    merged_people: list[dict[str, Any]] = []
+    seen_people: set[tuple[str, str]] = set()
+    for p in list(channel_meta.get("people") or []) + episode_people:
+        key = (str(p.get("name") or "").lower(), str(p.get("role") or "").lower())
+        if key not in seen_people:
+            seen_people.add(key)
+            merged_people.append(p)
 
     return {
         **channel_meta,
+        "people": merged_people,
+        "episode_people": episode_people,
         "episode_title": _child_text(item, "title"),
         "episode_guid": _child_text(item, "guid", "id") or None,
         "episode_link": _child_text(item, "link") or None,
@@ -585,9 +859,84 @@ def parse_podcast_rss_xml(
     for child in channel:
         if _local_name(child.tag) == "item":
             episodes.append(_extract_episode_from_item(child, channel_meta, feed_url))
-            if len(episodes) >= max_episodes:
+            if max_episodes > 0 and len(episodes) >= max_episodes:
                 break
     return channel_meta, episodes
+
+
+def parse_apple_reviews_json(payload: dict[str, Any], *, max_reviews: int = 25) -> dict[str, Any]:
+    """Parse Apple Podcasts customer reviews RSS JSON payload into structured review entries."""
+    feed = payload.get("feed") if isinstance(payload, dict) else {}
+    raw_entries = feed.get("entry") if isinstance(feed, dict) else []
+    if isinstance(raw_entries, dict):
+        raw_entries = [raw_entries]
+    if not isinstance(raw_entries, list):
+        raw_entries = []
+
+    reviews: list[dict[str, Any]] = []
+    ratings: list[int] = []
+    for entry in raw_entries:
+        if not isinstance(entry, dict):
+            continue
+        raw_rating = (entry.get("im:rating") or {}).get("label") if isinstance(entry.get("im:rating"), dict) else None
+        if raw_rating is None:
+            continue
+        try:
+            rating_int = int(str(raw_rating).strip())
+        except ValueError:
+            continue
+        ratings.append(rating_int)
+        author_obj = entry.get("author") if isinstance(entry.get("author"), dict) else {}
+        author_name_obj = author_obj.get("name") if isinstance(author_obj.get("name"), dict) else {}
+        reviews.append(
+            {
+                "review_id": (entry.get("id") or {}).get("label") if isinstance(entry.get("id"), dict) else None,
+                "author": author_name_obj.get("label"),
+                "rating": rating_int,
+                "title": (entry.get("title") or {}).get("label") if isinstance(entry.get("title"), dict) else None,
+                "content": (entry.get("content") or {}).get("label") if isinstance(entry.get("content"), dict) else None,
+                "updated_at": (entry.get("updated") or {}).get("label") if isinstance(entry.get("updated"), dict) else None,
+            }
+        )
+        if len(reviews) >= max_reviews:
+            break
+
+    avg_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
+    return {
+        "status": "extracted",
+        "review_count": len(reviews),
+        "average_rating": avg_rating,
+        "reviews": reviews,
+    }
+
+
+def fetch_apple_podcast_reviews(
+    client: httpx.Client,
+    itunes_id: str | int,
+    country: str = "US",
+    *,
+    max_reviews: int = 25,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict[str, Any]:
+    """Fetch public Apple Podcasts customer reviews JSON for a given iTunes track ID."""
+    pid = normalize_apple_podcast_id(str(itunes_id))
+    cc = re.sub(r"[^a-zA-Z]", "", str(country or "US")).lower() or "us"
+    reviews_url = f"https://itunes.apple.com/{cc}/rss/customerreviews/id={pid}/sortBy=mostRecent/json"
+    try:
+        resp = safe_http_get(client, reviews_url, sleep_fn=sleep_fn)
+        resp.raise_for_status()
+        parsed = parse_apple_reviews_json(resp.json(), max_reviews=max_reviews)
+        parsed["reviews_url"] = reviews_url
+        return parsed
+    except Exception as exc:
+        return {
+            "status": "fetch_failed",
+            "reviews_url": reviews_url,
+            "review_count": 0,
+            "average_rating": None,
+            "reviews": [],
+            "error": str(exc),
+        }
 
 
 def resolve_feed_sources(
@@ -597,13 +946,20 @@ def resolve_feed_sources(
     rss_urls: list[str],
     country: str = "US",
     search_limit: int = 3,
+    *,
+    sleep_fn: Callable[[float], None] = time.sleep,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Resolve Apple Podcast IDs, iTunes search terms, and RSS URLs into unique feed specs."""
+    """Resolve Apple Podcast IDs, iTunes search terms, and RSS URLs into unique SSRF-validated feed specs."""
     resolved: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     seen_urls: set[str] = set()
 
-    def _add_feed(feed_url: str, source_type: str, source_query: str, itunes_meta: dict[str, Any] | None = None) -> None:
+    def _add_feed(
+        feed_url: str,
+        source_type: str,
+        source_query: str,
+        itunes_meta: dict[str, Any] | None = None,
+    ) -> None:
         cleaned = validate_http_url(feed_url)
         if cleaned in seen_urls:
             return
@@ -621,15 +977,23 @@ def resolve_feed_sources(
     for raw_id in apple_ids:
         try:
             pid = normalize_apple_podcast_id(raw_id)
-            resp = client.get(
+            resp = safe_http_get(
+                client,
                 ITUNES_LOOKUP_URL,
                 params={"id": pid, "entity": "podcast", "country": country},
+                sleep_fn=sleep_fn,
             )
             resp.raise_for_status()
             results = resp.json().get("results") or []
             matched = next((r for r in results if isinstance(r, dict) and r.get("feedUrl")), None)
             if not matched:
-                errors.append({"source": raw_id, "stage": "itunes_lookup", "error": "No feedUrl returned by iTunes Lookup."})
+                errors.append(
+                    {
+                        "source": raw_id,
+                        "stage": "itunes_lookup",
+                        "error": "No feedUrl returned by iTunes Lookup.",
+                    }
+                )
                 continue
             _add_feed(str(matched["feedUrl"]), "apple_id", str(raw_id), matched)
         except Exception as exc:
@@ -640,7 +1004,8 @@ def resolve_feed_sources(
         if not cleaned_query:
             continue
         try:
-            resp = client.get(
+            resp = safe_http_get(
+                client,
                 ITUNES_SEARCH_URL,
                 params={
                     "term": cleaned_query,
@@ -648,12 +1013,19 @@ def resolve_feed_sources(
                     "limit": search_limit,
                     "country": country,
                 },
+                sleep_fn=sleep_fn,
             )
             resp.raise_for_status()
             results = resp.json().get("results") or []
             feed_hits = [r for r in results if isinstance(r, dict) and r.get("feedUrl")]
             if not feed_hits:
-                errors.append({"source": cleaned_query, "stage": "itunes_search", "error": "No podcast feedUrl hits returned."})
+                errors.append(
+                    {
+                        "source": cleaned_query,
+                        "stage": "itunes_search",
+                        "error": "No podcast feedUrl hits returned.",
+                    }
+                )
                 continue
             for item in feed_hits[:search_limit]:
                 _add_feed(str(item["feedUrl"]), "itunes_search", cleaned_query, item)
@@ -674,6 +1046,8 @@ def _populate_episode_transcript(
     episode: dict[str, Any],
     fetch_transcripts: bool,
     include_segments: bool,
+    *,
+    sleep_fn: Callable[[float], None] = time.sleep,
 ) -> None:
     candidates = episode.get("transcript_candidates") or []
     if not candidates:
@@ -705,7 +1079,7 @@ def _populate_episode_transcript(
     for cand in candidates:
         try:
             t_url = validate_http_url(cand["url"])
-            resp = client.get(t_url)
+            resp = safe_http_get(client, t_url, sleep_fn=sleep_fn)
             resp.raise_for_status()
             norm = normalize_transcript(
                 resp.text,
@@ -741,6 +1115,8 @@ def _populate_episode_chapters(
     client: httpx.Client,
     episode: dict[str, Any],
     fetch_chapters: bool,
+    *,
+    sleep_fn: Callable[[float], None] = time.sleep,
 ) -> None:
     chapters_url = episode.get("chapters_url")
     if not chapters_url:
@@ -753,7 +1129,7 @@ def _populate_episode_chapters(
         return
     try:
         validated = validate_http_url(chapters_url)
-        resp = client.get(validated)
+        resp = safe_http_get(client, validated, sleep_fn=sleep_fn)
         resp.raise_for_status()
         episode["chapters"] = parse_chapters_json(resp.text)
         episode["chapters_status"] = "extracted"
@@ -761,6 +1137,32 @@ def _populate_episode_chapters(
         episode["chapters"] = []
         episode["chapters_status"] = "fetch_failed"
         episode["chapters_error"] = str(exc)
+
+
+def _matches_keyword(episode: dict[str, Any], needle: str) -> bool:
+    haystack = " ".join(
+        [
+            str(episode.get("podcast_title") or ""),
+            str(episode.get("episode_title") or ""),
+            str(episode.get("show_notes") or ""),
+            str(episode.get("full_transcript") or ""),
+        ]
+    ).lower()
+    return needle in haystack
+
+
+def compute_ppe_charges(records: list[dict[str, Any]]) -> dict[str, int]:
+    """Compute exact split Pay-Per-Event counts: episode_extracted + conditional transcript_extracted."""
+    transcript_charges = sum(
+        1
+        for rec in records
+        if rec.get("transcript_status") == "extracted"
+        and int(rec.get("transcript_segment_count") or 0) > 0
+    )
+    return {
+        "episode_extracted": len(records),
+        "transcript_extracted": transcript_charges,
+    }
 
 
 def extract_podcast_episodes(
@@ -775,18 +1177,34 @@ def extract_podcast_episodes(
     include_transcript_segments: bool = True,
     timeout_sec: float = 20.0,
     client: httpx.Client | None = None,
+    *,
+    include_apple_reviews: bool = False,
+    only_with_transcripts: bool = False,
+    published_after: str | None = None,
+    keyword_filter: str | None = None,
+    sleep_fn: Callable[[float], None] = time.sleep,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Resolve podcast feeds, parse RSS XML safely, and enrich episodes with transcripts & chapters."""
+    """Resolve podcast feeds, parse RSS XML safely with SSRF protection, and enrich episodes."""
     apple_ids = [str(x) for x in (apple_podcast_ids or []) if str(x).strip()]
     queries = [str(x) for x in (search_queries or []) if str(x).strip()]
     urls = [str(x) for x in (rss_urls or []) if str(x).strip()]
     if not (apple_ids or queries or urls):
         return [], []
 
+    published_after_dt: datetime | None = None
+    if published_after and str(published_after).strip():
+        published_after_dt = _parse_datetime_utc(published_after)
+        if published_after_dt is None:
+            raise ValueError(f"Invalid ISO date for publishedAfter: {published_after!r}")
+
+    keyword_needle = str(keyword_filter or "").strip().lower()
+    filtering_active = bool(only_with_transcripts or published_after_dt or keyword_needle)
+    scan_limit = max(max_episodes_per_feed * 10, 200) if filtering_active else max_episodes_per_feed
+
     owns_client = client is None
     active_client = client or httpx.Client(
         timeout=timeout_sec,
-        follow_redirects=True,
+        follow_redirects=False,
         headers={"User-Agent": USER_AGENT},
     )
 
@@ -800,39 +1218,94 @@ def extract_podcast_episodes(
             rss_urls=urls,
             country=country,
             search_limit=search_limit_per_query,
+            sleep_fn=sleep_fn,
         )
         errors.extend(res_errors)
 
         for feed_spec in feeds:
             feed_url = feed_spec["feed_url"]
             try:
-                resp = active_client.get(feed_url)
+                resp = safe_http_get(active_client, feed_url, sleep_fn=sleep_fn)
                 resp.raise_for_status()
-                _, episodes = parse_podcast_rss_xml(
+                _, candidate_episodes = parse_podcast_rss_xml(
                     resp.content,
-                    feed_url=feed_url,
-                    max_episodes=max_episodes_per_feed,
+                    feed_url=str(resp.url) if resp.url else feed_url,
+                    max_episodes=scan_limit,
                 )
             except Exception as exc:
                 errors.append({"source": feed_url, "stage": "rss_fetch_or_parse", "error": str(exc)})
                 continue
 
-            for ep in episodes:
+            apple_reviews_bundle: dict[str, Any] | None = None
+            if include_apple_reviews:
+                itunes_id = feed_spec.get("itunes_track_id")
+                if itunes_id:
+                    apple_reviews_bundle = fetch_apple_podcast_reviews(
+                        active_client,
+                        itunes_id,
+                        country=country,
+                        sleep_fn=sleep_fn,
+                    )
+                else:
+                    apple_reviews_bundle = {
+                        "status": "no_itunes_id",
+                        "review_count": 0,
+                        "average_rating": None,
+                        "reviews": [],
+                    }
+
+            collected_for_feed = 0
+            for ep in candidate_episodes:
+                if collected_for_feed >= max_episodes_per_feed:
+                    break
+
+                if published_after_dt is not None:
+                    ep_dt = _parse_datetime_utc(ep.get("pub_date_iso") or ep.get("pub_date"))
+                    if ep_dt is None or ep_dt < published_after_dt:
+                        continue
+
+                if only_with_transcripts and not (ep.get("transcript_candidates") or []):
+                    continue
+
                 ep["source_type"] = feed_spec["source_type"]
                 ep["source_query"] = feed_spec["source_query"]
                 ep["itunes_track_id"] = feed_spec["itunes_track_id"]
+
                 _populate_episode_transcript(
                     active_client,
                     ep,
                     fetch_transcripts=fetch_transcripts,
                     include_segments=include_transcript_segments,
+                    sleep_fn=sleep_fn,
                 )
+
+                if only_with_transcripts and fetch_transcripts:
+                    if (
+                        ep.get("transcript_status") != "extracted"
+                        or int(ep.get("transcript_segment_count") or 0) <= 0
+                    ):
+                        continue
+
+                if keyword_needle and not _matches_keyword(ep, keyword_needle):
+                    continue
+
                 _populate_episode_chapters(
                     active_client,
                     ep,
                     fetch_chapters=fetch_chapters,
+                    sleep_fn=sleep_fn,
                 )
+
+                if apple_reviews_bundle is not None:
+                    ep["apple_reviews_status"] = apple_reviews_bundle["status"]
+                    ep["apple_review_count"] = apple_reviews_bundle["review_count"]
+                    ep["apple_average_rating"] = apple_reviews_bundle["average_rating"]
+                    ep["apple_reviews"] = apple_reviews_bundle["reviews"]
+                    if "error" in apple_reviews_bundle:
+                        ep["apple_reviews_error"] = apple_reviews_bundle["error"]
+
                 records.append(ep)
+                collected_for_feed += 1
     finally:
         if owns_client:
             active_client.close()
@@ -860,6 +1333,10 @@ async def main() -> None:
         fetch_transcripts = bool(actor_input.get("fetchTranscripts", True))
         fetch_chapters = bool(actor_input.get("fetchChapters", True))
         include_segments = bool(actor_input.get("includeTranscriptSegments", True))
+        include_apple_reviews = bool(actor_input.get("includeAppleReviews", False))
+        only_with_transcripts = bool(actor_input.get("onlyWithTranscripts", False))
+        published_after = str(actor_input.get("publishedAfter") or "").strip() or None
+        keyword_filter = str(actor_input.get("keywordFilter") or "").strip() or None
 
         records, errors = await asyncio.to_thread(
             extract_podcast_episodes,
@@ -872,10 +1349,16 @@ async def main() -> None:
             fetch_transcripts=fetch_transcripts,
             fetch_chapters=fetch_chapters,
             include_transcript_segments=include_segments,
+            include_apple_reviews=include_apple_reviews,
+            only_with_transcripts=only_with_transcripts,
+            published_after=published_after,
+            keyword_filter=keyword_filter,
         )
 
         for err in errors:
-            Actor.log.warning(f"Feed warning ({err.get('stage')}): {err.get('source')} -> {err.get('error')}")
+            Actor.log.warning(
+                f"Feed warning ({err.get('stage')}): {err.get('source')} -> {err.get('error')}"
+            )
 
         if not records and errors:
             raise RuntimeError(f"All requested podcast sources failed: {errors}")
@@ -883,6 +1366,11 @@ async def main() -> None:
         for record in records:
             await Actor.push_data(record)
             await Actor.charge(event_name="episode_extracted", count=1)
+            if (
+                record.get("transcript_status") == "extracted"
+                and int(record.get("transcript_segment_count") or 0) > 0
+            ):
+                await Actor.charge(event_name="transcript_extracted", count=1)
 
 
 if __name__ == "__main__":

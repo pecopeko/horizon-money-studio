@@ -3,116 +3,525 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ZENGINGATE（全銀門）：適格請求書T番号・全銀120バイト振込データ ブラウザ検証＆変換</title>
-  <meta name="description" content="100%ブラウザローカル完結・銀行口座データの社外送信ゼロで適格請求書T番号（Mod-9）検証、全銀協半角カナ自動補正、120バイト総合振込データ生成・検算を実施。">
+  <title>ZENGINGATE v2.0（全銀門）— Shift-JIS 全銀120バイト変換・銀行エラー自動修復ワークベンチ</title>
+  <meta name="description" content="100%ブラウザ完結・社外送信ゼロ。freee・マネーフォワード・弥生・Excel明細を銀行提出用の真のShift-JIS(CP932)全銀120バイトファイルへ変換。メガバンク・ネット銀行7プリセット、法人略語前後中自動判定、濁点保護切捨、銀行エラー1クリック修復、適格請求書T番号Mod-9検証に対応。">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <header class="topbar" data-ui="bar">
-    <div class="wrap topbar__inner">
+  <header class="topbar">
+    <div class="shell topbar__inner">
       <div class="brand">
-        <span class="brand__seal" aria-hidden="true">銀</span>
-        <div>
-          <strong class="brand__name">ZENGINGATE 全銀門</strong>
-          <span class="brand__sub">100% ブラウザ内処理 / 口座・請求情報の社外送信ゼロ</span>
+        <svg class="brand__mark" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="29" height="29" rx="4" fill="#1b3a63" />
+          <path d="M8 10.5H24M8 16H24M11 10.5V22.5M21 10.5V22.5" stroke="#ffffff" stroke-width="2" stroke-linecap="square" />
+          <rect x="14.2" y="18.2" width="3.6" height="4.3" fill="#ffffff" />
+        </svg>
+        <div class="brand__text">
+          <span class="brand__title">ZENGINGATE <span class="brand__ver">v2.0</span></span>
+          <span class="brand__sub">全銀120バイト Shift-JIS (CP932) 経理ワークベンチ</span>
         </div>
       </div>
-      <nav class="nav" aria-label="主要機能">
-        <a href="#csv-zengin">CSV全銀変換</a>
-        <a href="#zengin-audit">120バイト検算</a>
-        <a href="#invoice-check">T番号一括検証</a>
-        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
-        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+
+      <nav class="tabs" role="tablist" aria-label="ワークベンチ機能切替">
+        <button type="button" class="tab is-active" role="tab" aria-selected="true" data-tab="builder">
+          振込データ作成
+          <span id="tabErrorBadge" class="tab__badge is-hidden" aria-label="要修正件数">0</span>
+        </button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-tab="repair">
+          銀行エラー修復
+        </button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-tab="invoice">
+          T番号一括検証
+        </button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-tab="sheet">
+          承認チェックシート
+        </button>
       </nav>
+
+      <div class="trust-pill" title="すべての変換・Shift-JISバイナリ生成・Mod-9検証はブラウザ内メモリのみで完結します">
+        <span class="trust-pill__dot" aria-hidden="true"></span>
+        <span>完全ローカル処理 · 通信ゼロ</span>
+      </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="intro">
-      <h1>全銀120バイト総合振込データ変換と、適格請求書T番号の厳格検査を手元だけで。</h1>
-      <p class="intro__lead">
-        振込先名義のひらがな・全角カナ・「株式会社」・濁点/半濁点（1バイト分離計算）や小書き文字（ｧ→ｱ・ｯ→ﾂ）を全銀協規格へ自動補正し、120バイト固定長ファイル生成とトレーラ合計検算まで外部通信ゼロで実行します。
-      </p>
+  <main class="shell workspace">
+    <!-- ==================== TAB 1: 振込データ作成 ==================== -->
+    <section id="panel-builder" class="view is-active" role="tabpanel">
+      <div class="page-head">
+        <div>
+          <h1>全銀120バイト Shift-JIS 振込データ作成</h1>
+          <p id="builderHeadlineStatus" class="page-head__sub">
+            明細を読み込むと、法人略語（ｶ) / (ｶ / (ｶ)）・濁点保護30B切捨・真のShift-JIS(CP932)バイナリを即時検証します。
+          </p>
+        </div>
+        <div class="page-head__actions">
+          <button type="button" id="openPrintSheetBtn" class="btn-outline">承認シート表示</button>
+          <button type="button" id="downloadZenginBtn" class="btn-primary">Shift-JIS (.txt) ダウンロード</button>
+        </div>
+      </div>
+
+      <!-- Unified Ledger KPI Strip -->
+      <div class="summary-strip" aria-label="振込データ検算サマリ">
+        <div class="summary-cell summary-cell--lead">
+          <span class="summary-cell__label">振込合計金額</span>
+          <strong id="kpiTotalAmount" class="summary-cell__value tabular">¥0</strong>
+          <span id="kpiTransferMeta" class="summary-cell__note">総合振込(21)</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">明細件数</span>
+          <strong id="kpiRowCount" class="summary-cell__value tabular">0 件</strong>
+          <span id="kpiRowHealth" class="summary-cell__note">正常 0 件</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">Shift-JIS 120バイト検算</span>
+          <strong id="kpiByteCheck" class="summary-cell__value tabular">未生成</strong>
+          <span id="kpiByteSub" class="summary-cell__note">CP932 バイナリ待機中</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">銀行プリセット / 仕様</span>
+          <strong id="kpiPresetLabel" class="summary-cell__value">全銀標準</strong>
+          <span id="kpiSpecDetail" class="summary-cell__note">CRLF · EOFなし · 交換所空白</span>
+        </div>
+      </div>
+
+      <!-- Intake Bar: Dropzone + Format Spec Controls -->
+      <div class="intake-grid">
+        <div id="csvDropzone" class="dropzone" tabindex="0" role="button" aria-label="CSV・TSV・全銀ファイルをドロップまたは選択">
+          <input type="file" id="csvFileInput" accept=".csv,.tsv,.txt" hidden>
+          <div class="dropzone__body">
+            <strong class="dropzone__title">CSV / TSV / 全銀(.txt) をドロップ、またはクリックして選択</strong>
+            <span class="dropzone__meta">
+              freee・MoneyForward・弥生・Excelコピーに対応（Shift-JIS / UTF-8自動判定・先頭0欠落補完・「¥125,000」自動整形）
+            </span>
+            <span class="dropzone__hint">
+              既存の全銀固定長（.txt）をドロップすると「銀行エラー修復」へ自動で切り替わり、文字コード・桁数・トレーラ合計を診断します。
+            </span>
+          </div>
+          <div class="dropzone__buttons">
+            <button type="button" id="pickCsvFileBtn" class="btn-outline btn-sm">ファイル選択</button>
+            <button type="button" id="loadSampleCsvBtn" class="btn-outline btn-sm">正常サンプル</button>
+            <button type="button" id="loadDirtySampleBtn" class="btn-outline btn-sm">エラー修復体験</button>
+            <button type="button" id="togglePasteCsvBtn" class="btn-outline btn-sm">テキスト貼付</button>
+          </div>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-row">
+            <label class="field">
+              <span>銀行プリセット</span>
+              <select id="bankPresetSelect">
+                <option value="standard">全銀標準（汎用）</option>
+                <option value="mufg">三菱UFJ銀行（BizSTATION）</option>
+                <option value="smbc">三井住友銀行（Web21）</option>
+                <option value="mizuho">みずほ銀行（みずほe-ビジネス）</option>
+                <option value="rakuten">楽天銀行（法人ビジネス口座）</option>
+                <option value="sbi">住信SBIネット銀行（法人口座）</option>
+                <option value="gmo">GMOあおぞらネット銀行</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>振込種別（Pos 2-3）</span>
+              <select id="transferTypeSelect">
+                <option value="21">21：総合振込</option>
+                <option value="11">11：給与振込</option>
+                <option value="12">12：賞与振込</option>
+              </select>
+            </label>
+          </div>
+          <div class="spec-row spec-row--3">
+            <label class="field">
+              <span>改行コード</span>
+              <select id="lineEndingSelect">
+                <option value="CRLF">CRLF (0D 0A)</option>
+                <option value="NONE">改行なし (連続120B)</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>手形交換所番号 (Pos 39-42)</span>
+              <select id="clearingHouseSelect">
+                <option value="    ">スペース4桁（標準）</option>
+                <option value="0000">0000（SMBC/みずほ等）</option>
+              </select>
+            </label>
+            <label class="field field--checkbox">
+              <span>終端 EOF (0x1A)</span>
+              <span class="checkbox-wrap">
+                <input type="checkbox" id="includeEofCheckbox">
+                <span>末尾に 0x1A を付与</span>
+              </span>
+            </label>
+          </div>
+          <p id="presetNoteText" class="spec-note"></p>
+        </div>
+      </div>
+
+      <!-- Optional Raw CSV/TSV Paste Drawer -->
+      <div id="csvPasteDrawer" class="panel is-hidden">
+        <div class="panel__head">
+          <h2>CSV / TSV テキスト直接貼り付け（Excel / スプレッドシートのコピー＆ペースト対応）</h2>
+          <button type="button" id="applyPasteCsvBtn" class="btn-primary btn-sm">明細テーブルへ反映</button>
+        </div>
+        <textarea id="csvRowsInput" rows="5" placeholder="ヘッダ付きCSV/TSV（freee・MF・弥生・汎用Excel）または8列カンマ区切りデータを貼り付けてください。"></textarea>
+      </div>
+
+      <!-- Requester Profile (Header Record 1) with localStorage + JSON Export/Import -->
+      <details id="profileDetails" class="panel profile-panel">
+        <summary class="profile-summary">
+          <div class="profile-summary__left">
+            <span class="profile-summary__title">委託者プロファイル（ヘッダ・レコード区分1）</span>
+            <span id="profileSummaryText" class="profile-summary__meta tabular"></span>
+          </div>
+          <div class="profile-summary__right">
+            <span id="profileSavedBadge" class="badge badge--neutral">ブラウザ自動保存</span>
+          </div>
+        </summary>
+        <div class="profile-body">
+          <div class="grid-4">
+            <label class="field">
+              <span>委託者コード（10桁数字）</span>
+              <input type="text" id="reqCodeInput" value="0000123456" maxlength="10" class="tabular">
+            </label>
+            <label class="field field--span2">
+              <span>委託者名（最大40バイト · カナ自動変換）</span>
+              <input type="text" id="reqNameInput" value="株式会社ホライゾン">
+              <span id="reqNamePreview" class="field__meter"></span>
+            </label>
+            <label class="field">
+              <span>振込指定日（MMDD 4桁）</span>
+              <input type="text" id="transferDateInput" value="1125" maxlength="4" class="tabular">
+            </label>
+          </div>
+          <div class="grid-5">
+            <label class="field">
+              <span>仕向銀行コード（4桁）</span>
+              <input type="text" id="srcBankCodeInput" value="0005" maxlength="4" class="tabular">
+            </label>
+            <label class="field">
+              <span>仕向銀行名（15B）</span>
+              <input type="text" id="srcBankNameInput" value="ﾐﾂﾋﾞｼUFJ">
+            </label>
+            <label class="field">
+              <span>仕向支店コード（3桁）</span>
+              <input type="text" id="srcBranchCodeInput" value="001" maxlength="3" class="tabular">
+            </label>
+            <label class="field">
+              <span>仕向支店名（15B）</span>
+              <input type="text" id="srcBranchNameInput" value="ﾎﾝﾃﾝ">
+            </label>
+            <div class="grid-2-tight">
+              <label class="field">
+                <span>種目</span>
+                <select id="srcAcctTypeInput">
+                  <option value="1">1:普通</option>
+                  <option value="2">2:当座</option>
+                  <option value="4">4:貯蓄</option>
+                  <option value="9">9:その他</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>口座番号（7桁）</span>
+                <input type="text" id="srcAcctNumInput" value="1234567" maxlength="7" class="tabular">
+              </label>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button type="button" id="saveProfileBtn" class="btn-outline btn-sm">プロファイルを保存</button>
+            <button type="button" id="exportProfileJsonBtn" class="btn-outline btn-sm">JSON書出</button>
+            <button type="button" id="importProfileJsonBtn" class="btn-outline btn-sm">JSON読込</button>
+            <input type="file" id="importProfileFileInput" accept=".json" hidden>
+            <span id="headerErrorInline" class="inline-err"></span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Auto-Repair / Import Notice Banner -->
+      <div id="importRepairBanner" class="notice-bar is-hidden"></div>
+
+      <!-- Interactive Inline-Editable Transfer Table -->
+      <div class="panel table-panel">
+        <div class="panel__head">
+          <div class="panel__title-group">
+            <h2>振込明細テーブル（インライン直接編集・即時エラー検知）</h2>
+            <div class="filter-group" role="group" aria-label="明細表示フィルタ">
+              <button type="button" id="filterAllBtn" class="seg-btn is-active">すべて</button>
+              <button type="button" id="filterErrorsBtn" class="seg-btn">要修正のみ</button>
+            </div>
+          </div>
+          <div class="panel__actions">
+            <button type="button" id="addRowBtn" class="btn-outline btn-sm">+ 行を追加</button>
+            <button type="button" id="clearRowsBtn" class="btn-outline btn-sm">明細をクリア</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th class="col-idx num">#</th>
+                <th class="col-bank">銀行コード / 名</th>
+                <th class="col-branch">支店コード / 名</th>
+                <th class="col-acct">種目 / 口座番号</th>
+                <th class="col-payee">受取人名義（全銀カナ 30B・濁点保護）</th>
+                <th class="col-amt num">振込金額（円）</th>
+                <th class="col-edi">EDI情報（20B・自動Y）</th>
+                <th class="col-inv">T番号（Mod-9任意）</th>
+                <th class="col-del">操作</th>
+              </tr>
+            </thead>
+            <tbody id="transferTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live 120-Byte Monospace Byte-Ruler Inspector -->
+      <div class="panel inspector-panel">
+        <div class="panel__head">
+          <div class="panel__title-group">
+            <h2>全銀120バイト フィールド・ルーラー ＆ Shift-JIS バイナリ検証</h2>
+            <span id="inspectorByteBadge" class="badge badge--ok">120 bytes / record confirmed</span>
+          </div>
+          <div class="filter-group">
+            <button type="button" id="inspectorModeRulerBtn" class="seg-btn is-active">120B ルーラー</button>
+            <button type="button" id="inspectorModeHexBtn" class="seg-btn">Shift-JIS HEX</button>
+            <button type="button" id="copyZenginTextBtn" class="btn-outline btn-sm">テキストコピー</button>
+          </div>
+        </div>
+
+        <div class="legend-strip" aria-label="データレコード(区分2)フィールド凡例">
+          <span><i class="swatch swatch--type"></i>1:区分</span>
+          <span><i class="swatch swatch--bank"></i>2-38:銀行・支店</span>
+          <span><i class="swatch swatch--clear"></i>39-42:交換所</span>
+          <span><i class="swatch swatch--acct"></i>43-50:種目・口座</span>
+          <span><i class="swatch swatch--payee"></i>51-80:受取人名(30B)</span>
+          <span><i class="swatch swatch--amt"></i>81-90:金額(10B)</span>
+          <span><i class="swatch swatch--edi"></i>92-111:EDI(20B)</span>
+          <span><i class="swatch swatch--flag"></i>112-113:指定/識別Y</span>
+        </div>
+
+        <div id="genSummary" class="status-box"></div>
+        <div id="byteRulerContainer" class="ruler-box" aria-live="polite"></div>
+      </div>
     </section>
 
-    <section id="csv-zengin" class="panel" data-ui="converter">
-      <div class="panel__head">
-        <h2>1. カンマ区切り明細 → 全銀協120バイト総合振込データ生成</h2>
-        <button type="button" id="loadSampleCsvBtn" class="chip">サンプル明細を読込</button>
+    <!-- ==================== TAB 2: 銀行エラー修復 ==================== -->
+    <section id="panel-repair" class="view" role="tabpanel">
+      <div class="page-head">
+        <div>
+          <h1>銀行エラー全銀ファイル 1クリック自動修復</h1>
+          <p class="page-head__sub">
+            銀行の取込エラーになった `.txt`（UTF-8誤保存・BOM混入・全角スペース・桁ズレ・トレーラ件数/合計不一致・エンド欠落）を診断し、提出可能な Shift-JIS 120バイトへ修復します。
+          </p>
+        </div>
+        <div class="page-head__actions">
+          <button type="button" id="repairSendToBuilderBtn" class="btn-outline" disabled>編集テーブルへ取込む</button>
+          <button type="button" id="downloadRepairedBtn" class="btn-primary" disabled>修復済 Shift-JIS (.txt) 保存</button>
+        </div>
       </div>
-      <div class="grid-3">
-        <label class="field">
-          <span>委託者名（カナ/最大40バイト）</span>
-          <input type="text" id="reqNameInput" value="株式会社ホライゾン">
-        </label>
-        <label class="field">
-          <span>委託者コード（数字10桁）</span>
-          <input type="text" id="reqCodeInput" value="0000123456">
-        </label>
-        <label class="field">
-          <span>振込指定日（MMDD）</span>
-          <input type="text" id="transferDateInput" value="1125">
-        </label>
+
+      <div class="intake-grid">
+        <div id="repairDropzone" class="dropzone" tabindex="0" role="button" aria-label="エラーになった全銀ファイルをドロップまたは選択">
+          <input type="file" id="repairFileInput" accept=".txt,.dat,.zgn,.csv" hidden>
+          <div class="dropzone__body">
+            <strong class="dropzone__title">銀行で弾かれた全銀ファイル（.txt）をドロップ、または選択</strong>
+            <span class="dropzone__meta">バイナリ直接解析により Shift-JIS / UTF-8 / UTF-8 BOM / 改行コード / EOF(0x1A) の異常を即座に特定します。</span>
+          </div>
+          <div class="dropzone__buttons">
+            <button type="button" id="pickRepairFileBtn" class="btn-outline btn-sm">エラーファイル選択</button>
+            <button type="button" id="loadBrokenSampleBtn" class="btn-outline btn-sm">典型エラー例を診断</button>
+          </div>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-row">
+            <label class="field">
+              <span>修復後の出力先銀行プリセット</span>
+              <select id="repairPresetSelect">
+                <option value="standard">全銀標準（汎用）</option>
+                <option value="mufg">三菱UFJ銀行（BizSTATION）</option>
+                <option value="smbc">三井住友銀行（Web21）</option>
+                <option value="mizuho">みずほ銀行（みずほe-ビジネス）</option>
+                <option value="rakuten">楽天銀行（法人ビジネス口座）</option>
+                <option value="sbi">住信SBIネット銀行（法人口座）</option>
+                <option value="gmo">GMOあおぞらネット銀行</option>
+              </select>
+            </label>
+          </div>
+          <p class="spec-note">※漢字が混入している受取人名義は勝手に推測・削除せず「要手動修正」として赤表示します。「編集テーブルへ取込む」で安全に修正できます。</p>
+        </div>
       </div>
-      <p class="hint">列順：銀行コード,銀行名カナ,支店コード,支店名カナ,預金種目(1普通/2当座),口座番号,受取人名義,振込金額</p>
-      <textarea id="csvRowsInput" rows="5"></textarea>
-      <div class="actions">
-        <button type="button" id="generateZenginBtn" class="btn-primary">全銀120バイトを生成</button>
-        <button type="button" id="downloadZenginBtn" class="btn-outline">ZENGIN (.txt / CRLF) を保存</button>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>または全銀テキストを直接貼り付けて診断・修復</h2>
+          <button type="button" id="auditZenginBtn" class="btn-outline btn-sm">貼り付けテキストを診断＆修復</button>
+        </div>
+        <textarea id="zenginRawInput" rows="5" class="mono-area" placeholder="ヘッダ(区分1)からエンド(区分9)までの全銀固定長データを貼り付けてください。"></textarea>
       </div>
-      <div id="genSummary" class="status-box"></div>
-      <pre id="zenginPreview" class="code-box"></pre>
+
+      <div id="repairForensicsStrip" class="summary-strip is-hidden">
+        <div class="summary-cell">
+          <span class="summary-cell__label">元ファイル文字コード</span>
+          <strong id="repSrcEncoding" class="summary-cell__value">-</strong>
+          <span id="repSrcBom" class="summary-cell__note">-</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">自動修復件数</span>
+          <strong id="repFixedCount" class="summary-cell__value tabular">0 件</strong>
+          <span id="repBlockingCount" class="summary-cell__note">要手動修正 0 件</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">修復後 合計金額</span>
+          <strong id="repTotalAmount" class="summary-cell__value tabular">¥0</strong>
+          <span id="repRowCount" class="summary-cell__note">明細 0 件</span>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">修復後 Shift-JIS 検証</span>
+          <strong id="repByteStatus" class="summary-cell__value tabular">-</strong>
+          <span id="repByteTotal" class="summary-cell__note">-</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>行別バイナリ診断 ＆ 自動修復レポート</h2>
+        </div>
+        <div id="zenginAuditOutput" class="status-box">全銀ファイルを読み込むか貼り付けて診断を実行してください。</div>
+        <ul id="repairDiagnosticsList" class="diag-list"></ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>修復後 120バイト出力プレビュー（Shift-JIS CP932）</h2>
+        </div>
+        <pre id="repairPreviewCode" class="code-box"></pre>
+      </div>
     </section>
 
-    <section id="zengin-audit" class="panel" data-ui="auditor">
-      <div class="panel__head">
-        <h2>2. 既存全銀120バイトデータ 構文・合計検算チェック</h2>
-        <button type="button" id="auditZenginBtn" class="btn-outline">120バイト検査を実行</button>
+    <!-- ==================== TAB 3: T番号一括検証 ==================== -->
+    <section id="panel-invoice" class="view" role="tabpanel">
+      <div class="page-head">
+        <div>
+          <h1>適格請求書T番号（T+13桁）・法人番号 Mod-9 一括検証</h1>
+          <p class="page-head__sub">
+            国税庁モジュラス9算出式により、請求書記載のT番号・13桁法人番号の入力ミスや架空番号をオフラインで一括検査します。
+          </p>
+        </div>
+        <div class="page-head__actions">
+          <button type="button" id="exportInvoiceCsvBtn" class="btn-outline">検証結果CSV保存</button>
+          <button type="button" id="checkIdsBtn" class="btn-primary">チェックデジット検査を実行</button>
+        </div>
       </div>
-      <textarea id="zenginRawInput" rows="5" placeholder="ヘッダ(区分1)からエンド(区分9)までの全銀固定長データを貼り付けてください。"></textarea>
-      <div id="zenginAuditOutput" class="status-box"></div>
-    </section>
 
-    <section id="invoice-check" class="panel" data-ui="invoice">
-      <div class="panel__head">
-        <h2>3. 適格請求書T番号（T+13桁）・法人番号（13桁）Mod-9 一括検証</h2>
-        <button type="button" id="checkIdsBtn" class="btn-outline">チェックデジット検査を実行</button>
+      <div class="summary-strip">
+        <div class="summary-cell">
+          <span class="summary-cell__label">検査件数</span>
+          <strong id="invTotalCount" class="summary-cell__value tabular">0 件</strong>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">Mod-9 適格</span>
+          <strong id="invValidCount" class="summary-cell__value tabular text-ok">0 件</strong>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">不一致・形式エラー</span>
+          <strong id="invInvalidCount" class="summary-cell__value tabular text-err">0 件</strong>
+        </div>
+        <div class="summary-cell">
+          <span class="summary-cell__label">検証方式</span>
+          <strong class="summary-cell__value">国税庁 Mod-9</strong>
+          <span class="summary-cell__note">全角数字・ハイフン自動正規化</span>
+        </div>
       </div>
-      <textarea id="idsInput" rows="4" placeholder="1行に1件ずつ T番号または13桁法人番号を入力してください。">Ｔ７００００１２０５０００２
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>検査対象リスト（1行に1件・全角/ハイフン混在OK）</h2>
+        </div>
+        <textarea id="idsInput" rows="5" class="mono-area" placeholder="1行に1件ずつ T番号または13桁法人番号を入力してください。">Ｔ７００００１２０５０００２
 T8000012050002
 70000-1205-0002
 1234567890123</textarea>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>行</th>
-              <th>種別</th>
-              <th>正規化ID</th>
-              <th>判定</th>
-              <th>根拠・詳細</th>
-            </tr>
-          </thead>
-          <tbody id="idsTableBody"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>行</th>
+                <th>種別</th>
+                <th>正規化ID</th>
+                <th>判定</th>
+                <th>根拠・期待チェックデジット</th>
+              </tr>
+            </thead>
+            <tbody id="idsTableBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <section class="panel ext-box" data-ui="kit">
-      <div>
-        <h2>オフライン配布キット v1.0.0 ＆ 関連ツール</h2>
-        <p>社内閉域網やインターネット非接続端末でもそのまま開ける静的HTML/ESMパッケージとソースコードを公開しています。</p>
+    <!-- ==================== TAB 4: 承認チェックシート ==================== -->
+    <section id="panel-sheet" class="view" role="tabpanel">
+      <div class="page-head no-print">
+        <div>
+          <h1>振込承認チェックシート（稟議・経理決裁印刷用）</h1>
+          <p class="page-head__sub">
+            作成したShift-JIS全銀ファイルの明細一覧・合計金額・SHA-256改ざん検知ハッシュをA4決裁書式で出力します。
+          </p>
+        </div>
+        <div class="page-head__actions">
+          <button type="button" id="printApprovalSheetBtn" class="btn-primary">印刷 / PDF保存</button>
+        </div>
       </div>
-      <div class="actions">
-        <a class="btn-primary" href="https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip">オフラインZIPを保存</a>
-        <a class="btn-outline" href="https://pecopeko.github.io/yakkigate/" target="_blank" rel="noopener">YAKKIGATE（薬機法監査）</a>
-      </div>
+
+      <article id="approvalSheetDoc" class="sheet-doc">
+        <div class="sheet-doc__head">
+          <div>
+            <h2 class="sheet-doc__title">振込データ承認チェックシート</h2>
+            <p id="sheetSubtitle" class="sheet-doc__sub"></p>
+          </div>
+          <div class="seal-grid" aria-label="承認印欄">
+            <div class="seal-box"><span>起票・担当</span></div>
+            <div class="seal-box"><span>経理確認</span></div>
+            <div class="seal-box"><span>決裁・承認</span></div>
+          </div>
+        </div>
+
+        <dl id="sheetMetaGrid" class="sheet-meta"></dl>
+
+        <div id="sheetErrorWarning" class="status-box is-err is-hidden"></div>
+
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>金融機関・支店</th>
+              <th>種目 / 口座番号</th>
+              <th>受取人名義（全銀Shift-JISカナ）</th>
+              <th class="num">振込金額（円）</th>
+              <th>EDI / 識別Y</th>
+              <th>T番号判定</th>
+            </tr>
+          </thead>
+          <tbody id="sheetTableBody"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4" class="num">振込合計（<span id="sheetFooterCount">0</span> 件）</th>
+              <th id="sheetFooterTotal" class="num tabular">¥0</th>
+              <th colspan="2" id="sheetFooterIntegrity"></th>
+            </tr>
+          </tfoot>
+        </table>
+
+        <footer class="sheet-doc__foot">
+          <span>作成元：ZENGINGATE v2.0（完全ローカル処理・外部通信ゼロ）</span>
+          <span id="sheetSha256" class="tabular"></span>
+        </footer>
+      </article>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer__inner">
-      <span>ZENGINGATE（全銀門）：100%ローカル処理・ブラウザ外へのデータ送信なし</span>
+  <footer class="footer no-print">
+    <div class="shell footer__inner">
+      <span>ZENGINGATE v2.0（全銀門）— 100% ブラウザ内 Shift-JIS (CP932) 処理・銀行口座情報の外部送信ゼロ</span>
       <span><a href="https://github.com/pecopeko/zengingate" target="_blank" rel="noopener">GitHub pecopeko/zengingate</a></span>
     </div>
   </footer>

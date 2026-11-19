@@ -2,8 +2,8 @@
   "actorSpecification": 1,
   "name": "shopify-public-catalog-feed-extractor",
   "title": "Shopify Public Catalog JSON Feed Extractor",
-  "description": "Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints.",
-  "version": "1.0",
+  "description": "Fast, browserless batch extraction of Shopify products, full variant objects (SKU, price, compare-at price, discount %, options, grams, stock), plain-text descriptions, image URLs, and /collections.json discovery — $1 per 1,000 products.",
+  "version": "2.0",
   "meta": {
     "templateId": "python-start"
   },

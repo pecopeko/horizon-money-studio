@@ -4,10 +4,10 @@
     "actorChargeEvents": {
       "product_extracted": {
         "eventTitle": "Product Extracted",
-        "eventDescription": "Charged per normalized Shopify product record extracted.",
+        "eventDescription": "Charged per normalized Shopify product record extracted ($1.00 per 1,000 products). Error records and collection discovery rows are not charged.",
         "isOneTimeEvent": false,
         "isPrimaryEvent": true,
-        "eventPriceUsd": 0.002
+        "eventPriceUsd": 0.001
       }
     }
   },

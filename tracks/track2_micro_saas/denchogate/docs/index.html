@@ -3,148 +3,298 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DENCHOGATE（電帳門）：改正電子帳簿保存法 検索ファイル名一括変換・索引簿CSV・要件監査</title>
-  <meta name="description" content="100%ブラウザローカル処理で電子取引PDFファイル名を和暦・全角対応で「YYYYMMDD_取引先名_金額.pdf」へ一括正規化。T番号Mod-9検算・検索用索引簿CSV・事務処理規程ひな形まで端末内完結で出力。">
+  <title>DENCHOGATE Studio v2.0（電帳門）— オフラインPDF一括リネーム・検索索引簿CSV・ZIP梱包</title>
+  <meta name="description" content="完全オフライン・ブラウザ内処理のみでPDF請求書や領収書画像から取引日・取引先・金額・T番号を自動抽出し、電帳法第7条準拠ファイル名へ一括リネーム＋索引簿CSV＋事務処理規程をUTF-8 ZIPで一括出力。">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <header class="topbar" data-ui="bar">
+  <header class="topbar">
     <div class="wrap topbar__inner">
       <div class="brand">
         <span class="brand__seal" aria-hidden="true">帳</span>
-        <div>
-          <strong class="brand__name">DENCHOGATE 電帳門</strong>
-          <span class="brand__sub">100% ブラウザ内処理 / 取引先・請求金額・PDF名の外部送信ゼロ</span>
+        <div class="brand__text">
+          <div class="brand__title-row">
+            <strong class="brand__name">DENCHOGATE Studio</strong>
+            <span class="version-pill">v2.0</span>
+          </div>
+          <span class="brand__sub">100% オフライン端末内完結 / 外部通信・サーバー送信ゼロ</span>
         </div>
       </div>
-      <nav class="nav" aria-label="主要機能">
-        <a href="#dencho-batch">ファイル名一括整形</a>
+      <nav class="nav" aria-label="主要セクション">
+        <a href="#studio-workspace">証憑リネーム作業机</a>
         <a href="#workflow-audit">保存要件監査</a>
-        <a href="#kitei-export">事務処理規程出力</a>
-        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
-        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+        <a href="#kitei-export">事務処理規程</a>
+        <a class="nav__ext" href="https://github.com/pecopeko/denchogate" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn--subtle btn--sm" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援</a>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="intro">
-      <h1>電子取引データを、その場で「YYYYMMDD_取引先_金額」と索引簿CSVへ整える。</h1>
-      <p class="intro__lead">
-        改正電子帳簿保存法（第7条電子取引）に必要な「取引年月日・取引先名・取引金額」の3要素を、和暦（令和/R表記）・全角数字・記号混在テキストからブラウザ内のみで抽出し、標準ファイル名変換表、国税庁モデル形式の検索用索引簿CSV、T番号Mod-9妥当性、事務処理規程Markdownを即座に出力します。
-      </p>
+  <main class="wrap studio-main">
+    <section class="desk-hero" aria-label="概要">
+      <div class="desk-hero__copy">
+        <h1>受領PDF・領収書をドラッグするだけで、電帳法リネーム・索引簿CSV・事務処理規程をZIP一括梱包。</h1>
+        <p>
+          ファイル名が <code>invoice_001.pdf</code> や <code>download.pdf</code> でも、ブラウザ内でPDF本文（FlateDecode圧縮含む）を読み取り「取引日（和暦対応）・取引先・合計金額・適格請求書T番号（Mod-9検算）」を自動抽出。SHA-256による重複領収書検知と実物プレビュー付きインライン編集に対応します。
+        </p>
+      </div>
+      <div class="desk-hero__badges" aria-label="セキュリティ仕様">
+        <span class="trust-tag">通信ゼロ / 閉域PC動作</span>
+        <span class="trust-tag">UTF-8 ZIP（文字化け防止）</span>
+        <span class="trust-tag">SHA-256 重複検知</span>
+      </div>
     </section>
 
-    <section id="dencho-batch" class="panel" data-ui="batch">
-      <div class="panel__head">
-        <h2>電子取引ファイル名 一括正規化 ＆ 検索用索引簿CSV生成</h2>
-        <div class="preset-group">
-          <button type="button" id="loadSampleBatchBtn" class="chip">和暦・全角混在サンプル</button>
-          <button type="button" id="clearBatchBtn" class="chip">クリア</button>
+    <section id="studio-workspace" class="studio-card" aria-label="証憑リネーム＆ZIP梱包ワークスペース">
+      <!-- Above-the-fold Dropzone & Input Modes -->
+      <div class="dropzone" id="dropzone" tabindex="0" role="region" aria-label="PDF・画像ファイルドロップ領域">
+        <div class="dropzone__body">
+          <div class="dropzone__headline">
+            <strong>PDF・領収書画像をここにドラッグ＆ドロップ</strong>
+            <span>対応形式: PDF / PNG / JPG / WebP（複数ファイル・フォルダ一括読込対応・ブラウザ外送信なし）</span>
+          </div>
+          <div class="dropzone__controls">
+            <label class="btn btn--primary" for="fileInput">
+              ファイルを選択
+              <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.tif,.tiff" hidden>
+            </label>
+            <label class="btn btn--outline" for="folderInput">
+              フォルダ一括読込
+              <input type="file" id="folderInput" webkitdirectory multiple hidden>
+            </label>
+            <button type="button" id="fsDirectBtn" class="btn btn--outline" title="Chrome / Edge の File System Access API でローカルフォルダを直接リネーム＋undo_rename.json出力">
+              ローカルフォルダ直接リネーム
+            </button>
+            <button type="button" id="loadDemoPdfsBtn" class="btn btn--accent-soft">
+              サンプル請求書で試す
+            </button>
+          </div>
+        </div>
+        <div class="dropzone__footer">
+          <button type="button" id="togglePasteModeBtn" class="link-btn" aria-expanded="false" aria-controls="pasteModeDrawer">
+            ファイル名テキスト貼り付けモードを開く（ファイル実体なしで索引簿CSV作成）
+          </button>
+          <span id="fsSupportHint" class="muted-note"></span>
         </div>
       </div>
-      <label class="field">
-        <span>受領PDFファイル名または明細行（1行1件：和暦・全角数字・T番号混在可）</span>
-        <textarea id="batchInput" rows="6"></textarea>
-      </label>
-      <div class="actions">
-        <button type="button" id="normalizeBatchBtn" class="btn-primary">標準ファイル名と索引簿を一括生成</button>
-        <button type="button" id="downloadCsvBtn" class="btn-outline">索引簿CSV（UTF-8 BOM）を保存</button>
-      </div>
-      <div id="batchSummaryBox" class="status-box"></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>取引年月日</th>
-              <th>取引先名</th>
-              <th>取引金額</th>
-              <th>T番号</th>
-              <th>標準ファイル名案</th>
-              <th>要件判定</th>
-            </tr>
-          </thead>
-          <tbody id="batchTableBody"></tbody>
-        </table>
-      </div>
-    </section>
 
-    <section id="workflow-audit" class="panel" data-ui="auditor">
-      <div class="panel__head">
-        <h2>運用フロー・真実性・検索要件 自己点検</h2>
-        <div class="preset-group">
-          <button type="button" id="loadRiskyFlowBtn" class="chip">指摘リスク例</button>
-          <button type="button" id="loadSafeFlowBtn" class="chip">適合運用例</button>
+      <!-- Optional Direct Folder Rename Banner (shown when showDirectoryPicker folder is loaded) -->
+      <div id="directFsBanner" class="fs-banner" hidden>
+        <div class="fs-banner__info">
+          <strong id="directFsLabel">接続フォルダ:</strong>
+          <span id="directFsDetail">一覧で日付・取引先・金額を確認後、そのままローカルフォルダへ安全にリネーム適用できます（<code>undo_rename.json</code> 自動保存）。</span>
+        </div>
+        <div class="fs-banner__actions">
+          <button type="button" id="applyDirectRenameBtn" class="btn btn--primary btn--sm">ローカルフォルダへ直接リネーム適用</button>
+          <button type="button" id="undoDirectRenameBtn" class="btn btn--outline btn--sm" hidden>直前のリネームをロールバック</button>
+          <button type="button" id="disconnectFsBtn" class="btn btn--subtle btn--sm">接続解除</button>
         </div>
       </div>
-      <label class="field">
-        <span>現在の経理保存運用メモ</span>
-        <textarea id="workflowInput" rows="4"></textarea>
-      </label>
-      <div class="toggle-row">
-        <label class="check-label"><input type="checkbox" id="hasImmutableCheck"> タイムスタンプ／訂正削除履歴が残るシステム使用</label>
-        <label class="check-label"><input type="checkbox" id="hasKiteiCheck"> 訂正削除防止の事務処理規程を備付け</label>
-        <label class="check-label"><input type="checkbox" id="hasSearchCheck"> 規則的ファイル名または索引簿CSV運用</label>
-        <label class="check-label"><input type="checkbox" id="under50mCheck"> 基準期間売上高5,000万円以下</label>
+
+      <!-- Fallback Paste-Filename Mode -->
+      <div id="pasteModeDrawer" class="paste-drawer" hidden>
+        <label class="field">
+          <span>受領ファイル名または明細行を貼り付け（1行1件・和暦/全角/T番号混在可）</span>
+          <textarea id="pasteInput" rows="4" placeholder="令和8年11月19日 株式会社サンプル商事 請求書 110,000円 T7000012050002.pdf&#10;R6.4.5/株式会社クラウド保守/¥55,000.pdf"></textarea>
+        </label>
+        <div class="paste-drawer__actions">
+          <button type="button" id="importPasteLinesBtn" class="btn btn--primary btn--sm">一覧へ取り込む</button>
+          <button type="button" id="fillPasteSampleBtn" class="btn btn--outline btn--sm">テキスト例を挿入</button>
+        </div>
       </div>
-      <div class="actions">
-        <button type="button" id="runFlowAuditBtn" class="btn-primary">電帳法要件を診断</button>
+
+      <!-- KPI Status Bar -->
+      <div class="kpi-bar" aria-live="polite">
+        <div class="kpi-item">
+          <span class="kpi-item__label">読込ファイル数</span>
+          <strong class="kpi-item__value" id="kpiTotal">0</strong>
+        </div>
+        <div class="kpi-item kpi-item--ok">
+          <span class="kpi-item__label">要件充足</span>
+          <strong class="kpi-item__value" id="kpiCompliant">0</strong>
+        </div>
+        <div class="kpi-item kpi-item--warn">
+          <span class="kpi-item__label">要確認</span>
+          <strong class="kpi-item__value" id="kpiReview">0</strong>
+        </div>
+        <div class="kpi-item kpi-item--dup">
+          <span class="kpi-item__label">重複検知</span>
+          <strong class="kpi-item__value" id="kpiDuplicates">0</strong>
+        </div>
       </div>
-      <div id="flowSummaryBox" class="status-box"></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>深刻度</th>
-              <th>根拠条文</th>
-              <th>検知・課題内容</th>
-              <th>是正アクション</th>
-            </tr>
-          </thead>
-          <tbody id="flowTableBody"></tbody>
-        </table>
+
+      <!-- Naming Template & Primary Export Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar__settings">
+          <label class="inline-control">
+            <span>命名テンプレート</span>
+            <select id="templateSelect">
+              <option value="compact_no_yen">YYYYMMDD_取引先_金額</option>
+              <option value="iso_yen">YYYY-MM-DD_取引先_金額円</option>
+              <option value="compact_yen">YYYYMMDD_取引先_金額円</option>
+            </select>
+          </label>
+          <label class="check-inline">
+            <input type="checkbox" id="includeTNumberCheck">
+            <span>末尾に <code>_T番号</code> を付与</span>
+          </label>
+          <label class="check-inline">
+            <input type="checkbox" id="excludeDupZipCheck">
+            <span>重複ファイルをZIPから除外</span>
+          </label>
+        </div>
+
+        <div class="toolbar__exports">
+          <button type="button" id="downloadZipBtn" class="btn btn--primary">
+            リネーム済ファイル＋索引簿CSV＋事務処理規程をZIP一括保存
+          </button>
+          <button type="button" id="downloadCsvBtn" class="btn btn--outline">
+            索引簿CSVのみ保存
+          </button>
+          <button type="button" id="clearAllBtn" class="btn btn--subtle">
+            クリア
+          </button>
+        </div>
+      </div>
+
+      <div id="actionNotice" class="action-notice" role="status" aria-live="polite" hidden></div>
+
+      <!-- Split-Pane Accounting Desk -->
+      <div class="split-pane">
+        <!-- Left Pane: Keyboard-Fast Inline Editable Table -->
+        <div class="pane pane--table">
+          <div class="pane__bar">
+            <div class="filter-tabs" role="tablist" aria-label="表示フィルタ">
+              <button type="button" class="filter-tab is-active" data-filter="all" role="tab" aria-selected="true">すべて</button>
+              <button type="button" class="filter-tab" data-filter="review" role="tab" aria-selected="false">要確認のみ</button>
+              <button type="button" class="filter-tab" data-filter="duplicate" role="tab" aria-selected="false">重複のみ</button>
+            </div>
+            <span class="kbd-hint">Enterで下行へ移動 / 行クリックで右側プレビュー</span>
+          </div>
+
+          <div class="ledger-table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th class="col-date">取引日</th>
+                  <th class="col-partner">取引先</th>
+                  <th class="col-amount">金額（円）</th>
+                  <th class="col-tnum">T番号 (Mod-9)</th>
+                  <th class="col-target">変更後ファイル名 / 元ファイル</th>
+                  <th class="col-status">判定・重複</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="emptyStateBox" class="empty-desk">
+            <p>まだファイルが読み込まれていません。</p>
+            <p class="empty-desk__sub">上のドロップ領域へPDF・画像をドロップするか、「サンプル請求書で試す」をクリックして全機能（PDF本文抽出・重複検知・実物プレビュー・ZIP一括保存）を体験してください。</p>
+          </div>
+        </div>
+
+        <!-- Right Pane: Live Local Document Preview -->
+        <aside class="pane pane--preview" aria-label="証憑ローカルプレビュー">
+          <div class="preview-head">
+            <div class="preview-head__meta">
+              <strong id="previewTitle">証憑プレビュー</strong>
+              <span id="previewMeta">左の行を選択するとPDF・領収書画像をブラウザ内で即時表示します</span>
+            </div>
+            <div class="preview-head__tools">
+              <button type="button" id="toggleExtractedTextBtn" class="btn btn--subtle btn--xs" hidden>抽出テキスト確認</button>
+              <a id="openPreviewTabLink" class="btn btn--subtle btn--xs" target="_blank" rel="noopener" hidden>別タブ表示</a>
+            </div>
+          </div>
+
+          <div id="previewBadges" class="preview-badges" hidden></div>
+
+          <div id="previewStage" class="preview-stage">
+            <div class="preview-placeholder">
+              <strong>選択中のファイルなし</strong>
+              <p>PDFや領収書画像を選択すると、ここに原本が表示されます。スキャン画像や手書き領収書も、画面を切り替えず左の表へキーボード入力できます。</p>
+            </div>
+          </div>
+
+          <pre id="extractedTextBox" class="extracted-text-box" hidden></pre>
+        </aside>
       </div>
     </section>
 
-    <section id="kitei-export" class="panel" data-ui="template">
-      <div class="panel__head">
-        <h2>訂正削除防止 事務処理規程ジェネレータ（無料措置対応）</h2>
-        <button type="button" id="downloadKiteiBtn" class="btn-outline">事務処理規程.md を保存</button>
-      </div>
-      <div class="grid-3">
+    <!-- Below-the-fold: Workflow Compliance Auditor & Jimu Shori Kitei -->
+    <div class="secondary-grid">
+      <section id="workflow-audit" class="panel">
+        <div class="panel__head">
+          <h2>運用フロー・真実性・検索要件 自己点検</h2>
+          <div class="chip-group">
+            <button type="button" id="loadRiskyFlowBtn" class="chip">指摘リスク例</button>
+            <button type="button" id="loadSafeFlowBtn" class="chip">適合運用例</button>
+          </div>
+        </div>
         <label class="field">
-          <span>事業者名・屋号</span>
-          <input type="text" id="companyInput" value="合同会社ホライゾンラボ">
+          <span>現在の経理保存運用メモ</span>
+          <textarea id="workflowInput" rows="3"></textarea>
         </label>
-        <label class="field">
-          <span>管理責任者役職</span>
-          <input type="text" id="managerInput" value="代表社員（経理責任者兼務）">
-        </label>
-        <label class="field">
-          <span>施行日</span>
-          <input type="text" id="effectiveDateInput" value="2026-11-19">
-        </label>
-      </div>
-      <pre id="kiteiPreview" class="code-box"></pre>
-    </section>
+        <div class="toggle-row">
+          <label class="check-inline"><input type="checkbox" id="hasImmutableCheck"> タイムスタンプ／訂正削除履歴システム使用</label>
+          <label class="check-inline"><input type="checkbox" id="hasKiteiCheck"> 訂正削除防止の事務処理規程を備付け</label>
+          <label class="check-inline"><input type="checkbox" id="hasSearchCheck"> 規則的ファイル名または索引簿CSV運用</label>
+          <label class="check-inline"><input type="checkbox" id="under50mCheck"> 基準期間売上高5,000万円以下</label>
+        </div>
+        <div class="panel__actions">
+          <button type="button" id="runFlowAuditBtn" class="btn btn--primary btn--sm">電帳法要件を診断</button>
+        </div>
+        <div id="flowSummaryBox" class="status-box"></div>
+        <div class="simple-table-wrap">
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th>深刻度</th>
+                <th>根拠条文</th>
+                <th>検知内容</th>
+                <th>是正アクション</th>
+              </tr>
+            </thead>
+            <tbody id="flowTableBody"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <section class="panel ext-box" data-ui="kit">
-      <div>
-        <h2>オフライン配布キット v1.0.0 ＆ 関連B2Bチェックゲート</h2>
-        <p>閉域PCやインターネット非接続環境でも開けるHTML/ESM一式とソースコードを公開しています。</p>
-      </div>
-      <div class="actions">
-        <a class="btn-primary" href="https://github.com/pecopeko/denchogate/releases/download/v1.0.0/denchogate-offline-kit-v1.0.0.zip">オフラインZIPを保存</a>
-        <a class="btn-outline" href="https://pecopeko.github.io/zengingate/" target="_blank" rel="noopener">ZENGINGATE（全銀門）</a>
-        <a class="btn-outline" href="https://pecopeko.github.io/tokushogate/" target="_blank" rel="noopener">TOKUSHOGATE（特商門）</a>
-      </div>
-    </section>
+      <section id="kitei-export" class="panel">
+        <div class="panel__head">
+          <div>
+            <h2>訂正削除防止 事務処理規程ジェネレータ</h2>
+            <p class="panel__sub">入力内容は1クリックZIP内の <code>訂正削除防止_事務処理規程.md</code> にも自動反映されます。</p>
+          </div>
+          <button type="button" id="downloadKiteiBtn" class="btn btn--outline btn--sm">規程.md を単独保存</button>
+        </div>
+        <div class="grid-3">
+          <label class="field">
+            <span>事業者名・屋号</span>
+            <input type="text" id="companyInput" value="合同会社ホライゾンラボ">
+          </label>
+          <label class="field">
+            <span>管理責任者役職</span>
+            <input type="text" id="managerInput" value="代表社員（経理責任者兼務）">
+          </label>
+          <label class="field">
+            <span>施行日</span>
+            <input type="text" id="effectiveDateInput" value="2026-11-19">
+          </label>
+        </div>
+        <pre id="kiteiPreview" class="code-box"></pre>
+      </section>
+    </div>
   </main>
 
   <footer class="footer">
     <div class="wrap footer__inner">
-      <span>DENCHOGATE（電帳門）：100%ローカル処理・ブラウザ外へのデータ送信なし</span>
-      <span><a href="https://github.com/pecopeko/denchogate" target="_blank" rel="noopener">GitHub pecopeko/denchogate</a></span>
+      <span>DENCHOGATE Studio v2.0（電帳門）— ゼロ通信・100%ブラウザ内処理（PKWARE UTF-8 Stored ZIP / FlateDecode PDF抽出 / NTA Mod-9）</span>
+      <span class="footer__links">
+        <a href="https://pecopeko.github.io/zengingate/" target="_blank" rel="noopener">ZENGINGATE</a>
+        <a href="https://pecopeko.github.io/tokushogate/" target="_blank" rel="noopener">TOKUSHOGATE</a>
+        <a href="https://github.com/pecopeko/denchogate" target="_blank" rel="noopener">GitHub</a>
+      </span>
     </div>
   </footer>
 

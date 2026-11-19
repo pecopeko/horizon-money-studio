@@ -4,7 +4,13 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
 
 ## Live Shipped Outputs Across All 7 Tracks
 
-- **Track 1 — Apify Store PPE Actor Suite (`44` Actors, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
+- **Track 1 — Apify Store PPE Actor Suite (`45` Actors — Top 4 Production-Verified Winners, `pecopeko/apify-ppe-actors`)**: https://github.com/pecopeko/apify-ppe-actors
+  - **Top 4 Production-Verified Global Winners (Live Smoke-Tested, Zero-CAPTCHA, Zero-Browser)**:
+    - `shopify-public-catalog-feed-extractor` v2.0 (`product_extracted` @ `$0.001` — multi-store batch, SSRF/redirect safe, 429 backoff, full variants/discounts & `/collections.json`)
+    - `podcast-rss-transcript-extractor` v2.0 (`episode_extracted` `$0.002` + `transcript_extracted` `$0.002` — RSS `<itunes:owner>` host emails, Apple Reviews JSON, Podcasting 2.0 VTT/SRT/JSON)
+    - `substack-newsletter-posts-extractor` v1.0 (`post_extracted` @ `$0.001` — public `/api/v1/archive` + `/feed` RAG Markdown/text, honest paywall flagging)
+    - `sec-edgar-8k-10k-item-extractor` v2.0 (`filing_extracted` @ `$0.004` — SEC Fair Access email UA `200 OK`, ASC 606 annual vs quarterly XBRL, `efts.sec.gov` Form D startup funding search)
+  - Plus 41 archived/domain actors in repo:
   - `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   - `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)
   - `japan-corporate-ir-press-extractor` (`filing_extracted` @ `$0.003`)
@@ -50,12 +56,12 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
   - `jp-keizaianpo-clearance-supplychain-auditor` (`security_clearance_audited` @ `$0.004`)
   - `cloud-iam-oidc-least-privilege-auditor` (`iam_policy_audited` @ `$0.003`)
 - **Track 2 — Zero-Backend Japanese B2B Micro-SaaS (`21` Live Web Apps + Releases)**:
-  - **KUROGATE（黒門）**: https://pecopeko.github.io/kurogate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/kurogate/releases/download/v1.0.0/kurogate-chrome-extension-v1.0.0.zip))
+  - **KUROGATE（黒門 v1.1.0）**: https://pecopeko.github.io/kurogate/ ([Edge/Chrome/Firefox MV3 v1.1.0](https://github.com/pecopeko/kurogate/releases/download/v1.1.0/kurogate-extension-v1.1.0.zip))
   - **YAKKIGATE（薬影）**: https://pecopeko.github.io/yakkigate/ ([Chrome MV3 v1.0.0](https://github.com/pecopeko/yakkigate/releases/download/v1.0.0/yakkigate-chrome-extension-v1.0.0.zip))
-  - **ZENGINGATE（全銀門）**: https://pecopeko.github.io/zengingate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/zengingate/releases/download/v1.0.0/zengingate-offline-kit-v1.0.0.zip))
+  - **ZENGINGATE（全銀門 v2.0 — Shift-JIS CP932 120B）**: https://pecopeko.github.io/zengingate/ ([Offline Kit v2.0.0](https://github.com/pecopeko/zengingate/releases/download/v2.0.0/zengingate-offline-kit-v2.0.0.zip))
   - **KEIYAKUGATE（契約門）**: https://pecopeko.github.io/keiyakugate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/keiyakugate/releases/download/v1.0.0/keiyakugate-offline-kit-v1.0.0.zip))
   - **TOKUSHOGATE（特商門）**: https://pecopeko.github.io/tokushogate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/tokushogate/releases/download/v1.0.0/tokushogate-offline-kit-v1.0.0.zip))
-  - **DENCHOGATE（電帳門）**: https://pecopeko.github.io/denchogate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/denchogate/releases/download/v1.0.0/denchogate-offline-kit-v1.0.0.zip))
+  - **DENCHOGATE Studio（電帳門 v2.0 — PDF抽出＆UTF-8 ZIP）**: https://pecopeko.github.io/denchogate/ ([Offline Kit v2.0.0](https://github.com/pecopeko/denchogate/releases/download/v2.0.0/denchogate-offline-kit-v2.0.0.zip))
   - **KOJINGATE（個情門）**: https://pecopeko.github.io/kojingate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/kojingate/releases/download/v1.0.0/kojingate-offline-kit-v1.0.0.zip))
   - **GENSENGATE（源泉門）**: https://pecopeko.github.io/gensengate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/gensengate/releases/download/v1.0.0/gensengate-offline-kit-v1.0.0.zip))
   - **ROUMUGATE（労務門）**: https://pecopeko.github.io/roumugate/ ([Offline Kit v1.0.0](https://github.com/pecopeko/roumugate/releases/download/v1.0.0/roumugate-offline-kit-v1.0.0.zip))
@@ -84,13 +90,15 @@ A 7-track autonomous revenue & R&D studio operating at **`$0.00` out-of-pocket s
 - **Track 4 — `macroTomicro` Read-Only Empirical AFML Audit & Pruned Alpha Proposal**:
   - `Pruned18` + 3-tier conviction scaling (`800k / 1.6M / 2.4M JPY`): `+2,646,201 JPY` (`Sharpe 2.501`) vs Uniform Control `+2,100,950 JPY` (`Sharpe 2.328`) -> `+545,251 JPY` edge (`tracks/track4_m2m_colab/M2M_ACTIONABLE_ALPHA_PATCH_PROPOSAL.md`)
   - Real Panel AFML Report: `tracks/track4_m2m_colab/REAL_PANEL_AFML_AUDIT_REPORT.md`
-- **Track 5 — Direct Digital Sales (`Zenn` + `BOOTH` Pro Suite)**:
-  - **Zenn Content Repo (`¥2,400` 6-chapter book + 17 free articles)**: https://github.com/pecopeko/zenn-content
-  - **BOOTH Pro Suite Bundle Release (`v1.0.0-pro-kit`)**: https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit (CLI upgraded for 21-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding/Labor/JIS X 8341-3/METI Security/AI Governance/Anti-Social Forces & UBO KYC/FEFTA & US EAR Export Control/SSBJ GHG Scope 1-3 & Greenwash/Revised Construction Act 2024/Revised Logistics Efficiency & Truck Act/2026 Toriteki Act/PSA 50% Deposit & Crypto AML Travel Rule/ASBJ No. 34 New Lease Accounting/Economic Security Promotion Act & Security Clearance batch auditing)
-- **Track 6 — Solidity Smart Contract Audit Pre-Screener & Live Triage**:
-  - `src/makemoney/scouts/solidity_audit_scanner.py` + `tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md` (`36` contest repos: `sherlock-audit/2026-07-tare`, `Cyfrin/battlechain-safe-harbor-contracts`, `code-423n4/2026-04-monetrix`, `sherlock-audit/2025-07-malda`, `sherlock-audit/2025-06-notional-exponent`, `sherlock-audit/2026-01-fluid-dex-v2`, `sherlock-audit/2025-07-oku-trade-order-types`, `sherlock-audit/2025-07-cap`, `sherlock-audit/2025-07-mellow-flexible-vaults`, `sherlock-audit/2025-07-debank`, `sherlock-audit/2025-05-yearn-ybold`, `sherlock-audit/2025-06-symbiotic-relay`, `sherlock-audit/2025-07-allbridge-core-yield`, `hats-finance/Cross-chain-Realitio-Proxy`, `hats-finance/dTRINITY`, `hats-finance/Mento`, `hats-finance/Spectra`, `hats-finance/Euro-Dollar`, `hats-finance/SeeR-PM`, `hats-finance/Safe`, `code-423n4/2025-11-megapot`, `code-423n4/2025-08-gte-perps`, `hats-finance/SafeStaking-by-HOPR`, `sherlock-audit/2024-09-predict-fun`, `sherlock-audit/2024-08-sentiment-v2`, `Cyfrin/battlechain-lib`, `code-423n4/2026-03-chainlink`, `code-423n4/2025-11-merkl`, `code-423n4/2026-03-intuition`, `code-423n4/2025-10-sequence`, `code-423n4/2025-06-panoptic`, `code-423n4/2024-11-chainlink`, `code-423n4/2025-12-panoptic`, `hats-finance/Thorn-protocol-0x1286ecdac50215a366458a14968fbca4bd95067d`, `code-423n4/2025-07-lido-finance`, `code-423n4/2023-05-maia`)
-- **Track 7 — Fast-Cash Freelance Automation Deliverables & Playbook**:
-  - `tracks/track7_freelance_kit/deliverables/{dirty_csv_to_zengin120.py,polite_feed_price_diff.py,folder_pii_vault_sanitizer.py,dencho_folder_renamer_indexer.py,shiharai_chosho_csv_aggregator.py,attendance_36_overtime_auditor.py,html_folder_jis8341_auditor.py,security_checksheet_csv_responder.py,ai_tool_inventory_risk_register.py,vendor_kyc_ubo_hansha_screener.py,export_control_gaihi_screener.py,ssbj_ghg_scope123_carbon_auditor.py,construction_kensetsugyo_2024_auditor.py,logistics_butsuryu_2025_auditor.py,toriteki_shitauke_2026_auditor.py,fintech_kinyu_aml_2026_auditor.py,asbj34_new_lease_auditor.py,keizaianpo_clearance_auditor.py}` + `tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md` (Proposals 案A–案R)
+- **Track 5 — Direct Digital Sales (`Zenn` Reboot + `BOOTH` Top-5 Back-Office Pro Kit v2.0)**:
+  - **Zenn Content Repo (`pecopeko/zenn-content`)**: https://github.com/pecopeko/zenn-content — Cleaned up 16 thin promo stubs (`published: false`); published **3 deep code-packed Flagship Articles** (AFML backtest traps, Zengin Shift-JIS/Mod-9/Mod-11, Chrome MV3 PII Vault with measured `-91.67%` FP reduction) + focused **`¥1,200` 8-chapter Paid Book** (`jp-quant-backtest-audit-afml`, Ch. 1–2 `free: true`, Hiragino Sans editorial cover).
+  - **BOOTH Top-5 Back-Office Pro Kit v2.0 (`¥1,980` / `¥4,980`)**: Curated `tracks/track5_direct_sales/booth_pro_pack/dist/jp-backoffice-top5-pro-kit-v2.0.0.zip` (`ZENGINGATE v2.0` Shift-JIS CP932, `DENCHOGATE Studio v2.0` PDF extractor & ZIP, `GENSENGATE` + 2026 Invoice 50%/支払調書 CLI, `KUROGATE v1.1.0` MV3 ext, `YAKKIGATE`) + working `samples/` + `verify_quickstart.sh` + `1000x1000` Japanese cover (`jp-backoffice-top5-cover.png`). Public free Pro ZIP leak removed from `v1.0.0-pro-kit`.
+- **Track 6 — Solidity Smart Contract Security Audits**:
+  - Live Immunefi Deep Manual Audit Dossier (`39,759 LOC` across `Base Everest` + `Metricxyz`): `tracks/track6_security_audits/IMMUNEFI_LIVE_AUDIT_DOSSIER_2026_11.md` (`0` High/Critical; `2` confirmed Low + `5` Info)
+  - Static Pre-Screener (`src/makemoney/scouts/solidity_audit_scanner.py`) + historical triage log (`tracks/track6_security_audits/LIVE_SOLIDITY_AUDIT_TRIAGE.md`)
+- **Track 7 — Productized "List-and-Wait" Coconala / Lancers Packages & Upgraded Engines**:
+  - Ready-to-paste storefront pack: `tracks/track7_freelance_kit/COCONALA_LANCERS_READY_LISTINGS.md` (3 high-demand SME automation services `¥15,000–¥43,000` + Edge/Firefox `$0` extension checklist)
+  - Upgraded core automation engines: `dirty_csv_to_zengin120.py` (true CP932 Shift-JIS), `dencho_folder_renamer_indexer.py` (PDF extraction + SHA-256 dedup + rollback), `polite_feed_price_diff.py` (Shopify/RSS/Atom fetcher + Slack/Discord/Chatwork webhooks + JSON config), `shiharai_chosho_csv_aggregator.py` + legacy deliverables & playbook (`tracks/track7_freelance_kit/LANCERS_COCONALA_PLAYBOOK_JA.md`).
 
 ## Local Verification
 

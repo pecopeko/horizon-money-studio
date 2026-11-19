@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "post_extracted": {
+        "eventTitle": "Substack Post Extracted",
+        "eventDescription": "Charged per normalized Substack newsletter post extracted ($1.00 per 1,000 posts). Failed publication error records are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.001
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

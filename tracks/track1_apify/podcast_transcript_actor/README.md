@@ -1,89 +1,103 @@
-# Podcast RSS, Show Notes, Chapters & Transcript Extractor
+# Podcast RSS, Host Contacts, Apple Reviews & Transcript Extractor
 
-Extract clean episode metadata, HTML-stripped show notes, audio enclosure URLs, Podcasting 2.0 JSON chapters, and normalized timestamped transcripts (`.srt`, `.vtt`, `.json`, `.txt`) from any podcast RSS feed — or discover feeds automatically by Apple Podcasts ID or iTunes Search query.
+Extract **podcast host/owner contact emails** (`<itunes:owner>`), show categories, Podcasting 2.0 `<podcast:person>` & `<podcast:funding>` tags, **Apple Podcasts customer reviews**, clean HTML-stripped show notes, chapters, and normalized **Podcasting 2.0 transcripts (`.vtt`, `.srt`, `.json`, `.txt`)** directly from RSS XML and official iTunes APIs.
 
-Built for **zero-CAPTCHA, zero-browser** reliability: runs in pure Python over public iTunes Lookup/Search APIs and direct RSS XML feeds without brittle headless browser scrapers.
+Built for **zero-CAPTCHA, zero-browser** reliability with strict SSRF IP validation on every RSS, transcript, chapter, and redirect URL.
 
 ## Key Features
 
-- **Flexible Feed Resolution**:
-  - **Apple Podcasts IDs or URLs** (`applePodcastIds`): Resolves numeric IDs (e.g., `1584274529`) or full `podcasts.apple.com` URLs via `itunes.apple.com/lookup`.
-  - **iTunes Search Queries** (`searchQueries`): Finds matching podcast feeds via `itunes.apple.com/search`.
-  - **Direct RSS URLs** (`rssUrls`): Parses any HTTP/HTTPS RSS XML feed directly.
-- **Podcasting 2.0 `<podcast:transcript>` Support**:
-  - Supports multiple `<podcast:transcript>` formats (`.json`, `.vtt`, `.srt`, `.txt`), prioritizing structured formats first and falling back cleanly if a host fails.
-  - Normalizes every format into uniform timestamped segments (`start_sec`, `end_sec`, `speaker`, `text`) plus a clean `full_transcript` string for RAG, summarization, and LLM pipelines.
-- **Podcasting 2.0 `<podcast:chapters>` Support**:
-  - Fetches and normalizes JSON chapters (`start_sec`, `title`, `url`, `img`).
-- **Clean Show Notes & Safe XML Parsing**:
-  - Strips HTML tags from `content:encoded` / `description` / `itunes:summary` into readable plain text.
-  - Rejects DTD/ENTITY declarations (`<!DOCTYPE`, `<!ENTITY`) to guard against XML billion-laughs attacks.
-- **Honest Provenance**:
-  - Reports explicit `transcript_status` (`extracted`, `not_provided_in_rss`, `fetch_failed`, or `skipped_by_config`) — never fabricates transcripts when an episode lacks one.
+- **Host Contact & Lead-Gen Show Metadata**:
+  - Automatically parses `<itunes:owner>` into `owner_name` and `owner_email` (with `<managingEditor>` email fallback), `<itunes:category>` (including nested subcategories), `<itunes:author>`, `language`, `<podcast:person>` hosts/guests, and `<podcast:funding>` support URLs.
+- **Podcasting 2.0 VTT / SRT / JSON / TXT Transcripts**:
+  - Prioritizes structured formats (`.json` → `.vtt` → `.srt` → `.txt`), preserves VTT speaker labels (`<v Speaker>`), and outputs uniform timestamped segments (`start_sec`, `end_sec`, `speaker`, `text`) plus a clean `full_transcript` string ready for RAG and LLM summarization.
+- **Optional Apple Podcasts Customer Reviews (`includeAppleReviews`)**:
+  - Fetches official public Apple Podcasts reviews JSON (`itunes.apple.com/{country}/rss/customerreviews/...`) once per show when an iTunes ID is available, outputting `apple_reviews`, `apple_review_count`, and `apple_average_rating`.
+- **Precision Filtering**:
+  - `onlyWithTranscripts`: Return only episodes with extracted transcripts.
+  - `publishedAfter`: ISO date filter (e.g. `"2026-01-01"`).
+  - `keywordFilter`: Case-insensitive filter across episode title, show notes, and transcript text.
+- **Hardened XML & SSRF Safety**:
+  - Blocks DTD/ENTITY declarations (`<!DOCTYPE`, `<!ENTITY`) against XML billion-laughs attacks.
+  - Validates every RSS, transcript, chapter, and redirect hop against loopback, private, link-local, and cloud metadata IPs.
 
-## Pricing (Pay-Per-Event)
+## Fair Split Pricing (Pay-Per-Event)
 
-- **`episode_extracted`**: `$0.004` per episode record pushed to the dataset.
+Pay only for what you actually get:
 
-## Input Schema
+- **`episode_extracted` (Primary)**: **`$0.002`** per episode record extracted (metadata, host email, show notes, chapters, Apple reviews).
+- **`transcript_extracted` (Conditional)**: **`$0.002`** charged **ONLY** when Podcasting 2.0 transcript segments are actually extracted for an episode. Episodes without transcripts are never charged the transcript fee.
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `applePodcastIds` | `string[]` | `["1584274529"]` (prefill) | Apple Podcasts IDs or URLs to resolve via iTunes Lookup. |
-| `searchQueries` | `string[]` | `[]` | Search queries resolved to RSS feeds via iTunes Search. |
-| `rssUrls` | `string[]` | `[]` | Direct podcast RSS feed URLs. |
-| `maxEpisodesPerFeed` | `integer` | `10` | Maximum newest episodes extracted per feed (`1`–`500`). |
-| `searchLimitPerQuery` | `integer` | `3` | Maximum podcast feeds resolved per search query (`1`–`25`). |
-| `country` | `string` | `"US"` | Two-letter iTunes Store country code (`US`, `JP`, `GB`, etc.). |
-| `fetchTranscripts` | `boolean` | `true` | Download and normalize `<podcast:transcript>` files. |
-| `fetchChapters` | `boolean` | `true` | Download and normalize `<podcast:chapters>` JSON files. |
-| `includeTranscriptSegments` | `boolean` | `true` | Include timestamped `transcript_segments` array in output. |
+## Popular Use Cases
 
-### Example Input
+1. **Podcast Guest Booking & Sponsorship Outreach**: Search iTunes niches via `searchQueries` and export `owner_name`, `owner_email`, `categories`, `funding_urls`, and `apple_average_rating`.
+2. **AI / RAG Audio Knowledge Bases**: Pull timestamped transcripts (`onlyWithTranscripts: true`) + chapters for podcast search engines and briefing agents.
+3. **Brand & Topic Monitoring**: Track mentions via `keywordFilter` + `publishedAfter` across hundreds of RSS feeds without paying for Whisper transcription.
+
+## Input Example
 
 ```json
 {
   "applePodcastIds": ["1584274529"],
-  "maxEpisodesPerFeed": 2,
+  "rssUrls": ["https://podnews.net/rss"],
+  "maxEpisodesPerFeed": 5,
+  "country": "US",
   "fetchTranscripts": true,
   "fetchChapters": true,
-  "includeTranscriptSegments": true
+  "includeTranscriptSegments": true,
+  "includeAppleReviews": true,
+  "onlyWithTranscripts": false,
+  "publishedAfter": "2026-01-01",
+  "keywordFilter": ""
 }
 ```
 
-## Example Output
+## Output Example
 
 ```json
 {
-  "feed_url": "https://feeds.podcastindex.org/pc20.xml",
-  "podcast_title": "Podcasting 2.0",
-  "episode_title": "Episode 278: \"1 Billion Tokens!\"",
-  "pub_date_iso": "2026-11-13T20:38:43+00:00",
-  "audio": {
-    "url": "https://mp3s.nashownotes.com/PC20-278-2026-11-13-Final.mp3",
-    "type": "audio/mpeg",
-    "length_bytes": 123456789
-  },
-  "transcript_status": "extracted",
-  "transcript_format": "srt",
-  "transcript_url": "https://mp3s.nashownotes.com/PC20-278-Captions.srt",
-  "transcript_segment_count": 1420,
-  "full_transcript": "Podcasting 2.0 for November 13, 2026, episode 278...",
-  "transcript_segments": [
+  "feed_url": "https://podnews.net/rss",
+  "podcast_title": "Podnews Daily",
+  "podcast_author": "Podnews",
+  "language": "en",
+  "owner_name": "James Cridland",
+  "owner_email": "editor@podnews.net",
+  "categories": ["News", "Tech News", "Technology"],
+  "people": [
     {
-      "start_sec": 0.5,
-      "end_sec": 6.349,
-      "speaker": null,
-      "text": "Podcasting 2.0 for November 13, 2026, episode 278, 1 Billion"
+      "name": "James Cridland",
+      "role": "host",
+      "group": "cast",
+      "href": "https://james.cridland.net/",
+      "img": null
     }
   ],
+  "funding_urls": ["https://podnews.net/article/support-podnews"],
+  "episode_title": "Daily Podcast Industry Briefing",
+  "pub_date_iso": "2026-11-19T08:00:00+00:00",
+  "transcript_status": "extracted",
+  "transcript_format": "vtt",
+  "transcript_segment_count": 42,
+  "full_transcript": "Welcome to Podnews Daily...",
   "chapters_status": "extracted",
   "chapters": [
     {
       "start_sec": 0.0,
-      "title": "1 Billion Tokens! Welcome to the Boardroom",
+      "title": "Headlines",
       "url": null,
       "img": null
+    }
+  ],
+  "apple_reviews_status": "extracted",
+  "apple_review_count": 10,
+  "apple_average_rating": 4.9,
+  "apple_reviews": [
+    {
+      "review_id": "1092837465",
+      "author": "PodcastListener",
+      "rating": 5,
+      "title": "Essential daily briefing",
+      "content": "Concise, accurate, and always includes full transcripts.",
+      "updated_at": "2026-11-12T10:15:00-07:00"
     }
   ]
 }

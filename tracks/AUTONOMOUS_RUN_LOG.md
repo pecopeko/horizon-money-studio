@@ -1,12 +1,30 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–20)
+# Autonomous Multi-Track Studio Run Log (Waves 1–20 + v2.0 Strategic Pivot)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
 
 ---
 
-## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`44` Actors Shipped)
-- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`a8a7cf0`)
+## v2.0 Strategic Pivot — Quality & Distribution Over Template Volume (2026-11-20)
+Replaced the hourly regex-clone loop with 6 parallel deep-engineering & market-verified upgrades:
+- **Track 1 — Apify Store Top 4 Production Winners** (`pecopeko/apify-ppe-actors` `34c44b4`, `45` Actors total, `.github/FUNDING.yml` maintained):
+  - `shopify-public-catalog-feed-extractor` v2.0 (`$0.001`), `podcast-rss-transcript-extractor` v2.0 (`$0.002+$0.002`, host emails + Apple reviews), `sec-edgar-8k-10k-item-extractor` v2.0 (`200 OK` fixed + ASC 606 + EFTS Form D), NEW `substack-newsletter-posts-extractor` v1.0 (`$0.001`, public archive+RSS Markdown, honest paywall detection) — all 4 live smoke-tested (`0` errors) + `10` offline unit tests (`tests/test_apify_production_winners.py`).
+- **Track 2 — Flagship Production Upgrades (All Pages `built`)**:
+  - **ZENGINGATE v2.0** (`pecopeko/zengingate` `1b260a2`): true CP932 Shift-JIS `Uint8Array` 120B binary encoder, 総合/給与/賞与, 7 bank presets, positional `ｶ)`/`(ｶ`/`(ｶ)`, dakuten-safe 30B truncation, 1-click bank-rejected `.txt` repair (`18/18` Node tests).
+  - **DENCHOGATE Studio v2.0** (`pecopeko/denchogate` `5e72134`): drag-and-drop PDF/image batch renamer, pure-JS `/FlateDecode` + ToUnicode CMap PDF extractor, SHA-256 duplicate guard, pure-JS UTF-8 PKWARE Stored ZIP packager (`9/9` Node tests + Python `zipfile` interop).
+  - **KUROGATE v1.1.0** (`pecopeko/kurogate` `bca4f2c`): fixed multi-pass vault overwrite bug, React/ProseMirror safe input setter, paste-guard & collapsible UI, developer secret redaction, 6 LLM hosts, Edge/Firefox `$0` compatible (`14/14` Node tests).
+- **Track 5 — Zenn & BOOTH Reboot**:
+  - **Zenn** (`pecopeko/zenn-content` `9de1fce`): unpublished 16 thin promo stubs + retired old Franken-book; published **3 code-packed Flagship Articles** (`51,047` chars combined, live-tested Python/JS blocks + real measured PII precision benchmark `-91.67%` FP reduction) and **NEW `¥1,200` 8-chapter AFML Paid Book** (`jp-quant-backtest-audit-afml`, `68,187` chars, Ch. 1–2 `free: true`, Hiragino Sans `700x980` cover).
+  - **BOOTH Top-5 Back-Office Pro Kit v2.0**: built `jp-backoffice-top5-pro-kit-v2.0.0.zip` (`2,979,315` bytes, `124` entries) + working `samples/` + `verify_quickstart.sh` (all 3 steps exit 0) + crisp `1000x1000` Japanese cover (`jp-backoffice-top5-cover.png`), and **removed the free Pro ZIP leak** from public GitHub Release `v1.0.0-pro-kit`.
+- **Track 6 — Live Immunefi Deep Manual Solidity Audit**:
+  - Audited `39,759 LOC` across `Base Everest` (`nitro-validator` + `contracts`) & `Metricxyz` (`oracle`/`pool`/`periphery`) -> `tracks/track6_security_audits/IMMUNEFI_LIVE_AUDIT_DOSSIER_2026_11.md` (`0` Critical/High/Medium; `2` confirmed Low + `5` Info; advised against low-grade submissions).
+- **Track 7 — Productized "List-and-Wait" Storefront**:
+  - Created `tracks/track7_freelance_kit/COCONALA_LANCERS_READY_LISTINGS.md` (3 verified-char-limit Coconala/Lancers packages `¥15k–¥43k` + Edge/Firefox `$0` submission checklist) backed by upgraded CP932 `dirty_csv_to_zengin120.py`, PDF/SHA-256 `dencho_folder_renamer_indexer.py`, and Shopify/RSS/Webhook `polite_feed_price_diff.py`.
+
+---
+
+## Track 1 — Apify Store Pay-Per-Event (PPE) Actor Suite (`45` Actors Shipped)
+- **Public Repository**: https://github.com/pecopeko/apify-ppe-actors (`34c44b4`)
 - **Wave 1 (`3` Actors)**:
   1. `jp-llm-compliance-pii-guard` (`document_processed` @ `$0.002`)
   2. `podcast-rss-transcript-extractor` (`episode_extracted` @ `$0.004`)

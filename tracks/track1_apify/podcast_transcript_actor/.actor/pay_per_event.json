@@ -4,10 +4,17 @@
     "actorChargeEvents": {
       "episode_extracted": {
         "eventTitle": "Episode Extracted",
-        "eventDescription": "Charged per podcast episode extracted with clean show notes, audio enclosure metadata, chapters, and normalized Podcasting 2.0 transcript.",
+        "eventDescription": "Charged per podcast episode extracted with show owner metadata (owner_name, owner_email), categories, people, funding URLs, show notes, and audio enclosure metadata.",
         "isOneTimeEvent": false,
         "isPrimaryEvent": true,
-        "eventPriceUsd": 0.004
+        "eventPriceUsd": 0.002
+      },
+      "transcript_extracted": {
+        "eventTitle": "Transcript Extracted",
+        "eventDescription": "Charged ONLY when Podcasting 2.0 transcript segments (VTT/SRT/JSON/TXT) are actually extracted for an episode.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": false,
+        "eventPriceUsd": 0.002
       }
     }
   },

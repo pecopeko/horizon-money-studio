@@ -1,9 +1,9 @@
 {
   "actorSpecification": 1,
   "name": "sec-edgar-8k-10k-item-extractor",
-  "title": "SEC EDGAR 8-K / 10-K / 10-Q & XBRL Financial Extractor",
-  "description": "Extract structured recent SEC 8-K, 10-K, and 10-Q filing URLs plus latest US-GAAP XBRL Revenues, NetIncomeLoss, Assets, and Cash directly from public data.sec.gov JSON APIs.",
-  "version": "1.0",
+  "title": "SEC EDGAR Filings, XBRL Financials & Form D Search Extractor",
+  "description": "Extract structured SEC 8-K, 10-K, 10-Q filings, ASC 606 annual & quarterly US-GAAP XBRL metrics, and EFTS full-text / Form D startup funding searches directly from official data.sec.gov and efts.sec.gov JSON APIs.",
+  "version": "2.0",
   "meta": {
     "templateId": "python-start"
   },

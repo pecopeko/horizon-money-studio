@@ -3,27 +3,56 @@
   "type": "object",
   "schemaVersion": 1,
   "properties": {
-    "storeUrl": {
-      "title": "Shopify Store Base URL",
-      "type": "string",
-      "editor": "textfield",
-      "default": "https://shop.example.org",
-      "description": "Shopify Store Base URL (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
+    "storeUrls": {
+      "title": "Shopify Store URLs",
+      "type": "array",
+      "editor": "stringList",
+      "description": "One or more public Shopify store base URLs or domains (e.g. 'https://www.allbirds.com'). Failed or blocked stores emit a structured error record without stopping the rest of the batch.",
+      "prefill": [
+        "https://www.allbirds.com"
+      ]
     },
-    "collection": {
-      "title": "Collection Handle (optional)",
+    "storeUrl": {
+      "title": "Single Store URL (Legacy)",
       "type": "string",
       "editor": "textfield",
-      "description": "Collection Handle (optional) (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
+      "description": "Optional legacy single Shopify store base URL. Supported for backward compatibility alongside storeUrls."
+    },
+    "collectionHandle": {
+      "title": "Collection Handle Filter (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional Shopify collection handle (e.g. 'mens-runners') to fetch /collections/{handle}/products.json instead of the full store catalog."
+    },
+    "includeCollections": {
+      "title": "Include Store Collections (/collections.json)",
+      "type": "boolean",
+      "default": false,
+      "description": "When enabled, also fetches public /collections.json metadata and outputs collection discovery records alongside products."
     },
     "maxPages": {
-      "title": "Max Pages (250 products/page)",
+      "title": "Max Pages per Store (250 products/page)",
       "type": "integer",
-      "default": 3,
-      "description": "Max Pages (250 products/page) (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
+      "default": 5,
+      "minimum": 1,
+      "maximum": 100,
+      "description": "Maximum number of 250-product JSON pages to fetch per store."
+    },
+    "maxProductsPerStore": {
+      "title": "Max Products per Store (0 = Unlimited up to Max Pages)",
+      "type": "integer",
+      "default": 500,
+      "minimum": 0,
+      "maximum": 25000,
+      "description": "Optional hard cap on product records extracted per store. Set to 0 to extract all products up to maxPages * 250."
+    },
+    "requestDelayMs": {
+      "title": "Polite Delay Between Requests (ms)",
+      "type": "integer",
+      "default": 250,
+      "minimum": 0,
+      "maximum": 5000,
+      "description": "Polite delay in milliseconds between paginated requests and consecutive stores. 429/503 responses automatically trigger Retry-After exponential backoff."
     }
-  },
-  "required": [
-    "storeUrl"
-  ]
+  }
 }

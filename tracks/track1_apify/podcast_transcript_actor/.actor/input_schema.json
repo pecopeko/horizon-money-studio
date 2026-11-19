@@ -1,5 +1,5 @@
 {
-  "title": "Podcast RSS & Transcript Extractor Input",
+  "title": "Podcast RSS, Host Contacts & Transcript Extractor Input",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
@@ -22,14 +22,14 @@
     "rssUrls": {
       "title": "Direct Podcast RSS Feed URLs",
       "type": "array",
-      "description": "Direct HTTP(S) podcast RSS XML URLs to parse.",
+      "description": "Direct HTTP(S) podcast RSS XML URLs to parse (SSRF-protected with safe redirect validation).",
       "editor": "stringList",
       "default": []
     },
     "maxEpisodesPerFeed": {
       "title": "Max Episodes Per Feed",
       "type": "integer",
-      "description": "Maximum number of newest episodes to extract per podcast feed.",
+      "description": "Maximum number of newest matching episodes to extract per podcast feed.",
       "default": 10,
       "minimum": 1,
       "maximum": 500
@@ -45,7 +45,8 @@
     "country": {
       "title": "iTunes Store Country Code",
       "type": "string",
-      "description": "Two-letter country code passed to the iTunes Search/Lookup API (e.g. US, JP, GB).",
+      "editor": "textfield",
+      "description": "Two-letter country code passed to the iTunes Search/Lookup and Apple Reviews APIs (e.g. US, JP, GB).",
       "default": "US"
     },
     "fetchTranscripts": {
@@ -65,6 +66,30 @@
       "type": "boolean",
       "description": "Include per-cue timestamped segments alongside full_transcript in dataset records.",
       "default": true
+    },
+    "includeAppleReviews": {
+      "title": "Include Apple Podcasts Customer Reviews",
+      "type": "boolean",
+      "description": "Fetch official public Apple Podcasts customer reviews JSON when an Apple Podcasts iTunes ID is available.",
+      "default": false
+    },
+    "onlyWithTranscripts": {
+      "title": "Only Episodes With Transcripts",
+      "type": "boolean",
+      "description": "Filter output to episodes that include a Podcasting 2.0 transcript (and successfully extracted transcript segments when fetchTranscripts is enabled).",
+      "default": false
+    },
+    "publishedAfter": {
+      "title": "Published After (ISO Date)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional ISO-8601 date or timestamp (e.g. '2026-01-01') to include only episodes published on or after that date."
+    },
+    "keywordFilter": {
+      "title": "Keyword Filter (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional case-insensitive keyword filter matched against episode title, show notes, podcast title, and extracted transcript text."
     }
   }
 }
