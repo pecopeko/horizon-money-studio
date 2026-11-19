@@ -108,14 +108,14 @@ def is_non_cash_org(repo_full_name: str) -> bool:
 
 _NUMERIC_OWNER_RE = re.compile(r"^\d+$")
 _SANDBOX_REPO_NAME_RE = re.compile(
-    r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+)$"
+    r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+|(?:bot|bounty|algora|webhook)[-_](?:test|sandbox|demo)|(?:test|sandbox|demo)[-_](?:bot|repo|app))$"
 )
 _POINTS_ONLY_LABEL_RE = re.compile(r"(?i)^(?:points?|xp|kudos)\s*[:=-]?\s*\d+$")
 _PAID_CLOUD_INFRA_RE = re.compile(
     r"(?i)\b(?:aws\s+eks|eks\s+cluster|\bsst\b.*\beks\b|gke\s+cluster|aks\s+cluster|bedrock|sagemaker)\b"
 )
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b|\bdiscovery:\s*monetizing\s+github\s+issues\b)"
+    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|hello\s+world[!.\s]*$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b|\bdiscovery:\s*monetizing\s+github\s+issues\b)"
 )
 
 
@@ -428,7 +428,14 @@ def score_bounty_issue(
     has_points_only_label = bounty_usd is None and any(
         _POINTS_ONLY_LABEL_RE.match(lb.strip()) for lb in labels
     )
-    non_cash_only = is_non_cash_org(repo_full_name) or has_points_only_label
+    is_unfunded_algora_meta = (
+        _extract_repo_owner(repo_full_name) == "algora-io"
+        and bounty_usd is None
+        and not any(("bounty" in lb.lower() or "💎" in lb) for lb in labels)
+    )
+    non_cash_only = (
+        is_non_cash_org(repo_full_name) or has_points_only_label or is_unfunded_algora_meta
+    )
     honeypot_flag = is_honeypot_or_bait(raw_issue)
     paid_infra_text = f"{repo_full_name}\n{title}\n{body or ''}"
     requires_paid_infra = bool(_PAID_CLOUD_INFRA_RE.search(paid_infra_text))
@@ -481,7 +488,7 @@ def score_bounty_issue(
 def scan_bounty_issues(
     queries: tuple[str, ...] = DEFAULT_BOUNTY_QUERIES,
     per_page: int = 40,
-    delay_sec: float = 1.5,
+    delay_sec: float = 2.2,
     timeout_sec: float = 15.0,
     client: httpx.Client | None = None,
 ) -> dict[str, Any]:

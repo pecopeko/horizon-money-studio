@@ -18,6 +18,7 @@ from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_j
 from tracks.track1_apify.jp_ai_governance_guideline_actor.main import audit_ai_governance_item
 from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
+from tracks.track1_apify.jp_fefta_export_control_actor.main import audit_fefta_export_item
 from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
 from tracks.track1_apify.jp_hansha_kyc_whistleblower_actor.main import audit_hansha_kyc_item
 from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
@@ -48,8 +49,9 @@ def run_offline_compliance_audit(
     security_column: str = "security_checksheet_text",
     ai_gov_column: str = "ai_governance_text",
     hansha_column: str = "hansha_clause_text",
+    export_control_column: str = "export_control_text",
 ) -> dict[str, Any]:
-    """Audit rows across 13 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower)."""
+    """Audit rows across 14 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -65,6 +67,7 @@ def run_offline_compliance_audit(
     bouheki_flagged = 0
     aigov_flagged = 0
     hansha_flagged = 0
+    fefta_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -170,6 +173,33 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_export = str(row.get(export_control_column) or "").strip()
+        raw_us_val = str(row.get("us_origin_value_jpy") or "").replace(",", "").strip()
+        raw_tot_val = str(row.get("total_product_value_jpy") or "").replace(",", "").strip()
+        raw_dest = str(row.get("destination_group") or "general").strip() or "general"
+        try:
+            us_val_f = float(raw_us_val or "0")
+        except ValueError:
+            us_val_f = 0.0
+        try:
+            tot_val_f = float(raw_tot_val or "0")
+        except ValueError:
+            tot_val_f = 0.0
+        has_export_inputs = bool(raw_export or raw_us_val or raw_tot_val)
+        fefta_res = (
+            audit_fefta_export_item(
+                raw_export,
+                us_origin_value_jpy=us_val_f,
+                total_product_value_jpy=tot_val_f,
+                destination_group=raw_dest,
+                is_public_oss_encryption=str(row.get("is_public_oss_encryption") or "").strip().lower() in {"1", "true", "yes"},
+                has_ear_license_or_exception=str(row.get("has_ear_license_or_exception") or "").strip().lower() in {"1", "true", "yes"},
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_export_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -196,6 +226,8 @@ def run_offline_compliance_audit(
             aigov_flagged += 1
         if hansha_res and hansha_res["status"] != "pass":
             hansha_flagged += 1
+        if fefta_res and fefta_res["status"] != "pass":
+            fefta_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -227,6 +259,8 @@ def run_offline_compliance_audit(
             row_entry["aigov_audit"] = aigov_res
         if hansha_res is not None:
             row_entry["hansha_kyc_audit"] = hansha_res
+        if fefta_res is not None:
+            row_entry["fefta_export_audit"] = fefta_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -246,6 +280,7 @@ def run_offline_compliance_audit(
         "bouheki_security_flagged_rows": bouheki_flagged,
         "aigov_flagged_rows": aigov_flagged,
         "hansha_kyc_flagged_rows": hansha_flagged,
+        "fefta_export_flagged_rows": fefta_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

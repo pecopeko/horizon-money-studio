@@ -306,5 +306,52 @@ def test_flags_multi_arg_abi_encode_packed_collision_and_ignores_eip191(tmp_path
     assert ep_findings[0]["line_number"] == 5
 
 
+def test_flags_unchecked_narrowing_uint_downcast_and_allows_safecast(tmp_path: Path) -> None:
+    bad_sol = tmp_path / "UnsafeCastPool.sol"
+    bad_sol.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract UnsafeCastPool {
+            function deposit(uint256 amount) external pure returns (uint128, uint32) {
+                uint32 ts = uint32(block.timestamp);
+                return (uint128(amount), ts);
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    good_sol = tmp_path / "SafeCastPool.sol"
+    good_sol.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract SafeCastPool {
+            function deposit(uint256 amount) external pure returns (uint128) {
+                require(amount <= type(uint128).max, "overflow");
+                return uint128(amount);
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    using_sol = tmp_path / "UsingSafeCastPool.sol"
+    using_sol.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract UsingSafeCastPool {
+            using SafeCast for uint256;
+            function deposit(uint256 amount) external pure returns (uint128) {
+                return uint128(amount);
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    summary = scan_solidity_tree(tmp_path)
+    cast_findings = [f for f in summary["findings"] if f["rule_id"] == "SOL-UNSAFECAST-13"]
+    assert len(cast_findings) == 1
+    assert cast_findings[0]["file_path"].endswith("UnsafeCastPool.sol")
+    assert cast_findings[0]["line_number"] == 6
+
+
 
 

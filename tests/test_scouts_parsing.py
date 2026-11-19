@@ -629,5 +629,50 @@ def test_wave12_paid_cloud_infra_penalty_and_meta_monetizing_filter() -> None:
     assert scored_plain.ev_score > scored_eks.ev_score * 5.0
 
 
+def test_wave13_bot_test_hello_world_and_unfunded_algora_meta_filter() -> None:
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/respace-labs/bot-test",
+                "title": "Hello world",
+                "labels": [],
+            }
+        )
+        is True
+    )
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/org/real-app",
+                "title": "Hello world!",
+                "labels": [],
+            }
+        )
+        is True
+    )
+
+    now = datetime(2026, 11, 19, 0, 0, tzinfo=timezone.utc)
+    algora_meta = {
+        "repository_url": "https://api.github.com/repos/algora-io/algora",
+        "number": 222,
+        "html_url": "https://github.com/algora-io/algora/issues/222",
+        "title": "Enhancement: Add support for system dark mode via prefers-color-scheme",
+        "body": "Add dark mode.",
+        "comments": 2,
+        "created_at": "2026-11-18T00:00:00Z",
+        "labels": [],
+    }
+    algora_funded = {
+        **algora_meta,
+        "title": "Fix payout webhook ($150)",
+        "labels": [{"name": "💎 Bounty"}],
+    }
+    scored_meta = score_bounty_issue(algora_meta, now_utc=now)
+    scored_funded = score_bounty_issue(algora_funded, now_utc=now)
+    assert scored_meta.non_cash_only is True
+    assert scored_funded.non_cash_only is False
+    assert scored_funded.ev_score > scored_meta.ev_score * 10.0
+
+
 
 

@@ -334,3 +334,42 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason3.sol` | 355 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
 | `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason4.sol` | 361 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
 | `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason6.sol` | 80 | `IERC20(LOCK_TOKEN).safeTransferFrom(owner(), address(this), increaseLocked);` |
+
+## Repository: `https://github.com/sherlock-audit/2024-09-predict-fun.git`
+- Non-test/non-interface `.sol` files scanned: `9`
+- Candidate pattern hits: `16` (`SOL-FOT-04`: `10`, `SOL-ENCODEPACKED-12`: `5`, `SOL-PRECISION-01`: `1`; top `15` hits shown)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 421 | `CTF.safeTransferFrom(borrowRequest.from, address(this), positionId, collateralAmountRequired, "");` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 470 | `LOAN_TOKEN.safeTransferFrom(msg.sender, loan.lender, debt);` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 471 | `CTF.safeTransferFrom(address(this), msg.sender, loan.positionId, loan.collateralAmount, "");` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 880 | `CTF.safeTransferFrom(address(this), msg.sender, loan.positionId, loan.collateralAmount, "");` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 895 | `LOAN_TOKEN.safeTransferFrom(from, to, loanAmount - protocolFee);` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 897 | `LOAN_TOKEN.safeTransferFrom(from, protocolFeeRecipient, protocolFee);` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 912 | `LOAN_TOKEN.safeTransferFrom(from, to, loanAmount);` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 914 | `LOAN_TOKEN.safeTransferFrom(from, protocolFeeRecipient, protocolFee);` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 927 | `CTF.safeTransferFrom(address(this), receiver, positionId, excessCollateral, "");` |
+| `SOL-ENCODEPACKED-12` | Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 953 | `fulfillment = fulfillments[keccak256(abi.encodePacked(proposal.from, proposal.salt, proposal.proposalType))];` |
+| `SOL-FOT-04` | Low/Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 991 | `CTF.safeTransferFrom(borrower, address(this), positionId, collateralAmountRequired, "");` |
+| `SOL-ENCODEPACKED-12` | Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 1556 | `return keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount));` |
+| `SOL-ENCODEPACKED-12` | Medium | `predict-dot-loan/contracts/PredictDotLoan.sol` | 1563 | `return uint(keccak256(abi.encodePacked(collateralToken, collectionId)));` |
+| `SOL-ENCODEPACKED-12` | Medium | `predict-dot-loan/contracts/PredictDotLoanValidator.sol` | 430 | `return keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount));` |
+| `SOL-ENCODEPACKED-12` | Medium | `predict-dot-loan/contracts/PredictDotLoanValidator.sol` | 442 | `return uint(keccak256(abi.encodePacked(collateralToken, collectionId)));` |
+
+## Repository: `https://github.com/sherlock-audit/2024-08-sentiment-v2.git`
+- Non-test/non-interface `.sol` files scanned: `17`
+- Candidate pattern hits: `10` (`SOL-FOT-04`: `5`, `SOL-ENCODEPACKED-12`: `3`, `SOL-ORACLE-03`: `2`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `protocol-v2/src/Pool.sol` | 318 | `IERC20(pool.asset).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-ENCODEPACKED-12` | Medium | `protocol-v2/src/Pool.sol` | 575 | `poolId = uint256(keccak256(abi.encodePacked(owner, asset, rateModelKey)));` |
+| `SOL-ENCODEPACKED-12` | Medium | `protocol-v2/src/PositionManager.sol` | 276 | `salt = keccak256(abi.encodePacked(owner, salt));` |
+| `SOL-FOT-04` | Low/Medium | `protocol-v2/src/PositionManager.sol` | 336 | `IERC20(asset).safeTransferFrom(msg.sender, position, amt);` |
+| `SOL-FOT-04` | Low/Medium | `protocol-v2/src/PositionManager.sol` | 494 | `IERC20(poolAsset).safeTransferFrom(msg.sender, address(pool), amt);` |
+| `SOL-FOT-04` | Low/Medium | `protocol-v2/src/SuperPool.sol` | 501 | `ASSET.safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `protocol-v2/src/SuperPoolFactory.sol` | 72 | `IERC20(asset).safeTransferFrom(msg.sender, address(this), initialDepositAmt);` |
+| `SOL-ENCODEPACKED-12` | Medium | `protocol-v2/src/lens/PortfolioLens.sol` | 155 | `salt = keccak256(abi.encodePacked(owner, salt));` |
+| `SOL-ORACLE-03` | High | `protocol-v2/src/oracle/ChainlinkEthOracle.sol` | 88 | `(, int256 answer, uint256 startedAt,,) = ARB_SEQ_FEED.latestRoundData();` |
+| `SOL-ORACLE-03` | High | `protocol-v2/src/oracle/ChainlinkUsdOracle.sol` | 103 | `(, int256 answer, uint256 startedAt,,) = ARB_SEQ_FEED.latestRoundData();` |

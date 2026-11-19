@@ -39,6 +39,12 @@ _SAFE_PROXY_DELEGATE_RE = re.compile(
 _ECRECOVER_RE = re.compile(r"\becrecover\s*\(")
 _ZERO_ADDR_CHECK_RE = re.compile(r"(?:address\s*\(\s*0\s*\)|0x0+\b)")
 _ABI_ENCODE_PACKED_RE = re.compile(r"\bkeccak256\s*\(\s*abi\.encodePacked\s*\(([^)]*)\)")
+_NARROWING_UINT_CAST_RE = re.compile(
+    r"\buint(?:32|64|96|128)\s*\(\s*([A-Za-z_][A-Za-z0-9_\.]*)\s*\)"
+)
+_SAFECAST_GUARD_RE = re.compile(
+    r"(?:\bSafeCast\b|\.toUint(?:32|64|96|128)\b|type\s*\(\s*uint(?:32|64|96|128)\s*\)\s*\.max\b)"
+)
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -79,6 +85,7 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
     is_concrete_or_abstract_contract = bool(
         re.search(r"\b(?:abstract\s+)?contract\s+[A-Za-z_]", joined)
     )
+    has_file_safecast = bool(re.search(r"\busing\s+SafeCast\b", joined))
     findings: list[SolidityFinding] = []
 
     for idx, line in enumerate(lines, 1):
@@ -271,6 +278,24 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         rationale="Packing multiple dynamic/variable arguments with abi.encodePacked lets distinct inputs collide onto identical digests; prefer abi.encode.",
                     )
                 )
+        if is_concrete_or_abstract_contract and not has_file_safecast:
+            m_cast = _NARROWING_UINT_CAST_RE.search(stripped)
+            if m_cast is not None:
+                inner = m_cast.group(1)
+                if inner not in {"block.timestamp", "block.number", "msg.sig"}:
+                    cast_window = "\n".join(lines[max(0, idx - 3) : min(len(lines), idx + 2)])
+                    if not _SAFECAST_GUARD_RE.search(cast_window):
+                        findings.append(
+                            SolidityFinding(
+                                rule_id="SOL-UNSAFECAST-13",
+                                severity="Medium",
+                                title="Unchecked narrowing uint downcast risks silent truncation in Solidity >=0.8",
+                                file_path=file_path,
+                                line_number=idx,
+                                snippet=stripped[:140],
+                                rationale="Explicit narrowing casts like uint128(x) silently truncate higher bits even in Solidity >=0.8; validate bounds or use SafeCast.",
+                            )
+                        )
 
     if (
         is_concrete_or_abstract_contract
