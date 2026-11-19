@@ -95,12 +95,12 @@
   - Continuous 3-tier conviction lot scaling (`800k / 1.6M / 2.4M JPY` within the `2,400,000 JPY` cap, `mean_cap_jpy = 1,683,271 JPY`) achieved `+2,646,201 JPY` net PnL (`Sharpe 2.501`) vs exact mean-capital Uniform-Cap Control `+2,100,950 JPY` (`Sharpe 2.328`) — **`+545,251 JPY` verified edge (`PASS`)**.
 
 ## Track 5 — Direct Digital Products (Zenn Paid Book/Articles + BOOTH Pro Suite)
-- **Zenn Content GitHub Repo**: https://github.com/pecopeko/zenn-content (`2d04acd`)
-  - Paid Book (`¥2,400`, 6 chapters): `books/afml-quant-and-local-ai-guard/`
-  - Free Lead Articles (`7`): `kurogate-yakkigate-local-compliance.md`, `quant-backtest-uniform-shrinkage-trap.md`, `jp-b2b-6gates-offline-compliance.md`, `kojingate-gensengate-8gates-local.md`, `roumugate-fixed-overtime-36-local-audit.md`, `jisgate-wcag-10gates-local-compliance.md`, `bouhekigate-meti-star3-11gates-local.md`
+- **Zenn Content GitHub Repo**: https://github.com/pecopeko/zenn-content (`ceadb7f`)
+  - Paid Book (`¥2,400`, 6 chapters + `700x980` `cover.png`): `books/afml-quant-and-local-ai-guard/`
+  - Free Lead Articles (`7`, all `published: true`): `kurogate-yakkigate-local-compliance.md`, `quant-backtest-uniform-shrinkage-trap.md`, `jp-b2b-6gates-offline-compliance.md`, `kojingate-gensengate-8gates-local.md`, `roumugate-fixed-overtime-36-local-audit.md`, `jisgate-wcag-10gates-local-compliance.md`, `bouhekigate-meti-star3-11gates-local.md`
 - **BOOTH / Gumroad Pro Suite Bundle (`¥3,980` recommended)**:
-  - Release ZIP (`4,662,158` bytes): https://github.com/pecopeko/horizon-money-studio/releases/download/v1.0.0-pro-kit/japan-b2b-compliance-pro-suite-v1.0.0.zip
-  - CLI (`batch_compliance_suite_cli.py`, upgraded for 11-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding/Labor/JIS X 8341-3/METI Security CSV columns) + Listing Copy (`tracks/track5_direct_sales/booth_pro_pack/BOOTH_LISTING_JA.md`)
+  - Release ZIP (`4,872,586` bytes, `133` entries: all `11` Web Apps + `2` Chrome MV3 Extensions + 11-Gate CLI + `8` Track 7 deliverables): https://github.com/pecopeko/horizon-money-studio/releases/download/v1.0.0-pro-kit/japan-b2b-compliance-pro-suite-v1.0.0.zip
+  - CLI (`batch_compliance_suite_cli.py`, upgraded for 11-Gate PII/Yakki/Zengin/Keiyaku/Tokusho/Dencho-ho/APPI/Withholding/Labor/JIS X 8341-3/METI Security CSV columns) + `tracks/track5_direct_sales/booth_pro_pack/{BOOTH_LISTING_JA.md,QUICKSTART_JA.md}`
 
 ## Track 6 — Solidity Smart Contract Audit Competition Pre-Screener & Triage
 - **Engine**: `src/makemoney/scouts/solidity_audit_scanner.py` (upgraded to skip pure interfaces, ERC721 NFT transfers, `/script/` deployment files, `/dependencies/`/`/openzeppelin/`/`/vendor/`/`/lib/`/`/mocks/` libraries, typed interface `.call()` invocations without low-level `{}` options, and non-vault `vault.totalAssets()` callers, validate tuple-captured `.call` checks across 6 lines, and flag zero-slippage swap params via `SOL-SLIPPAGE-07`, unguarded upgradeable `initialize()` via `SOL-INIT-08`, `selfdestruct`/`suicide` via `SOL-SELFDESTRUCT-09`, & non-proxy `.delegatecall` via `SOL-DELEGATECALL-10`)
