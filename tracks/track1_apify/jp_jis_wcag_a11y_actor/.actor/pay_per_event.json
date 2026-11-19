@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "page_audited": {
+        "eventTitle": "HTML Page Audited (JIS X 8341-3 AA)",
+        "eventDescription": "Charged per HTML document/fragment audited against JIS X 8341-3:2016 / WCAG 2.1 AA.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

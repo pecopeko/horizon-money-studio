@@ -127,5 +127,5 @@
 
 ## Honeypot & Non-Cash Orgs Excluded During Discovery
 - Blocklisted AI-honeypot / duplicate synthetic orgs: `SecureBananaLabs`, `UnsafeLabs`, `ClankerNation`, `IES-BoilerRoom`, `zhangjiayang6835-cyber`, `WholeTroutMedia`, `relayhop`, `limitlessprojects`
-- Flagged non-cash credit-only orgs: `hanzoai` (platform credits), `zoo-apps` (non-cash rewards)
-- Skipped contested `tscircuit` issues that already had open competing PRs (`tscircuit/jlcsearch#653`, `tscircuit/circuit-json-to-spice#73`, `tscircuit/core#6066`) and multi-page PR + cross-repo `/timeline` scans across `110+` `tscircuit` repos verified `0` new uncontested bug candidates in Iterations 5–7.
+- Flagged non-cash credit-only orgs: `hanzoai` (platform credits), `zoo-apps` (non-cash rewards), `CaravanaCloud` (stale un-funded hack/non-cash issues)
+- Skipped contested `tscircuit` issues that already had open competing PRs (`tscircuit/jlcsearch#653`, `tscircuit/circuit-json-to-spice#73`, `tscircuit/core#6066`) and multi-page PR + cross-repo `/timeline` scans across `110+` `tscircuit` repos verified `0` new uncontested bug candidates in Iterations 5–8.

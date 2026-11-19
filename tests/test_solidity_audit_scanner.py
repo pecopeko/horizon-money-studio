@@ -176,4 +176,33 @@ def test_excludes_deployment_scripts_and_flags_unguarded_initialize(tmp_path: Pa
     assert init_findings[0]["line_number"] == 4
 
 
+def test_excludes_vendored_dependencies_and_flags_selfdestruct(tmp_path: Path) -> None:
+    proto_dir = tmp_path / "contracts"
+    deps_dir = tmp_path / "contracts" / "dependencies" / "openzeppelin"
+    proto_dir.mkdir()
+    deps_dir.mkdir(parents=True)
+
+    (deps_dir / "Address.sol").write_text(
+        "contract Address { function send() internal { target.call(\"\"); } }",
+        encoding="utf-8",
+    )
+    (proto_dir / "LegacyPool.sol").write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract LegacyPool {
+            function destroy(address payable to) external {
+                selfdestruct(to);
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    summary = scan_solidity_tree(tmp_path)
+    assert summary["scanned_files"] == 1
+    assert [f["rule_id"] for f in summary["findings"]] == ["SOL-SELFDESTRUCT-09"]
+    assert summary["findings"][0]["line_number"] == 5
+
+
+
 

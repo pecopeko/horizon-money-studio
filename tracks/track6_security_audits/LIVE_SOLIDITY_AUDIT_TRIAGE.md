@@ -192,23 +192,51 @@ _Showing top 40 of 42 deterministic pattern hits._
 - Candidate pattern hits: `0`
 
 ## Repository: `https://github.com/hats-finance/dTRINITY-0xee5c6f15e8d0b55a5eff84bb66beeee0e6140ffe.git`
-- Non-test/non-interface `.sol` files scanned: `219`
-- Candidate pattern hits: `57` (top `15` representative findings below)
+- Non-test/non-interface `.sol` files scanned: `194` (re-scanned after `/dependencies/` & `/openzeppelin/` exclusion; previously `219`)
+- Candidate pattern hits: `55` (top `15` representative findings below)
 
 | Rule ID | Severity | File | Line | Snippet |
 |---|---|---|---:|---|
 | `SOL-ERC4626-06` | High | `bot/dlend-liquidator/contracts/aave-v3/FlashLoanLiquidatorAaveBorrowRepayBase.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
+| `SOL-ERC4626-06` | High | `bot/dlend-liquidator/contracts/aave-v3/FlashMintLiquidatorAaveBorrowRepayBase.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
 | `SOL-ERC4626-06` | High | `contracts/common/RescuableVault.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
 | `SOL-ERC4626-06` | High | `contracts/common/SwappableVault.sol` | 1 | `ERC4626 / convertToShares without _decimalsOffset or virtual shares` |
-| `SOL-INIT-08` | High | `contracts/dlend/core/dependencies/openzeppelin/upgradeability/InitializableUpgradeabilityProxy.sol` | 36 | `function initialize(address _logic, bytes memory _data) public payable {` |
 | `SOL-ORACLE-03` | High | `contracts/dlend/core/protocol/configuration/PriceOracleSentinel.sol` | 101 | `.latestRoundData();` |
-| `SOL-CALL-05` | Medium | `contracts/dlend/core/dependencies/openzeppelin/contracts/Address.sol` | 166 | `(bool success, bytes memory returndata) = target.call{value: value}(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/BorrowLogic.sol` | 298 | `IERC20(params.asset).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/BridgeLogic.sol` | 178 | `IERC20(asset).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/FlashLoanLogic.sol` | 295 | `IERC20(params.asset).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/LiquidationLogic.sol` | 265 | `IERC20(params.debtAsset).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/core/protocol/libraries/logic/SupplyLogic.sol` | 99 | `IERC20(params.asset).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/adapters/curve/CurveDebtSwapAdapter.sol` | 274 | `IERC20WithPermit(aToken).safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/adapters/odos/OdosDebtSwapAdapter.sol` | 261 | `IERC20WithPermit(aToken).safeTransferFrom(` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/misc/WrappedTokenGatewayV3.sol` | 91 | `aWETH.transferFrom(msg.sender, address(this), amountToWithdraw);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/dlend/periphery/misc/WrappedTokenGatewayV3.sol` | 193 | `aWETH.transferFrom(msg.sender, address(this), amountToWithdraw);` |
 | `SOL-FOT-04` | Low/Medium | `contracts/dstable/AmoManager.sol` | 176 | `dstable.transferFrom(amoVault, address(this), dstableAmount);` |
-| `SOL-FOT-04` | Low/Medium | `contracts/dstable/CollateralHolderVault.sol` | 75 | `IERC20Metadata(fromCollateral).safeTransferFrom(` |
+
+## Repository: `https://github.com/hats-finance/Mento-0x2a1b9b1f6fa7c2e73815a7dff0e1688767382694.git`
+- Non-test/non-interface `.sol` files scanned: `57`
+- Candidate pattern hits: `8` (`SOL-ORACLE-03`: `1`, `SOL-FOT-04`: `7`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `contracts/goodDollar/GoodDollarExpansionController.sol` | 144 | `require(IERC20(exchange.reserveAsset).transferFrom(msg.sender, reserve, reserveInterest), "Transfer failed");` |
+| `SOL-FOT-04` | Low/Medium | `contracts/governance/locking/Locking.sol` | 68 | `require(token.transferFrom(msg.sender, address(this), amount), "transfer failed");` |
+| `SOL-FOT-04` | Low/Medium | `contracts/governance/locking/LockingRelock.sol` | 131 | `require(token.transferFrom(locks[id].account, address(this), transferAmount), "transfer failed");` |
+| `SOL-ORACLE-03` | High | `contracts/oracles/ChainlinkRelayerV1.sol` | 299 | `(, int256 _price, , uint256 timestamp, ) = AggregatorV3Interface(aggCfg.aggregator).latestRoundData();` |
+| `SOL-FOT-04` | Low/Medium | `contracts/swap/Broker.sol` | 188 | `IERC20(token).safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/swap/Broker.sol` | 241 | `IERC20(token).safeTransferFrom(from, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/swap/Broker.sol` | 244 | `IERC20(token).safeTransferFrom(from, address(reserve), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/tokens/StableTokenV2.sol` | 199 | `return ERC20Upgradeable.transferFrom(from, to, amount);` |
+
+## Repository: `https://github.com/hats-finance/Spectra-0x4b792db3d2a5d1c1ccf9938380756b200c240e5d.git`
+- Non-test/non-interface `.sol` files scanned: `18`
+- Candidate pattern hits: `6` (`SOL-FOT-04`: `6`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `src/router/Dispatcher.sol` | 94 | `IERC20(token).safeTransferFrom(msgSender, address(this), value);` |
+| `SOL-FOT-04` | Low/Medium | `src/router/Dispatcher.sol` | 107 | `IERC20(token).safeTransferFrom(msgSender, address(this), value);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/PrincipalToken.sol` | 216 | `IERC20(_underlying).safeTransferFrom(msg.sender, address(this), assets);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/PrincipalToken.sol` | 246 | `IERC20(ibt).safeTransferFrom(msg.sender, address(this), ibts);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/PrincipalToken.sol` | 485 | `IERC20(_ibt).safeTransferFrom(address(_receiver), address(this), _amount + fee);` |
+| `SOL-FOT-04` | Low/Medium | `src/tokens/YieldToken.sol` | 109 | `return super.transferFrom(from, to, amount);` |

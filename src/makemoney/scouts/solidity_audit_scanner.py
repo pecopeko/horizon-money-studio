@@ -31,6 +31,7 @@ _UNCHECKED_LOW_LEVEL_RE = re.compile(r"\.call\s*(?:\{[^}]*\})?\s*\(")
 _ZERO_SLIPPAGE_RE = re.compile(r"\b(?:amountOutMinimum|amountOutMin|minAmountOut|minOut|minSharesOut)\s*[:=]\s*0\b")
 _UNPROTECTED_INIT_RE = re.compile(r"\bfunction\s+initialize\s*\(")
 _INIT_GUARD_RE = re.compile(r"\b(?:initializer|reinitializer|onlyInitializing)\b")
+_SELFDESTRUCT_RE = re.compile(r"\b(?:selfdestruct|suicide)\s*\(")
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -200,6 +201,18 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         rationale="An unguarded public initialize() function allows any attacker to hijack proxy initialization or re-initialize ownership.",
                     )
                 )
+        if _SELFDESTRUCT_RE.search(stripped):
+            findings.append(
+                SolidityFinding(
+                    rule_id="SOL-SELFDESTRUCT-09",
+                    severity="High",
+                    title="Deprecated selfdestruct usage (EIP-6780 post-Cancun behavior risk)",
+                    file_path=file_path,
+                    line_number=idx,
+                    snippet=stripped[:140],
+                    rationale="Under EIP-6780 post-Cancun EVM rules, selfdestruct no longer clears code/storage outside creation transactions, breaking teardown invariants.",
+                )
+            )
 
     if (
         is_concrete_or_abstract_contract
@@ -231,7 +244,21 @@ def scan_solidity_tree(root_dir: str | Path) -> dict[str, Any]:
         low_rel = f"/{rel.lower()}"
         if any(
             skip in low_rel
-            for skip in ("/test/", "/tests/", "/interfaces/", "/script/", "/scripts/", "node_modules/", "/lib/", "/mock", ".t.sol", ".s.sol")
+            for skip in (
+                "/test/",
+                "/tests/",
+                "/interfaces/",
+                "/script/",
+                "/scripts/",
+                "/dependencies/",
+                "/openzeppelin/",
+                "/vendor/",
+                "node_modules/",
+                "/lib/",
+                "/mock",
+                ".t.sol",
+                ".s.sol",
+            )
         ):
             continue
         try:

@@ -487,4 +487,36 @@ def test_wave8_limitlessprojects_and_spam_title_filters() -> None:
         )
 
 
+def test_wave9_caravanacloud_spam_titles_and_stale_365d_penalty() -> None:
+    assert "caravanacloud" in NON_CASH_ORGS
+    assert is_non_cash_org("CaravanaCloud/pet-feeder") is True
+
+    for title in ("gogogo", "testgogo", "OPEN BOUNTY"):
+        assert (
+            is_honeypot_or_bait(
+                {
+                    "repository_url": "https://api.github.com/repos/ylc8037/ylc8037",
+                    "title": title,
+                    "labels": [],
+                }
+            )
+            is True
+        )
+
+    now = datetime(2026, 11, 19, 0, 0, tzinfo=timezone.utc)
+    recent = {
+        "repository_url": "https://api.github.com/repos/org/active",
+        "number": 10,
+        "html_url": "https://github.com/org/active/issues/10",
+        "title": "Fix bug ($100)",
+        "body": "$100 bounty",
+        "comments": 0,
+        "created_at": "2026-11-18T00:00:00Z",
+        "labels": [],
+    }
+    zombie = {**recent, "created_at": "2025-04-28T03:51:10Z"}
+    assert score_bounty_issue(recent, now_utc=now).ev_score > score_bounty_issue(zombie, now_utc=now).ev_score * 3.0
+
+
+
 

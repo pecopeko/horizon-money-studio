@@ -1,0 +1,19 @@
+{
+  "title": "Terraform HCL Security & FinOps Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Terraform HCL Snippets to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "name": "main.tf",
+          "hcl_text": "resource \"aws_s3_bucket_acl\" \"public\" {\n  acl = \"public-read\"\n}\nresource \"aws_instance\" \"app\" {\n  ami = \"ami-0123456789abcdef0\"\n  instance_type = \"t3.micro\"\n}\n"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

@@ -34,7 +34,7 @@ HONEYPOT_ORGS: frozenset[str] = frozenset(
     }
 )
 
-NON_CASH_ORGS: frozenset[str] = frozenset({"hanzoai", "zoo-apps"})
+NON_CASH_ORGS: frozenset[str] = frozenset({"hanzoai", "zoo-apps", "caravanacloud"})
 
 SUSPICIOUS_BAIT_LABELS: frozenset[str] = frozenset(
     {
@@ -106,7 +106,7 @@ def is_non_cash_org(repo_full_name: str) -> bool:
 
 
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test\d*$|ssadsa$)|(?:lorem ipsum|dolor sit amet)"
+    r"(?i)^(?:\[wildcard\]\s*|test[a-z0-9]*$|(?:go){2,}$|ssadsa$|open bounty$)|(?:lorem ipsum|dolor sit amet)"
 )
 
 
@@ -196,6 +196,8 @@ def _freshness_multiplier(created_at_iso: str, now_utc: datetime | None = None) 
         return 1.25
     if age_days <= 30.0:
         return 1.05
+    if age_days > 365.0:
+        return 0.30
     if age_days > 180.0:
         return 0.70
     return 0.90
