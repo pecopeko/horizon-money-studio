@@ -1,10 +1,10 @@
-# 日本B2Bコンプライアンス 11連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
+# 日本B2Bコンプライアンス 12連 Pro スイート v1.0.0 クイックスタート（完全ローカル実行）
 
 本アーカイブに含まれるすべてのWebアプリ・Chrome拡張・Python CLI・業務自動化スクリプトは、**外部クラウド・外部LLMへ機密データを1バイトも送信せず**、貴社PCまたは閉域網ローカル環境のみで完結動作します。
 
 ---
 
-## 1. Webツール 11種（ブラウザで即起動）
+## 1. Webツール 12種（ブラウザで即起動）
 
 ES Modules を読み込むため、ZIP解凍後のフォルダ直下でローカルHTTPサーバーを1行で起動してブラウザから開いてください。
 
@@ -25,6 +25,7 @@ python3 -m http.server 8080
 9. **ROUMUGATE（労務門・労働条件通知書/固定残業3要件/36協定）**: `http://localhost:8080/tracks/track2_micro_saas/roumugate/docs/`
 10. **JISGATE（基準門・JIS X 8341-3 AA / コントラスト比検算）**: `http://localhost:8080/tracks/track2_micro_saas/jisgate/docs/`
 11. **BOUHEKIGATE（防壁門・METI ★3・★4 / PPC漏えいSLA / SPF・DMARC）**: `http://localhost:8080/tracks/track2_micro_saas/bouhekigate/docs/`
+12. **AIGOVGATE（統治門・AI事業者ガイドライン第1.1版 / 著作権30条の4 / シャドーAI）**: `http://localhost:8080/tracks/track2_micro_saas/aigovgate/docs/`
 
 ---
 
@@ -38,7 +39,7 @@ python3 -m http.server 8080
 
 ---
 
-## 3. 11ゲート統合オフライン一括処理 Python CLI
+## 3. 12ゲート統合オフライン一括処理 Python CLI
 
 Python 3.11+（`pydantic` のみ推奨・外部有料API不要）で解凍フォルダ直下から実行できます。
 
@@ -61,10 +62,11 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `labor_notice_text`: 労働条件通知書・雇用契約書テキスト
 - `html_snippet`: LP / 公開前HTMLスニペット（JIS X 8341-3:2016 AA）
 - `security_checksheet_text` / `spf_record` / `dmarc_record`: セキュリティ体制記述・SPF/DMARC（METI ★3/★4）
+- `ai_governance_text` / `ai_use_case` / `model_license`: 社内生成AI運用規程・用途・モデルライセンス（AI事業者ガイドライン第1.1版）
 
 ---
 
-## 4. 用途別 単体自動化バッチエンジン 8種（`tracks/track7_freelance_kit/deliverables/`）
+## 4. 用途別 単体自動化バッチエンジン 9種（`tracks/track7_freelance_kit/deliverables/`）
 
 - `dirty_csv_to_zengin120.py`: 会計/給与CSV → 120バイト全銀振込ファイル＋T番号検証
 - `polite_feed_price_diff.py`: Shopify/RSS 公開フィード価格・在庫差分CSV出力
@@ -74,3 +76,4 @@ PYTHONPATH=src:. python3 tracks/track5_direct_sales/booth_pro_pack/batch_complia
 - `attendance_36_overtime_auditor.py`: 勤怠CSV月60h超1.5倍・固定残業差額・36協定（2〜6ヶ月80h平均）監査
 - `html_folder_jis8341_auditor.py`: HTMLフォルダ一括 JIS X 8341-3 AA 監査＋方針Markdown生成
 - `security_checksheet_csv_responder.py`: 取引先セキュリティチェックシートCSV自動分類・回答案＋METI監査JSON生成
+- `ai_tool_inventory_risk_register.py`: 社内AIツール台帳CSV一括監査（シャドーAI・著作権法30条の4・EU AI Act・商用ライセンス判定）

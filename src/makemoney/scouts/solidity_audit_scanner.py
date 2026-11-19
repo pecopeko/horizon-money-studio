@@ -36,6 +36,8 @@ _DELEGATECALL_RE = re.compile(r"\.\s*delegatecall\s*\(")
 _SAFE_PROXY_DELEGATE_RE = re.compile(
     r"(?:\b_implementation\b|\bimplementation\s*\(\s*\)|\bERC1967|\bassembly\b)"
 )
+_ECRECOVER_RE = re.compile(r"\becrecover\s*\(")
+_ZERO_ADDR_CHECK_RE = re.compile(r"(?:address\s*\(\s*0\s*\)|0x0+\b)")
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -229,6 +231,20 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         line_number=idx,
                         snippet=stripped[:140],
                         rationale="Executing delegatecall in concrete business logic risks storage slot collision or arbitrary state overwrite via untrusted target.",
+                    )
+                )
+        if _ECRECOVER_RE.search(stripped):
+            ec_window = "\n".join(lines[max(0, idx - 2) : min(len(lines), idx + 5)])
+            if not _ZERO_ADDR_CHECK_RE.search(ec_window):
+                findings.append(
+                    SolidityFinding(
+                        rule_id="SOL-RECOVER-11",
+                        severity="High",
+                        title="ecrecover result not checked against address(0)",
+                        file_path=file_path,
+                        line_number=idx,
+                        snippet=stripped[:140],
+                        rationale="Malformed signatures make ecrecover return address(0) rather than reverting, bypassing signature checks when expected signer is unset.",
                     )
                 )
 

@@ -248,5 +248,41 @@ def test_excludes_foundry_lib_mocks_and_flags_raw_delegatecall(tmp_path: Path) -
     assert del_findings[0]["line_number"] == 5
 
 
+def test_flags_unchecked_ecrecover_zero_address_and_allows_checked(tmp_path: Path) -> None:
+    sig_bad = tmp_path / "BadSig.sol"
+    sig_bad.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract BadSig {
+            function verify(bytes32 h, uint8 v, bytes32 r, bytes32 s, address expected) external pure returns (bool) {
+                address signer = ecrecover(h, v, r, s);
+                return signer == expected;
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    sig_good = tmp_path / "GoodSig.sol"
+    sig_good.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract GoodSig {
+            function verify(bytes32 h, uint8 v, bytes32 r, bytes32 s, address expected) external pure returns (bool) {
+                address signer = ecrecover(h, v, r, s);
+                require(signer != address(0), "zero signer");
+                return signer == expected;
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    summary = scan_solidity_tree(tmp_path)
+    rec_findings = [f for f in summary["findings"] if f["rule_id"] == "SOL-RECOVER-11"]
+    assert len(rec_findings) == 1
+    assert rec_findings[0]["file_path"].endswith("BadSig.sol")
+    assert rec_findings[0]["line_number"] == 5
+
+
 
 

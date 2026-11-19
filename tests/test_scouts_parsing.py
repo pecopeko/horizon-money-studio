@@ -560,5 +560,38 @@ def test_wave10_numeric_owners_sandbox_repos_and_keyboard_mash_titles() -> None:
     )
 
 
+def test_wave11_points_only_meta_announcements_and_730d_zombie_penalty() -> None:
+    for meta_title in ("(OFF-TOPIC) Ancient mirror", "🔔 Update on the project"):
+        assert (
+            is_honeypot_or_bait(
+                {
+                    "repository_url": "https://api.github.com/repos/org/repo",
+                    "title": meta_title,
+                    "labels": [],
+                }
+            )
+            is True
+        )
+
+    now = datetime(2026, 11, 19, 0, 0, tzinfo=timezone.utc)
+    points_issue = {
+        "repository_url": "https://api.github.com/repos/AstralDeep/AstralDeep",
+        "number": 266,
+        "html_url": "https://github.com/AstralDeep/AstralDeep/issues/266",
+        "title": "Connect wakeups",
+        "body": "Work on wakeups",
+        "comments": 0,
+        "created_at": "2026-11-18T00:00:00Z",
+        "labels": ["bounty", "points:50"],
+    }
+    scored_points = score_bounty_issue(points_issue, now_utc=now)
+    assert scored_points.non_cash_only is True
+    assert scored_points.ev_score < 10.0
+
+    stale_730d = {**points_issue, "labels": [], "created_at": "2023-03-25T13:49:32Z"}
+    fresh_issue = {**stale_730d, "created_at": "2026-11-18T00:00:00Z"}
+    assert score_bounty_issue(fresh_issue, now_utc=now).ev_score > score_bounty_issue(stale_730d, now_utc=now).ev_score * 8.0
+
+
 
 

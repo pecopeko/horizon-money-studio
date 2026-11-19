@@ -268,3 +268,25 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-AUTH-02` | High | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 24 | `if (msg.sender == tx.origin) {` |
 | `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 31 | `wxdai.transferFrom(msg.sender, address(this), assets);` |
 | `SOL-FOT-04` | Low/Medium | `contracts/src/interaction/sDAI-on-Gnosis/periphery/SavingsXDaiAdapter.sol` | 37 | `wxdai.transferFrom(msg.sender, address(this), sDAI.convertToAssets(shares));` |
+
+## Repository: `https://github.com/hats-finance/Safe-0x2909fdefd24a1ced675cb1444918fa766d76bdac.git`
+- Non-test/non-interface `.sol` files scanned: `16`
+- Candidate pattern hits: `4` (`SOL-AUTH-02`: `2`, `SOL-RECOVER-11`: `2`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-AUTH-02` | High | `modules/allowances/contracts/AllowanceModule.sol` | 194 | `transfer(safe, paymentToken, tx.origin, payment);` |
+| `SOL-AUTH-02` | High | `modules/allowances/contracts/AllowanceModule.sol` | 196 | `emit PayAllowanceTransfer(address(safe), delegate, paymentToken, tx.origin, payment);` |
+| `SOL-RECOVER-11` | High | `modules/allowances/contracts/AllowanceModule.sol` | 268 | `owner = ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(transferHashData))), v - 4, r, s);` |
+| `SOL-RECOVER-11` | High | `modules/allowances/contracts/SignatureDecoder.sol` | 17 | `return ecrecover(messageHash, v, r, s);` |
+
+## Repository: `https://github.com/code-423n4/2025-11-megapot.git`
+- Non-test/non-interface `.sol` files scanned: `6`
+- Candidate pattern hits: `4` (`SOL-FOT-04`: `3`, `SOL-PRECISION-01`: `1`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `contracts/Jackpot.sol` | 385 | `usdc.safeTransferFrom(msg.sender, address(this), ticketsValue);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/Jackpot.sol` | 481 | `usdc.safeTransferFrom(msg.sender, address(this), _amountToDeposit);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/JackpotBridgeManager.sol` | 182 | `usdc.safeTransferFrom(msg.sender, address(this), ticketCost);` |
+| `SOL-PRECISION-01` | Medium | `contracts/ScaledEntropyProvider.sol` | 328 | `uint256 limit = (type(uint256).max / range) * range;` |

@@ -1,0 +1,19 @@
+{
+  "title": "Web CSP / CORS / Cookie Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "HTTP Header Snapshots or Configs to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "target_name": "app.example.jp",
+          "headers_text": "Access-Control-Allow-Origin: *\nContent-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'\nSet-Cookie: sid=abc123; Path=/\nX-Powered-By: Express"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

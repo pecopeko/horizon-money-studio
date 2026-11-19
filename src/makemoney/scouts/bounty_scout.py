@@ -109,8 +109,9 @@ _NUMERIC_OWNER_RE = re.compile(r"^\d+$")
 _SANDBOX_REPO_NAME_RE = re.compile(
     r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+)$"
 )
+_POINTS_ONLY_LABEL_RE = re.compile(r"(?i)^(?:points?|xp|kudos)\s*[:=-]?\s*\d+$")
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,})"
+    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b)"
 )
 
 
@@ -205,6 +206,8 @@ def _freshness_multiplier(created_at_iso: str, now_utc: datetime | None = None) 
         return 1.25
     if age_days <= 30.0:
         return 1.05
+    if age_days > 730.0:
+        return 0.12
     if age_days > 365.0:
         return 0.30
     if age_days > 180.0:
@@ -418,7 +421,10 @@ def score_bounty_issue(
     has_claimed_label = bool(lower_labels & _CONTESTED_OR_CLAIMED_LABELS)
     has_claimed_body = bool(body and _CLAIMED_BODY_RE.search(body))
     contested_flag = is_assigned or has_claimed_label or has_claimed_body or (comments >= 10)
-    non_cash_only = is_non_cash_org(repo_full_name)
+    has_points_only_label = bounty_usd is None and any(
+        _POINTS_ONLY_LABEL_RE.match(lb.strip()) for lb in labels
+    )
+    non_cash_only = is_non_cash_org(repo_full_name) or has_points_only_label
     honeypot_flag = is_honeypot_or_bait(raw_issue)
 
     if honeypot_flag:

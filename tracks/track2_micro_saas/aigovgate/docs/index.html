@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIGOVGATE 統治門 | 経産省・総務省AI事業者ガイドライン第1.1版・著作権法第30条の4・シャドーAI監査</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで総務省/経産省AI事業者ガイドライン第1.1版、著作権法第30条の4（享受目的・作風模倣リスク）、学習オプトアウト（シャドーAI統制）、EU AI Actリスク区分、OSSモデル商用ライセンスをローカル診断し社内生成AI利活用ガイドラインMarkdownを自動生成します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">統治</span>
+        <div>
+          <h1>AIGOVGATE <span class="title-sub">統治門</span></h1>
+          <p class="subtitle">AI事業者ガイドライン第1.1版・著作権法第30条の4・シャドーAI統制・EU AI Act区分＆社内AIガイドライン生成</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル検査</span>
+        <span class="trust-pill" data-ui="badge">外部送信ゼロ・社内AI規定生成</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 社内AI規程・利用用途・モデルライセンス入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">不備規程・非商用モデル例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">ガイドライン第1.1版準拠例</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            事業者名
+            <input id="in-org" type="text" value="株式会社東京AIプロダクツ" />
+          </label>
+          <label>
+            AI統括窓口（CAIO / 法務）
+            <input id="in-owner" type="text" value="CAIO・法務コンプライアンス部" />
+          </label>
+          <label>
+            想定AIユースケース
+            <input id="in-usecase" type="text" value="採用エントリーシート一次スクリーニング" />
+          </label>
+          <label>
+            モデル / APIライセンス
+            <input id="in-license" type="text" value="cc-by-nc-4.0" />
+          </label>
+        </div>
+
+        <label class="field-block">
+          現行の社内AI利活用ルール・運用記述
+          <textarea id="in-policy" rows="12" placeholder="シャドーAI禁止、学習オプトアウト、著作権法30条の4、個人情報マスキング、HITL人間確認、ログ保存等を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">AI統治チェック＆規定案を生成</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. ガバナンス適合度・リスク区分・是正課題</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">統治適合スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">EU/METI リスク区分</span>
+            <strong id="m-risk" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">ライセンス判定</span>
+            <strong id="m-license" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出されたAIガバナンス・著作権・ライセンス課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『社内生成AI利活用ガイドライン』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>AIGOVGATE 統治門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・AI事業者ガイドライン第1.1版 / 著作権法第30条の4自己診断補助ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

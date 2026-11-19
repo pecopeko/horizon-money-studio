@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-meti-ai-governance-copyright304-auditor",
+  "title": "Japan METI AI Governance Guidelines v1.1 & Copyright Art. 30-4 Auditor",
+  "description": "Audit corporate generative AI policies against Japan METI AI Business Guidelines v1.1, Copyright Act Art. 30-4, Shadow AI opt-out controls, EU AI Act risk tiers, and model licenses.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}
