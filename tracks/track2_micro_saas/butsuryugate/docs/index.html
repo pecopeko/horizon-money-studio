@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUTSURYUGATE 物流門 | 改正物流効率化法・荷待ち2h・標準的運賃 ローカル監査</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで改正物流効率化法（9万トン特定荷主CLO・荷待ち荷役2時間以内）・標準的運賃＆燃料サーチャージ・実運送体制管理簿(2次請け以内)・2024年改善基準告示を監査します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">物流</span>
+        <div>
+          <h1>BUTSURYUGATE <span class="title-sub">物流門</span></h1>
+          <p class="subtitle">改正物流効率化法（9万t CLO・荷待ち2h）・標準的運賃＆トラック2024年基準 ローカル監査ツール</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル計算</span>
+        <span class="trust-pill" data-ui="badge">運賃・物量・待機時間社外送信ゼロ</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 貨物重量・運賃水準・荷待ち時間・運送契約条項入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">運賃割れ・荷待ち3.5h・3次請け例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">改正物流法 基準準拠例</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            荷主 / 元請事業者名
+            <input id="in-org" type="text" value="関東食品卸売株式会社" />
+          </label>
+          <label>
+            対象輸送ルート / 物流センター
+            <input id="in-route" type="text" value="東名幹線・埼玉第一DC〜名古屋共配便" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            年間取扱貨物重量 (トン)
+            <input id="in-tons" type="number" min="0" step="1000" value="115000" />
+          </label>
+          <label>
+            契約運賃額 (JPY)
+            <input id="in-fare" type="number" min="0" step="1000" value="38000" />
+          </label>
+          <label>
+            国交省 標準的運賃目安 (JPY)
+            <input id="in-tariff" type="number" min="0" step="1000" value="52000" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            1運行 荷待ち＋荷役 (時間)
+            <input id="in-wait" type="number" min="0" step="0.5" value="3.5" />
+          </label>
+          <label>
+            運転者 月間拘束時間 (h)
+            <input id="in-binding" type="number" min="0" step="1" value="325" />
+          </label>
+          <label>
+            1日休息期間 (h) / 請負階層
+            <input id="in-rest" type="number" min="0" step="0.5" value="8.0" />
+          </label>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            実運送 下請階層 (1=自社/元請, 2=2次, 3=3次...)
+            <input id="in-tier" type="number" min="1" step="1" value="3" />
+          </label>
+          <div class="check-row" style="justify-content:end;">
+            <label class="inline-check">
+              <input id="in-clo" type="checkbox" />
+              <span>特定荷主 物流統括管理者(CLO) 選任・計画提出済み</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="field-block">
+          運送契約書・配車条件・荷主ガイドライン運用テキスト
+          <textarea id="in-contract" rows="9" placeholder="書面交付、標準的運賃・燃料サーチャージ、荷待ち荷役2時間以内・バース予約、物流統括管理者(CLO)、実運送体制管理簿(2次請け以内)、改善基準告示、待機時間料・附帯作業料、記録保存を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">物流効率化法・運賃・待機監査を実行</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. 法令適合スコア・荷待ち/運賃・Gメンリスク</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">改正物流法スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">特定荷主 / 運賃水準</span>
+            <strong id="m-fare" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">荷待ち・運転者基準</span>
+            <strong id="m-wait" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出された改正物流法・トラックGメン上の課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『改正物流効率化法・2024基準 監査証明書』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>BUTSURYUGATE 物流門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・改正物流効率化法自己点検ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

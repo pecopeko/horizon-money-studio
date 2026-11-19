@@ -1,0 +1,30 @@
+{
+  "title": "Japan Revised Logistics Act & 2024 Truck Driver Cap Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Shipper/Carrier Logistics Contracts, Tonnage & Wait Hours to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Kanto Food Wholesale K.K.",
+          "annual_cargo_tons": 115000,
+          "has_clo_appointed": false,
+          "contract_fare_jpy": 38000,
+          "standard_tariff_jpy": 52000,
+          "wait_and_handling_hours": 3.5,
+          "monthly_binding_hours": 325,
+          "daily_rest_hours": 8.0,
+          "subcontract_tier": 3,
+          "contract_text": "荷待ち待機料・附帯作業費は運賃込みとし、口頭配車で3次下請を許容する。"
+        }
+      ],
+      "description": "List of Japanese logistics contracts with annual_cargo_tons, has_clo_appointed, contract_fare_jpy, standard_tariff_jpy, wait_and_handling_hours, monthly_binding_hours, daily_rest_hours, subcontract_tier, and contract_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

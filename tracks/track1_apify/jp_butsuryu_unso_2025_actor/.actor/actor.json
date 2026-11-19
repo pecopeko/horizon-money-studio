@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-logistics-2025-butsuryu-hakobi-auditor",
+  "title": "Japan Revised Logistics Efficiency Act, 2024 Driver Cap & Standard Tariff Auditor",
+  "description": "Audit Japanese freight & logistics contracts against the Revised Act on Advancement of Integration and Streamlining of Distribution Business (90,000t/yr Specific Shipper CLO duty, wait+cargo handling <=2h rule), Truck Act Standard Tariff / Fuel Surcharge, Actual Carrier Ledger (<=Tier 2), and 2024 Driver Binding/Rest Caps.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

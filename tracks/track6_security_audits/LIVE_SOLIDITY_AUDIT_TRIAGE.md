@@ -377,3 +377,33 @@ _Showing top 40 of 42 deterministic pattern hits._
 ## Repository: `https://github.com/Cyfrin/battlechain-lib.git`
 - Non-test/non-interface `.sol` files scanned: `8`
 - Candidate pattern hits: `0`
+
+## Repository: `https://github.com/code-423n4/2026-03-chainlink.git`
+- Non-test/non-interface `.sol` files scanned: `15`
+- Candidate pattern hits: `1` (`SOL-FOT-04`: `1`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `src/BaseAuction.sol` | 453 | `IERC20(assetOut).safeTransferFrom(msg.sender, address(this), assetOutAmount);` |
+
+## Repository: `https://github.com/code-423n4/2025-11-merkl.git`
+- Non-test/non-interface `.sol` files scanned: `21`
+- Candidate pattern hits: `20` (`SOL-AUTH-02`: `3`, `SOL-FOT-04`: `15`, `SOL-UNSAFECAST-13`: `2`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-AUTH-02` | High | `contracts/DistributionCreator.sol` | 157 | `userSignatureWhitelist[tx.origin] == 0 &&` |
+| `SOL-AUTH-02` | High | `contracts/DistributionCreator.sol` | 159 | `userSignatures[tx.origin] != messageHash` |
+| `SOL-FOT-04` | Low/Medium | `contracts/DistributionCreator.sol` | 285 | `if (!accessControlManager.isGovernor(msg.sender)) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/DistributionCreator.sol` | 599 | `if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/DistributionCreator.sol` | 600 | `IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/DistributionCreator.sol` | 608 | `if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/DistributionCreator.sol` | 609 | `IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/Distributor.sol` | 291 | `IERC20(disputeToken).safeTransferFrom(msg.sender, address(this), disputeAmount);` |
+| `SOL-AUTH-02` | High | `contracts/Distributor.sol` | 452 | `tx.origin != user &&` |
+| `SOL-FOT-04` | Low/Medium | `contracts/ReferralRegistry.sol` | 146 | `IERC20(program.paymentToken).safeTransferFrom(msg.sender, program.owner, program.cost);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/partners/middleman/MerklGaugeMiddlemanTemplate.sol` | 54 | `IERC20(token).safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/partners/tokenWrappers/PufferPointTokenWrapper.sol` | 89 | `IERC20(underlying).safeTransferFrom(from, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/partners/tokenWrappers/PufferPointTokenWrapper.sol` | 95 | `IERC20(underlying).safeTransferFrom(from, feeRecipient, amount);` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/partners/tokenWrappers/PufferPointTokenWrapper.sol` | 113 | `userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));` |
+| `SOL-FOT-04` | Low/Medium | `contracts/partners/tokenWrappers/PullTokenWrapperAllow.sol` | 65 | `if (from == distributor \|\| to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);` |

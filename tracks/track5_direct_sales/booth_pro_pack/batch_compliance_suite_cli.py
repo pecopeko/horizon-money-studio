@@ -17,6 +17,7 @@ from typing import Any
 from makemoney.compliance_guard.engine import ComplianceGuardEngine, normalize_jp_business_text
 from tracks.track1_apify.jp_ai_governance_guideline_actor.main import audit_ai_governance_item
 from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy_item
+from tracks.track1_apify.jp_butsuryu_unso_2025_actor.main import audit_butsuryu_contract_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
 from tracks.track1_apify.jp_fefta_export_control_actor.main import audit_fefta_export_item
 from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
@@ -68,8 +69,9 @@ def run_offline_compliance_audit(
     export_control_column: str = "export_control_text",
     ssbj_carbon_column: str = "ssbj_carbon_text",
     kensetsu_column: str = "kensetsu_contract_text",
+    butsuryu_column: str = "butsuryu_contract_text",
 ) -> dict[str, Any]:
-    """Audit rows across 16 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024)."""
+    """Audit rows across 17 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -88,6 +90,7 @@ def run_offline_compliance_audit(
     fefta_flagged = 0
     ssbj_carbon_flagged = 0
     kensetsu_flagged = 0
+    butsuryu_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -266,6 +269,30 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_butsuryu = str(row.get(butsuryu_column) or "").strip()
+        raw_b_tons = str(row.get("annual_cargo_tons") or "").strip()
+        raw_b_fare = str(row.get("contract_fare_jpy") or "").strip()
+        raw_b_wait = str(row.get("wait_and_handling_hours") or "").strip()
+        has_butsuryu_inputs = bool(raw_butsuryu or raw_b_tons or raw_b_fare or raw_b_wait)
+        raw_b_rest = str(row.get("daily_rest_hours") or "").strip()
+        raw_b_tier = str(row.get("subcontract_tier") or "").strip()
+        butsuryu_res = (
+            audit_butsuryu_contract_item(
+                raw_butsuryu,
+                annual_cargo_tons=_as_float(raw_b_tons),
+                has_clo_appointed=_as_bool(row.get("has_clo_appointed")),
+                contract_fare_jpy=_as_float(raw_b_fare),
+                standard_tariff_jpy=_as_float(row.get("standard_tariff_jpy")),
+                wait_and_handling_hours=_as_float(raw_b_wait),
+                monthly_binding_hours=_as_float(row.get("monthly_binding_hours")),
+                daily_rest_hours=_as_float(raw_b_rest, 11.0) if raw_b_rest else 11.0,
+                subcontract_tier=int(_as_float(raw_b_tier, 1.0)) if raw_b_tier else 1,
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_butsuryu_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -298,6 +325,8 @@ def run_offline_compliance_audit(
             ssbj_carbon_flagged += 1
         if kensetsu_res and kensetsu_res["status"] != "pass":
             kensetsu_flagged += 1
+        if butsuryu_res and butsuryu_res["status"] != "pass":
+            butsuryu_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -335,6 +364,8 @@ def run_offline_compliance_audit(
             row_entry["ssbj_carbon_audit"] = ssbj_res
         if kensetsu_res is not None:
             row_entry["kensetsu_audit"] = kensetsu_res
+        if butsuryu_res is not None:
+            row_entry["butsuryu_audit"] = butsuryu_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -357,6 +388,7 @@ def run_offline_compliance_audit(
         "fefta_export_flagged_rows": fefta_flagged,
         "ssbj_carbon_flagged_rows": ssbj_carbon_flagged,
         "kensetsu_flagged_rows": kensetsu_flagged,
+        "butsuryu_flagged_rows": butsuryu_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

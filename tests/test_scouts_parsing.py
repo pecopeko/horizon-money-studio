@@ -678,7 +678,7 @@ def test_wave15_archived_query_and_secondary_rate_limit_retry(monkeypatch) -> No
     from makemoney.github_client import github_api_request
     from makemoney.scouts.bounty_scout import DEFAULT_BOUNTY_QUERIES, _normalize_search_query
 
-    assert any('"console.algora.io"' in q for q in DEFAULT_BOUNTY_QUERIES)
+    assert any('"console.algora.io/org/"' in q for q in DEFAULT_BOUNTY_QUERIES)
     assert all("archived:false" in q for q in DEFAULT_BOUNTY_QUERIES)
     normalized = _normalize_search_query('is:issue is:open label:"bounty"')
     assert "archived:false" in normalized
@@ -713,6 +713,20 @@ def test_wave15_archived_query_and_secondary_rate_limit_retry(monkeypatch) -> No
     )
     assert out == {"ok": True}
     assert calls == 2
+
+
+def test_wave16_excludes_unfunded_bounty_create_prompts() -> None:
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/flameshot-org/flameshot",
+                "title": "Rysolv isn't working",
+                "labels": ["bounty"],
+            }
+        )
+        is True
+    )
+
 
 
 

@@ -17,7 +17,7 @@ GITHUB_SEARCH_ISSUES_URL = "https://api.github.com/search/issues"
 
 DEFAULT_BOUNTY_QUERIES: tuple[str, ...] = (
     'is:issue is:open archived:false -linked:pr no:assignee label:"💎 Bounty" sort:created-desc',
-    'is:issue is:open archived:false -linked:pr no:assignee "console.algora.io" in:comments sort:updated-desc',
+    'is:issue is:open archived:false -linked:pr no:assignee "console.algora.io/org/" in:comments sort:updated-desc',
     'is:issue is:open archived:false -linked:pr no:assignee label:bounty "$" in:title,body sort:created-desc',
 )
 
@@ -115,7 +115,7 @@ _PAID_CLOUD_INFRA_RE = re.compile(
     r"(?i)\b(?:aws\s+eks|eks\s+cluster|\bsst\b.*\beks\b|gke\s+cluster|aks\s+cluster|bedrock|sagemaker)\b"
 )
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|hello\s+world[!.\s]*$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b|\bdiscovery:\s*monetizing\s+github\s+issues\b)"
+    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|hello\s+world[!.\s]*$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b|\bdiscovery:\s*monetizing\s+github\s+issues\b|\brysolv isn'?t working\b)"
 )
 
 
