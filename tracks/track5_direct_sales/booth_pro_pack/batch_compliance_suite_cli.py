@@ -20,6 +20,7 @@ from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy
 from tracks.track1_apify.jp_butsuryu_unso_2025_actor.main import audit_butsuryu_contract_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
 from tracks.track1_apify.jp_fefta_export_control_actor.main import audit_fefta_export_item
+from tracks.track1_apify.jp_fsc_kinyu_kyoka_aml_actor.main import audit_kinyu_aml_item
 from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
 from tracks.track1_apify.jp_hansha_kyc_whistleblower_actor.main import audit_hansha_kyc_item
 from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
@@ -72,8 +73,9 @@ def run_offline_compliance_audit(
     kensetsu_column: str = "kensetsu_contract_text",
     butsuryu_column: str = "butsuryu_contract_text",
     toriteki_column: str = "toriteki_contract_text",
+    kinyu_column: str = "kinyu_aml_text",
 ) -> dict[str, Any]:
-    """Audit rows across 18 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025, Toriteki Act 2026)."""
+    """Audit rows across 19 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower, FEFTA/EAR Export Control, SSBJ/SHK GHG Carbon, Construction Business Act 2024, Logistics Efficiency Act 2025, Toriteki Act 2026, Payment Services & AML/Travel Rule)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -94,6 +96,7 @@ def run_offline_compliance_audit(
     kensetsu_flagged = 0
     butsuryu_flagged = 0
     toriteki_flagged = 0
+    kinyu_aml_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -327,6 +330,40 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_kinyu = str(row.get(kinyu_column) or "").strip()
+        raw_k_unused = str(row.get("unused_prepaid_balance_jpy") or "").strip()
+        raw_k_dep = str(row.get("deposited_guarantee_jpy") or "").strip()
+        raw_k_tx = str(row.get("single_transfer_jpy") or "").strip()
+        raw_k_str = str(row.get("str_detected_days_elapsed") or "").strip()
+        raw_k_ret = str(row.get("kyc_record_retention_years") or "").strip()
+        raw_k_travel = str(row.get("has_travel_rule_notice") or "").strip()
+        has_kinyu_inputs = bool(
+            raw_kinyu
+            or raw_k_unused
+            or raw_k_dep
+            or raw_k_tx
+            or raw_k_str
+            or raw_k_ret
+            or raw_k_travel
+        )
+        kinyu_res = (
+            audit_kinyu_aml_item(
+                raw_kinyu,
+                business_type=str(row.get("business_type") or "prepaid_payment").strip() or "prepaid_payment",
+                unused_prepaid_balance_jpy=_as_float(raw_k_unused),
+                deposited_guarantee_jpy=_as_float(raw_k_dep),
+                single_transfer_jpy=_as_float(raw_k_tx),
+                has_type1_license=_as_bool(row.get("has_type1_license")),
+                is_crypto_cross_border_transfer=_as_bool(row.get("is_crypto_cross_border_transfer")),
+                has_travel_rule_notice=_as_bool(raw_k_travel) if raw_k_travel else True,
+                str_detected_days_elapsed=int(_as_float(raw_k_str)),
+                kyc_record_retention_years=int(_as_float(raw_k_ret, 7.0)) if raw_k_ret else 7,
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if has_kinyu_inputs
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -363,6 +400,8 @@ def run_offline_compliance_audit(
             butsuryu_flagged += 1
         if toriteki_res and toriteki_res["status"] != "pass":
             toriteki_flagged += 1
+        if kinyu_res and kinyu_res["status"] != "pass":
+            kinyu_aml_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -404,6 +443,8 @@ def run_offline_compliance_audit(
             row_entry["butsuryu_audit"] = butsuryu_res
         if toriteki_res is not None:
             row_entry["toriteki_audit"] = toriteki_res
+        if kinyu_res is not None:
+            row_entry["kinyu_aml_audit"] = kinyu_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -428,6 +469,7 @@ def run_offline_compliance_audit(
         "kensetsu_flagged_rows": kensetsu_flagged,
         "butsuryu_flagged_rows": butsuryu_flagged,
         "toriteki_flagged_rows": toriteki_flagged,
+        "kinyu_aml_flagged_rows": kinyu_aml_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

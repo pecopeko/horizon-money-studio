@@ -1,0 +1,31 @@
+{
+  "title": "Japan PSA 50% Deposit, Travel Rule & FSA AML Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Fintech / Prepaid / Fund Transfer / Crypto AML Profiles to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Sample FinTech K.K.",
+          "business_type": "prepaid_payment",
+          "unused_prepaid_balance_jpy": 30000000,
+          "deposited_guarantee_jpy": 8000000,
+          "single_transfer_jpy": 1500000,
+          "has_type1_license": false,
+          "is_crypto_cross_border_transfer": true,
+          "has_travel_rule_notice": false,
+          "str_detected_days_elapsed": 14,
+          "kyc_record_retention_years": 3,
+          "policy_text": "本人確認省略でトラベルルール通知なし、供託未了かつ確認記録3年破棄とする。"
+        }
+      ],
+      "description": "List of Japanese payment/crypto compliance profiles with business_type, unused_prepaid_balance_jpy, deposited_guarantee_jpy, single_transfer_jpy, Travel Rule flags, STR lag days, KYC retention years, and policy_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

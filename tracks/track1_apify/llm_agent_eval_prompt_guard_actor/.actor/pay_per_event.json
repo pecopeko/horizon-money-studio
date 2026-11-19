@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "agent_trace_audited": {
+        "eventTitle": "AI Agent Prompt & Tool Trace Audited",
+        "eventDescription": "Charged per LLM agent trace, prompt, or tool schema screened for prompt injection, SSRF, shell execution, exfiltration, and missing HITL gates.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

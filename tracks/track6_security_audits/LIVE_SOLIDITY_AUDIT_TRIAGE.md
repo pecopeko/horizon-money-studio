@@ -451,3 +451,46 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-ENCODEPACKED-12` | Medium | `src/modules/Payload.sol` | 275 | `return keccak256(abi.encodePacked("\x19\x01", domain, structHash));` |
 | `SOL-UNSAFECAST-13` | Medium | `src/modules/auth/BaseAuth.sol` | 43 | `return (address(uint160(word >> 96)), uint256(uint96(word)));` |
 | `SOL-ENCODEPACKED-12` | Medium | `src/modules/auth/BaseSig.sol` | 44 | `return keccak256(abi.encodePacked("Sequence signer:\n", _addr, _weight));` |
+
+## Repository: `https://github.com/code-423n4/2025-06-panoptic.git`
+- Non-test/non-interface `.sol` files scanned: `2`
+- Candidate pattern hits: `14` (`SOL-FOT-04`: `2`, `SOL-UNSAFECAST-13`: `12`)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `src/HypoVault.sol` | 237 | `SafeTransferLib.safeTransferFrom(underlyingToken, msg.sender, address(this), assets);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 279 | `depositEpochState[currentEpoch].assetsDeposited -= uint128(queuedDepositAmount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 340 | `if (assetsRemaining > 0) queuedDeposit[user][epoch + 1] += uint128(assetsRemaining);` |
+| `SOL-FOT-04` | Low/Medium | `src/HypoVault.sol` | 422 | `return super.transferFrom(from, to, amount);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 492 | `assetsDeposited: uint128(epochState.assetsDeposited),` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 493 | `sharesReceived: uint128(sharesReceived),` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 494 | `assetsFulfilled: uint128(assetsToFulfill)` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 498 | `depositEpoch = uint128(currentEpoch);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 501 | `assetsDeposited: uint128(assetsRemaining),` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 540 | `assetsReceived: uint128(assetsReceived),` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 541 | `sharesWithdrawn: uint128(epochState.sharesWithdrawn),` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 542 | `sharesFulfilled: uint128(sharesToFulfill)` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 547 | `withdrawalEpoch = uint128(currentEpoch);` |
+| `SOL-UNSAFECAST-13` | Medium | `src/HypoVault.sol` | 551 | `sharesWithdrawn: uint128(sharesRemaining),` |
+
+## Repository: `https://github.com/code-423n4/2024-11-chainlink.git`
+- Non-test/non-interface `.sol` files scanned: `56`
+- Candidate pattern hits: `18` (`SOL-ORACLE-03`: `1`, `SOL-UNSAFECAST-13`: `7`, `SOL-FOT-04`: `7`, `SOL-RECOVER-11`: `1`, `SOL-ENCODEPACKED-12`: `2`; top `15` representative findings below)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-ORACLE-03` | High | `contracts/src/ccip/FeeQuoter.sol` | 373 | `) = dataFeedContract.latestRoundData();` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/FeeQuoter.sol` | 382 | `return Internal.TimestampedPackedUint224({value: rebasedValue, timestamp: uint32(updatedAt)});` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/Router.sol` | 134 | `IERC20(message.feeToken).safeTransferFrom(msg.sender, onRamp, feeTokenAmount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/Router.sol` | 141 | `token.safeTransferFrom(` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/applications/CCIPClientExample.sol` | 126 | `IERC20(tokenAmounts[i].token).transferFrom(msg.sender, address(this), tokenAmounts[i].amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/applications/CCIPClientExample.sol` | 151 | `IERC20(tokenAmounts[i].token).transferFrom(msg.sender, address(this), tokenAmounts[i].amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/applications/EtherSenderReceiver.sol` | 98 | `IERC20(validatedMessage.feeToken).safeTransferFrom(msg.sender, address(this), fee);` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/capability/CCIPHome.sol` | 230 | `revert DONIdMismatch(uint32(callDonId), donId);` |
+| `SOL-RECOVER-11` | High | `contracts/src/ccip/ocr/MultiOCR3Base.sol` | 315 | `address signer = ecrecover(hashedReport, uint8(rawVs[i]) + 27, rs[i], ss[i]);` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/offRamp/OffRamp.sol` | 365 | `if (i_rmnRemote.isCursed(bytes16(uint128(sourceChainSelector)))) {` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/offRamp/OffRamp.sol` | 814 | `if (i_rmnRemote.isCursed(bytes16(uint128(sourceChainSelector)))) {` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/onRamp/OnRamp.sol` | 495 | `if (i_rmnRemote.isCursed(bytes16(uint128(destChainSelector)))) revert CursedByRMN(destChainSelector);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/src/ccip/pools/LockReleaseTokenPool.sol` | 108 | `i_token.safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/pools/TokenPool.sol` | 170 | `if (IRMN(i_rmnProxy).isCursed(bytes16(uint128(lockOrBurnIn.remoteChainSelector)))) revert CursedByRMN();` |
+| `SOL-UNSAFECAST-13` | Medium | `contracts/src/ccip/pools/TokenPool.sol` | 190 | `if (IRMN(i_rmnProxy).isCursed(bytes16(uint128(releaseOrMintIn.remoteChainSelector)))) revert CursedByRMN();` |

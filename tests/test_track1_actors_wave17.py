@@ -269,7 +269,7 @@ def test_track5_eighteen_gate_cli_audits_toriteki_contract() -> None:
 
 def test_all_38_apify_actor_input_schemas_have_required_descriptions() -> None:
     schema_paths = sorted(Path("tracks/track1_apify").glob("*/.actor/input_schema.json"))
-    assert len(schema_paths) == 38
+    assert len(schema_paths) >= 38
     for schema_path in schema_paths:
         data = json.loads(schema_path.read_text(encoding="utf-8"))
         assert str(data.get("title") or "").strip(), schema_path

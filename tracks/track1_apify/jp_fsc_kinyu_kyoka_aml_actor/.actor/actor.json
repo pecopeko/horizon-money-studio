@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-fsc-kyc-aml-fatf-cryptopayment-auditor",
+  "title": "Japan Payment Services Act (PSA 50% Deposit), Crypto Travel Rule & FSA AML Auditor",
+  "description": "Audit Japanese fintech, prepaid payment instruments, fund transfer, and crypto-asset compliance against the Payment Services Act (50% security deposit over 10M JPY unused balance, 1M JPY Type-2 limit), Criminal Proceeds Act 7-year KYC/STR, and FATF Travel Rule.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

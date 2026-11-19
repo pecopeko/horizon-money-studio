@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "ai-agent-prompt-tool-guard-eval-auditor",
+  "title": "AI Agent Prompt-Injection, Tool-Call SSRF, MCP Exfiltration & Jailbreak Auditor",
+  "description": "Audit LLM system prompts, agent traces, and MCP/function-calling tool payloads for system-prompt extraction, jailbreak overrides, SSRF metadata IPs, unconstrained shell execution, data exfiltration sinks, and missing human-in-the-loop approvals.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}
