@@ -284,5 +284,27 @@ def test_flags_unchecked_ecrecover_zero_address_and_allows_checked(tmp_path: Pat
     assert rec_findings[0]["line_number"] == 5
 
 
+def test_flags_multi_arg_abi_encode_packed_collision_and_ignores_eip191(tmp_path: Path) -> None:
+    sol = tmp_path / "PackHash.sol"
+    sol.write_text(
+        """
+        pragma solidity ^0.8.20;
+        contract PackHash {
+            function leaf(string memory a, string memory b) external pure returns (bytes32) {
+                return keccak256(abi.encodePacked(a, b));
+            }
+            function eip191(bytes32 digest) external pure returns (bytes32) {
+                return keccak256(abi.encodePacked("\\x19Ethereum Signed Message:\\n32", digest));
+            }
+        }
+        """,
+        encoding="utf-8",
+    )
+    summary = scan_solidity_tree(tmp_path)
+    ep_findings = [f for f in summary["findings"] if f["rule_id"] == "SOL-ENCODEPACKED-12"]
+    assert len(ep_findings) == 1
+    assert ep_findings[0]["line_number"] == 5
+
+
 
 

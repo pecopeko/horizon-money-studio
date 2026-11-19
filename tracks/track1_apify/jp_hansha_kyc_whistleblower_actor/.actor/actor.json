@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-hansha-ubo-whistleblower-auditor",
+  "title": "Japan Anti-Social Forces, KYC UBO (>25%) & Whistleblower Protection Auditor",
+  "description": "Audit Japanese Anti-Social Forces exclusion clauses, compute >25% indirect Beneficial Owners (UBO), and validate Revised Whistleblower Protection Act compliance.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

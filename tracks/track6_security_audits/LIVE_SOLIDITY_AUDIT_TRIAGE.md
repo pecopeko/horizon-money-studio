@@ -290,3 +290,47 @@ _Showing top 40 of 42 deterministic pattern hits._
 | `SOL-FOT-04` | Low/Medium | `contracts/Jackpot.sol` | 481 | `usdc.safeTransferFrom(msg.sender, address(this), _amountToDeposit);` |
 | `SOL-FOT-04` | Low/Medium | `contracts/JackpotBridgeManager.sol` | 182 | `usdc.safeTransferFrom(msg.sender, address(this), ticketCost);` |
 | `SOL-PRECISION-01` | Medium | `contracts/ScaledEntropyProvider.sol` | 328 | `uint256 limit = (type(uint256).max / range) * range;` |
+
+## Repository: `https://github.com/code-423n4/2025-08-gte-perps.git`
+- Non-test/non-interface `.sol` files scanned: `50`
+- Candidate pattern hits: `21` (`SOL-FOT-04`: `12`, `SOL-ENCODEPACKED-12`: `4`, `SOL-PRECISION-01`: `2`, `SOL-INIT-08`: `2`, `SOL-ERC4626-06`: `1`; top `15` hits shown)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `contracts/account-manager/AccountManager.sol` | 186 | `token.safeTransferFrom(account, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/account-manager/AccountManager.sol` | 193 | `token.safeTransferFrom(msg.sender, address(this), amount);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/account-manager/AccountManager.sol` | 207 | `token.safeTransferFrom(gteRouter, address(this), amount);` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/clob/CLOBManager.sol` | 321 | `return keccak256(abi.encodePacked(tokenA, tokenB));` |
+| `SOL-PRECISION-01` | Medium | `contracts/clob/types/Book.sol` | 175 | `return baseAmount / lotSize * lotSize;` |
+| `SOL-INIT-08` | High | `contracts/launchpad/Distributor.sol` | 39 | `function initialize(address _launchpad) public onlyOwner {` |
+| `SOL-FOT-04` | Low/Medium | `contracts/launchpad/Distributor.sol` | 124 | `launchAsset.safeTransferFrom(msg.sender, address(this), uint256(launchAssetAmount));` |
+| `SOL-FOT-04` | Low/Medium | `contracts/launchpad/Distributor.sol` | 130 | `quoteAsset.safeTransferFrom(msg.sender, address(this), uint256(quoteAssetAmount));` |
+| `SOL-FOT-04` | Low/Medium | `contracts/launchpad/Launchpad.sol` | 290 | `address(data.quote).safeTransferFrom(buyData.account, address(this), amountInQuote);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/launchpad/Launchpad.sol` | 359 | `token.safeTransferFrom(account, address(this), amountInBase);` |
+| `SOL-FOT-04` | Low/Medium | `contracts/launchpad/Launchpad.sol` | 538 | `data.quote.safeTransferFrom(msg.sender, address(this), data.quoteAmount);` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/launchpad/Launchpad.sol` | 579 | `keccak256(abi.encodePacked(token0, token1)),` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/launchpad/libraries/RewardsTracker.sol` | 239 | `return keccak256(abi.encodePacked(baseAsset, LAUNCH_ASSET_TO_REWARDS_SLOT));` |
+| `SOL-INIT-08` | High | `contracts/launchpad/uniswap/GTELaunchpadV2Pair.sol` | 86 | `function initialize(address _token0, address _token1, address _launchpadLp, address _launchpadFeeDistributor)` |
+| `SOL-ENCODEPACKED-12` | Medium | `contracts/launchpad/uniswap/GTELaunchpadV2PairFactory.sol` | 39 | `bytes32 salt = keccak256(abi.encodePacked(token0, token1, _launchpadLp, _launchpadFeeDistributor));` |
+
+## Repository: `https://github.com/hats-finance/SafeStaking-by-HOPR-0x607386df18b663cf5ee9b879fbc1f32466ad5a85.git`
+- Non-test/non-interface `.sol` files scanned: `37`
+- Candidate pattern hits: `19` (`SOL-FOT-04`: `12`, `SOL-ENCODEPACKED-12`: `5`, `SOL-RECOVER-11`: `2`; top `15` hits shown)
+
+| Rule ID | Severity | File | Line | Snippet |
+|---|---|---|---:|---|
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/Channels.sol` | 725 | `if (token.transferFrom(msg.sender, address(this), Balance.unwrap(amount)) != true) {` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/Channels.sol` | 740 | `if (token.transferFrom(msg.sender, address(this), Balance.unwrap(amount)) != true) {` |
+| `SOL-ENCODEPACKED-12` | Medium | `packages/ethereum/contracts/src/Channels.sol` | 797 | `return keccak256(abi.encodePacked(source, destination));` |
+| `SOL-ENCODEPACKED-12` | Medium | `packages/ethereum/contracts/src/Channels.sol` | 839 | `keccak256(abi.encodePacked(redeemable.data.channelId, secondPart, challenge))` |
+| `SOL-RECOVER-11` | High | `packages/ethereum/contracts/src/Crypto.sol` | 141 | `return ecrecover(` |
+| `SOL-RECOVER-11` | High | `packages/ethereum/contracts/src/Crypto.sol` | 171 | `return ecrecover(0, sign, bytes32(pX), bytes32(mulmod(scalar, pX, SECP256K1_FIELD_ORDER)));` |
+| `SOL-ENCODEPACKED-12` | Medium | `packages/ethereum/contracts/src/Crypto.sol` | 184 | `return address(uint160(uint256(keccak256(abi.encodePacked(pX, pY)))));` |
+| `SOL-ENCODEPACKED-12` | Medium | `packages/ethereum/contracts/src/node-stake/NodeStakeFactory.sol` | 97 | `bytes32 salt = keccak256(abi.encodePacked(msg.sender, nonce));` |
+| `SOL-ENCODEPACKED-12` | Medium | `packages/ethereum/contracts/src/node-stake/permissioned-module/CapabilityPermissions.sol` | 655 | `return keccak256(abi.encodePacked(source, destination));` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStake.sol` | 266 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStake2.sol` | 328 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeBase.sol` | 364 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason3.sol` | 355 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason4.sol` | 361 | `IHoprBoost(tokenAddress).transferFrom(address(this), owner(), tokenId);` |
+| `SOL-FOT-04` | Low/Medium | `packages/ethereum/contracts/src/static/stake/HoprStakeSeason6.sol` | 80 | `IERC20(LOCK_TOKEN).safeTransferFrom(owner(), address(this), increaseLocked);` |

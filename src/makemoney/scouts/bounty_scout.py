@@ -83,6 +83,7 @@ class BountyCandidate(BaseModel):
     is_assigned: bool = False
     contested_flag: bool = False
     non_cash_only: bool = False
+    requires_paid_infra: bool = False
     honeypot_flag: bool = False
     ev_score: float
 
@@ -110,8 +111,11 @@ _SANDBOX_REPO_NAME_RE = re.compile(
     r"(?i)^(?:test|testing|sandbox|demo|gggg+|gogo|fishwww|robot-\d+)$"
 )
 _POINTS_ONLY_LABEL_RE = re.compile(r"(?i)^(?:points?|xp|kudos)\s*[:=-]?\s*\d+$")
+_PAID_CLOUD_INFRA_RE = re.compile(
+    r"(?i)\b(?:aws\s+eks|eks\s+cluster|\bsst\b.*\beks\b|gke\s+cluster|aks\s+cluster|bedrock|sagemaker)\b"
+)
 _SPAM_TITLE_RE = re.compile(
-    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b)"
+    r"(?i)^(?:\[wildcard\]\s*|test(?:\s*\d+|[a-z0-9]*)$|(?:go){2,}$|open bounty$|([a-z0-9])\1{3,}$|[0-9]+$|[asdf]{5,}$)|(?:lorem ipsum|dolor sit amet|(?:asd|dsa|sda|qwe){2,}|\(off-topic\)|\[off-topic\]|\bupdate on the project\b|\bdiscovery:\s*monetizing\s+github\s+issues\b)"
 )
 
 
@@ -426,6 +430,8 @@ def score_bounty_issue(
     )
     non_cash_only = is_non_cash_org(repo_full_name) or has_points_only_label
     honeypot_flag = is_honeypot_or_bait(raw_issue)
+    paid_infra_text = f"{repo_full_name}\n{title}\n{body or ''}"
+    requires_paid_infra = bool(_PAID_CLOUD_INFRA_RE.search(paid_infra_text))
 
     if honeypot_flag:
         ev_score = 0.0
@@ -447,6 +453,9 @@ def score_bounty_issue(
         if non_cash_only:
             ev_score *= 0.10
 
+        if requires_paid_infra:
+            ev_score *= 0.15
+
         ev_score *= _freshness_multiplier(created_at, now_utc=now_utc)
 
     return BountyCandidate(
@@ -463,6 +472,7 @@ def score_bounty_issue(
         is_assigned=is_assigned,
         contested_flag=contested_flag,
         non_cash_only=non_cash_only,
+        requires_paid_infra=requires_paid_infra,
         honeypot_flag=honeypot_flag,
         ev_score=round(ev_score, 2),
     )

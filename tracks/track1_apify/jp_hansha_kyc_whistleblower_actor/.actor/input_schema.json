@@ -1,0 +1,24 @@
+{
+  "title": "Japan Anti-Social Forces & KYC UBO Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Vendor Contracts & Shareholder Structures to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Shinagawa Holdings K.K.",
+          "representative_name": "Suzuki Ichiro",
+          "holders": [
+            {"name": "Yamada Taro", "type": "individual", "directPct": 15},
+            {"name": "Yamada Asset KK", "type": "corporate", "directPct": 22, "controllerName": "Yamada Taro", "controllerPct": 80}
+          ],
+          "clause_text": "催告の上解除する。確認記録保存なし。"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

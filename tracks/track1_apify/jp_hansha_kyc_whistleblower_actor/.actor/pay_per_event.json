@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "screening_audited": {
+        "eventTitle": "Corporate Compliance Screening & UBO Audited",
+        "eventDescription": "Charged per vendor Anti-Social Forces clause, UBO tree, and whistleblower policy audited.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

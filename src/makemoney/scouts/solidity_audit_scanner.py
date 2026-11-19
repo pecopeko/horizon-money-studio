@@ -38,6 +38,7 @@ _SAFE_PROXY_DELEGATE_RE = re.compile(
 )
 _ECRECOVER_RE = re.compile(r"\becrecover\s*\(")
 _ZERO_ADDR_CHECK_RE = re.compile(r"(?:address\s*\(\s*0\s*\)|0x0+\b)")
+_ABI_ENCODE_PACKED_RE = re.compile(r"\bkeccak256\s*\(\s*abi\.encodePacked\s*\(([^)]*)\)")
 
 
 def strip_solidity_comments(source: str) -> list[str]:
@@ -245,6 +246,29 @@ def scan_solidity_source(source: str, file_path: str = "Contract.sol") -> list[S
                         line_number=idx,
                         snippet=stripped[:140],
                         rationale="Malformed signatures make ecrecover return address(0) rather than reverting, bypassing signature checks when expected signer is unset.",
+                    )
+                )
+        m_ep = _ABI_ENCODE_PACKED_RE.search(stripped)
+        if m_ep is not None:
+            raw_inside = m_ep.group(1)
+            args = [a.strip() for a in raw_inside.split(",") if a.strip()]
+            if (
+                len(args) >= 2
+                and "Signed Message" not in raw_inside
+                and not all(
+                    a.startswith(('"', "'", "bytes32(", "uint256(", "address("))
+                    for a in args
+                )
+            ):
+                findings.append(
+                    SolidityFinding(
+                        rule_id="SOL-ENCODEPACKED-12",
+                        severity="Medium",
+                        title="keccak256(abi.encodePacked(...)) with multiple arguments risks hash collision",
+                        file_path=file_path,
+                        line_number=idx,
+                        snippet=stripped[:140],
+                        rationale="Packing multiple dynamic/variable arguments with abi.encodePacked lets distinct inputs collide onto identical digests; prefer abi.encode.",
                     )
                 )
 

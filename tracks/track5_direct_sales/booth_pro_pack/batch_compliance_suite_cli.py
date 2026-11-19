@@ -19,6 +19,7 @@ from tracks.track1_apify.jp_ai_governance_guideline_actor.main import audit_ai_g
 from tracks.track1_apify.jp_appi_gaibusoshin_actor.main import audit_appi_policy_item
 from tracks.track1_apify.jp_denchoho_ledger_actor.main import validate_denchoho_record
 from tracks.track1_apify.jp_gensen_shiharai_actor.main import calculate_gensen_item
+from tracks.track1_apify.jp_hansha_kyc_whistleblower_actor.main import audit_hansha_kyc_item
 from tracks.track1_apify.jp_jis_wcag_a11y_actor.main import audit_jis_a11y_item
 from tracks.track1_apify.jp_keiyaku_risk_actor.main import audit_jp_contract_item
 from tracks.track1_apify.jp_meti_security_checksheet_actor.main import audit_meti_security_item
@@ -46,8 +47,9 @@ def run_offline_compliance_audit(
     html_column: str = "html_snippet",
     security_column: str = "security_checksheet_text",
     ai_gov_column: str = "ai_governance_text",
+    hansha_column: str = "hansha_clause_text",
 ) -> dict[str, Any]:
-    """Audit rows across 12 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance)."""
+    """Audit rows across 13 gates (PII, Yakki/Keihyo, Zengin Mod-9, Contract, Tokushoho, Dencho-ho, APPI, Withholding, Labor, JIS A11y, METI Security, AI Governance, Hansha/KYC/Whistleblower)."""
     guard = ComplianceGuardEngine()
     audited_rows: list[dict[str, Any]] = []
     pii_total = 0
@@ -62,6 +64,7 @@ def run_offline_compliance_audit(
     jis_a11y_flagged = 0
     bouheki_flagged = 0
     aigov_flagged = 0
+    hansha_flagged = 0
 
     for idx, row in enumerate(rows, 1):
         raw_text = str(row.get(text_column) or "")
@@ -147,6 +150,26 @@ def run_offline_compliance_audit(
             else None
         )
 
+        raw_hansha = str(row.get(hansha_column) or "").strip()
+        raw_holders_str = str(row.get("ubo_holders_json") or "").strip()
+        raw_rep = str(row.get("representative_name") or "").strip()
+        try:
+            parsed_holders = json.loads(raw_holders_str) if raw_holders_str else []
+            if not isinstance(parsed_holders, list):
+                parsed_holders = []
+        except json.JSONDecodeError:
+            parsed_holders = []
+        hansha_res = (
+            audit_hansha_kyc_item(
+                raw_hansha,
+                holders=parsed_holders,
+                representative_name=raw_rep,
+                org_name=raw_payee or f"row-{idx}",
+            )
+            if (raw_hansha or parsed_holders or raw_rep)
+            else None
+        )
+
         finding_cnt = len(pii_res.findings) if pii_res else 0
         pii_total += finding_cnt
         if yakki_res and yakki_res["findings_count"] > 0:
@@ -171,6 +194,8 @@ def run_offline_compliance_audit(
             bouheki_flagged += 1
         if aigov_res and aigov_res["status"] != "pass":
             aigov_flagged += 1
+        if hansha_res and hansha_res["status"] != "pass":
+            hansha_flagged += 1
 
         row_entry: dict[str, Any] = {
             "row": idx,
@@ -200,6 +225,8 @@ def run_offline_compliance_audit(
             row_entry["bouheki_security_audit"] = bouheki_res
         if aigov_res is not None:
             row_entry["aigov_audit"] = aigov_res
+        if hansha_res is not None:
+            row_entry["hansha_kyc_audit"] = hansha_res
         audited_rows.append(row_entry)
 
     payload: dict[str, Any] = {
@@ -218,6 +245,7 @@ def run_offline_compliance_audit(
         "jis_a11y_flagged_rows": jis_a11y_flagged,
         "bouheki_security_flagged_rows": bouheki_flagged,
         "aigov_flagged_rows": aigov_flagged,
+        "hansha_kyc_flagged_rows": hansha_flagged,
         "rows": audited_rows,
     }
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()

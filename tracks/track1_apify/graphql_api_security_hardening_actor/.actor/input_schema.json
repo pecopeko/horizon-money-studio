@@ -1,0 +1,19 @@
+{
+  "title": "GraphQL Security Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "GraphQL Schemas and Server Configs to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "target_name": "api.graphql",
+          "sdl_text": "introspection: true\nallowBatchedHttpRequests: true\ncsrfPrevention: false\ntype User { id: ID! passwordHash: String! posts: [Post!]! }\ntype Post { id: ID! author: User! }\ntype Query { users: [User!]! }"
+        }
+      ]
+    }
+  },
+  "required": ["items"]
+}

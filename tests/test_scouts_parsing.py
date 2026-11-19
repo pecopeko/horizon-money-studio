@@ -593,5 +593,41 @@ def test_wave11_points_only_meta_announcements_and_730d_zombie_penalty() -> None
     assert score_bounty_issue(fresh_issue, now_utc=now).ev_score > score_bounty_issue(stale_730d, now_utc=now).ev_score * 8.0
 
 
+def test_wave12_paid_cloud_infra_penalty_and_meta_monetizing_filter() -> None:
+    assert (
+        is_honeypot_or_bait(
+            {
+                "repository_url": "https://api.github.com/repos/thnxdev/issues",
+                "title": "discovery: monetizing github issues (incentive)",
+                "labels": [],
+            }
+        )
+        is True
+    )
+
+    now = datetime(2026, 11, 19, 0, 0, tzinfo=timezone.utc)
+    eks_issue = {
+        "repository_url": "https://api.github.com/repos/noktadev/sst-eks-surrealdb",
+        "number": 1,
+        "html_url": "https://github.com/noktadev/sst-eks-surrealdb/issues/1",
+        "title": "Create working configuration ($200)",
+        "body": "Deploy AWS EKS cluster via SST.",
+        "comments": 0,
+        "created_at": "2026-11-18T00:00:00Z",
+        "labels": [],
+    }
+    plain_issue = {
+        **eks_issue,
+        "repository_url": "https://api.github.com/repos/org/oss-cli",
+        "title": "Fix parser crash ($200)",
+        "body": "Simple unit-testable CLI fix.",
+    }
+    scored_eks = score_bounty_issue(eks_issue, now_utc=now)
+    scored_plain = score_bounty_issue(plain_issue, now_utc=now)
+    assert scored_eks.requires_paid_infra is True
+    assert scored_plain.requires_paid_infra is False
+    assert scored_plain.ev_score > scored_eks.ev_score * 5.0
+
+
 
 
