@@ -13,8 +13,11 @@
           "dialect": "postgres",
           "sql_text": "BEGIN; CREATE INDEX CONCURRENTLY idx_orders_user ON orders(user_id); COMMIT;"
         }
-      ]
+      ],
+      "description": "SQL Migration Scripts to Audit (Audit SQL migrations deterministically for blocking table locks, invalid CONCURRENTLY transactions, FK validation locks, destructive DDL, and unbounded DML)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

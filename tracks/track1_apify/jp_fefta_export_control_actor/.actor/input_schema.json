@@ -17,8 +17,11 @@
           "has_ear_license_or_exception": false,
           "policy_text": "該非判定不要とし自己承認のみで出荷する。特定類型確認不要、判定記録保存なし。"
         }
-      ]
+      ],
+      "description": "Products, Origin BOM Ratios & Trade Compliance Policies to Audit (Audit Japanese Foreign Exchange and Foreign Trade Act (FEFTA Lists 1-15, Catch-All 16, Deemed Export Categories 1-3, Foreign User List, 7-yr retention) and US EAR De Minimis (25%/0%) & TSU 5D002 exemptions)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

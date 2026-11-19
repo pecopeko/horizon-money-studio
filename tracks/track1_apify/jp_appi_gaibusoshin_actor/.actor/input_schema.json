@@ -13,8 +13,11 @@
           "script_tags_text": "<script src=\"https://www.googletagmanager.com/gtag/js?id=G-12345\"></script>",
           "include_cross_border": true
         }
-      ]
+      ],
+      "description": "Privacy Policy & Script Tag Pairs to Audit (Audit Japanese privacy policies against APPI (Art.17/23/27/28/32) and extract third-party SDKs (GA4, Meta, LINE, Yahoo, TikTok, Sentry, Stripe) under Telecom Business Act Art. 27-12 Gaibusoshin rules)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

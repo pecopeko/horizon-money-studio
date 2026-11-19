@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 from tracks.track1_apify.jp_fefta_export_control_actor.main import (
@@ -208,3 +209,23 @@ def test_track5_fourteen_gate_cli_audits_fefta_export_control() -> None:
     assert report["fefta_export_flagged_rows"] == 1
     assert report["rows"][0]["fefta_export_audit"]["status"] == "fail"
     assert report["rows"][0]["fefta_export_audit"]["ear_result"]["subject_to_ear"] is True
+
+
+def test_all_30_apify_actor_input_schemas_have_required_descriptions() -> None:
+    schema_paths = sorted(Path("tracks/track1_apify").glob("*/.actor/input_schema.json"))
+    assert len(schema_paths) == 30
+    for schema_path in schema_paths:
+        data = json.loads(schema_path.read_text(encoding="utf-8"))
+        assert str(data.get("title") or "").strip(), schema_path
+        assert data.get("type") == "object", schema_path
+        assert data.get("schemaVersion") == 1, schema_path
+        props = data.get("properties")
+        assert isinstance(props, dict) and props, schema_path
+        for key, prop in props.items():
+            assert isinstance(prop, dict), f"{schema_path}:{key}"
+            assert str(prop.get("title") or "").strip(), f"{schema_path}:{key} missing title"
+            assert str(prop.get("type") or "").strip(), f"{schema_path}:{key} missing type"
+            assert str(prop.get("description") or "").strip(), f"{schema_path}:{key} missing description"
+            if prop.get("type") in {"array", "object"}:
+                assert str(prop.get("editor") or "").strip(), f"{schema_path}:{key} missing editor"
+

@@ -14,8 +14,11 @@
           "foreground_hex": "#999999",
           "background_hex": "#FFFFFF"
         }
-      ]
+      ],
+      "description": "HTML Snippets and Color Pairs to Audit (Audit HTML templates and web pages deterministically against JIS X 8341-3:2016 / WCAG 2.1 Level AA rules plus sRGB color contrast ratio math)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

@@ -12,8 +12,11 @@
           "name": "Dockerfile",
           "manifest_text": "FROM python:latest\nENV API_KEY=prod-hardcoded-value-123\nRUN curl -sSL https://installer.example/setup.sh | sh\nCMD [\"python3\", \"app.py\"]\n"
         }
-      ]
+      ],
+      "description": "Dockerfiles, Compose, or Kubernetes YAML Payloads to Audit (Audit Dockerfiles, docker-compose.yml, and Kubernetes YAML manifests for :latest or untagged images, root container execution, hardcoded ENV/ARG secrets, privileged/host-network flags, and remote curl|sh execution)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

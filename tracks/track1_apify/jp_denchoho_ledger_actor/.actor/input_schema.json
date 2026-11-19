@@ -14,8 +14,11 @@
         {
           "raw_text": "R6.4.5 株式会社クラウド保守 ¥55,000.pdf"
         }
-      ]
+      ],
+      "description": "Filenames or Transaction Lines to Normalize (Normalize messy Japanese invoices/receipts filenames and transaction records into Art.7 search-compliant YYYYMMDD_Partner_Amount filenames with Wareki conversion and NTA Modulo-9 T-number check)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

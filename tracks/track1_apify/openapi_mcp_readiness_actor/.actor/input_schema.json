@@ -15,7 +15,11 @@
               "title": "Billing API",
               "description": "Manage customer invoices and payment intents."
             },
-            "servers": [{"url": "https://api.service.example"}],
+            "servers": [
+              {
+                "url": "https://api.service.example"
+              }
+            ],
             "paths": {
               "/v1/invoices": {
                 "get": {
@@ -26,7 +30,9 @@
                       "name": "status",
                       "in": "query",
                       "description": "Invoice payment state filter",
-                      "schema": {"type": "string"}
+                      "schema": {
+                        "type": "string"
+                      }
                     }
                   ]
                 }
@@ -34,8 +40,11 @@
             }
           }
         }
-      ]
+      ],
+      "description": "OpenAPI Specs or MCP Tool Arrays to Audit (Audit OpenAPI 3.0/3.1 JSON specs and MCP tool schemas for LLM function-calling clarity, parameter bloat, unbounded object/array schemas, HTTPS security, and auth annotations)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

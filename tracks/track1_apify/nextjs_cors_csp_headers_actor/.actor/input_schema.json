@@ -12,8 +12,11 @@
           "target_name": "app.example.jp",
           "headers_text": "Access-Control-Allow-Origin: *\nContent-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'\nSet-Cookie: sid=abc123; Path=/\nX-Powered-By: Express"
         }
-      ]
+      ],
+      "description": "HTTP Header Snapshots or Configs to Audit (Audit HTTP security headers and config snippets for CORS wildcard reflection, weak CSP unsafe-inline/eval, missing clickjacking guards, HSTS max-age, cookie flags, and Server/X-Powered-By banner leaks)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

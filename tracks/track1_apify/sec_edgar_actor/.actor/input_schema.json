@@ -7,19 +7,30 @@
       "title": "Tickers or 10-Digit CIKs",
       "type": "array",
       "editor": "stringList",
-      "default": ["0000320193"]
+      "default": [
+        "0000320193"
+      ],
+      "description": "Tickers or 10-Digit CIKs (Extract structured recent SEC 8-K, 10-K, and 10-Q filing URLs plus latest US-GAAP XBRL Revenues, NetIncomeLoss, Assets, and Cash directly from public data.sec.gov JSON APIs)."
     },
     "forms": {
       "title": "Filing Form Types",
       "type": "array",
       "editor": "stringList",
-      "default": ["8-K", "10-K", "10-Q"]
+      "default": [
+        "8-K",
+        "10-K",
+        "10-Q"
+      ],
+      "description": "Filing Form Types (Extract structured recent SEC 8-K, 10-K, and 10-Q filing URLs plus latest US-GAAP XBRL Revenues, NetIncomeLoss, Assets, and Cash directly from public data.sec.gov JSON APIs)."
     },
     "limitPerCompany": {
       "title": "Recent Filings per Company",
       "type": "integer",
-      "default": 5
+      "default": 5,
+      "description": "Recent Filings per Company (Extract structured recent SEC 8-K, 10-K, and 10-Q filing URLs plus latest US-GAAP XBRL Revenues, NetIncomeLoss, Assets, and Cash directly from public data.sec.gov JSON APIs)."
     }
   },
-  "required": ["identifiers"]
+  "required": [
+    "identifiers"
+  ]
 }

@@ -20,12 +20,23 @@
             }
           },
           "packages": [
-            {"name": "express", "version": "4.19.2", "license": "MIT"},
-            {"name": "agpl-worker", "version": "1.2.0", "license": "AGPL-3.0-only"}
+            {
+              "name": "express",
+              "version": "4.19.2",
+              "license": "MIT"
+            },
+            {
+              "name": "agpl-worker",
+              "version": "1.2.0",
+              "license": "AGPL-3.0-only"
+            }
           ]
         }
-      ]
+      ],
+      "description": "Dependency Manifests or Package Lists to Audit (Audit package.json, requirements.txt, and SBOM dependency manifests for viral copyleft licenses (AGPL/GPL/SSPL/BUSL), weak copyleft (MPL/LGPL), unpinned wildcards, git+ dependencies, and M&A procurement compliance)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

@@ -13,8 +13,11 @@
           "checkout_text": "初回500円でお試し！",
           "is_subscription": true
         }
-      ]
+      ],
+      "description": "Tokushoho and Checkout Pages to Audit (Audit Japanese SaaS and EC legal notice pages + checkout confirmation copy for Tokushoho Art.11 mandatory disclosures, Art.12-6 recurring teaser traps, phone-only cancellation barriers, and defect-refund omissions)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

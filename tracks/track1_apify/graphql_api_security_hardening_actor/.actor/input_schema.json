@@ -12,8 +12,11 @@
           "target_name": "api.graphql",
           "sdl_text": "introspection: true\nallowBatchedHttpRequests: true\ncsrfPrevention: false\ntype User { id: ID! passwordHash: String! posts: [Post!]! }\ntype Post { id: ID! author: User! }\ntype Query { users: [User!]! }"
         }
-      ]
+      ],
+      "description": "GraphQL Schemas and Server Configs to Audit (Audit GraphQL SDL schemas and Apollo/Yoga configs for exposed introspection, cyclic depth DoS bombs, batch alias amplification, unguarded sensitive fields, unbounded lists, and disabled CSRF protection)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

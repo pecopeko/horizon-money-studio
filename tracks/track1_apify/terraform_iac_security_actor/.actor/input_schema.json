@@ -12,8 +12,11 @@
           "name": "main.tf",
           "hcl_text": "resource \"aws_s3_bucket_acl\" \"public\" {\n  acl = \"public-read\"\n}\nresource \"aws_instance\" \"app\" {\n  ami = \"ami-0123456789abcdef0\"\n  instance_type = \"t3.micro\"\n}\n"
         }
-      ]
+      ],
+      "description": "Terraform HCL Snippets to Audit (Audit Terraform HCL files deterministically for public S3/GCS storage ACLs, 0.0.0.0/0 sensitive-port ingress, unencrypted storage, wildcard IAM policies, hardcoded credentials, and missing FinOps billing tags)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

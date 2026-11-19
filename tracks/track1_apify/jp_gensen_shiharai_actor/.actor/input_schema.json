@@ -17,8 +17,11 @@
           "category": "standard",
           "period": "post_2026_10"
         }
-      ]
+      ],
+      "description": "Vendor Payment Records or Net Targets to Audit (Calculate Japan Art. 204 withholding tax, gross-up pre-tax base from net target, NTA No. 6929 VAT bundling warnings, post-2026-10 50% Qualified Invoice deduction cliff impact, and Shiharai-Chosho flags)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }

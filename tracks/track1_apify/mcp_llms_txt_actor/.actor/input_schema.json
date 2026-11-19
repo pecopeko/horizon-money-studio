@@ -7,8 +7,13 @@
       "title": "Domains or Origins to Audit",
       "type": "array",
       "editor": "stringList",
-      "default": ["https://docs.python.org"]
+      "default": [
+        "https://docs.python.org"
+      ],
+      "description": "Domains or Origins to Audit (Audit target websites for /llms.txt, /llms-full.txt, /.well-known/mcp.json manifests, and robots.txt AI crawler policies (GPTBot, ClaudeBot, Google-Extended), scoring AI agent readiness (0-100))."
     }
   },
-  "required": ["domains"]
+  "required": [
+    "domains"
+  ]
 }

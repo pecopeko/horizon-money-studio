@@ -7,18 +7,23 @@
       "title": "Shopify Store Base URL",
       "type": "string",
       "editor": "textfield",
-      "default": "https://shop.example.org"
+      "default": "https://shop.example.org",
+      "description": "Shopify Store Base URL (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
     },
     "collection": {
       "title": "Collection Handle (optional)",
       "type": "string",
-      "editor": "textfield"
+      "editor": "textfield",
+      "description": "Collection Handle (optional) (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
     },
     "maxPages": {
       "title": "Max Pages (250 products/page)",
       "type": "integer",
-      "default": 3
+      "default": 3,
+      "description": "Max Pages (250 products/page) (Fast, browserless extraction of products, variants, SKUs, price min/max, stock flags, and image URLs from public Shopify /products.json and collection JSON endpoints)."
     }
   },
-  "required": ["storeUrl"]
+  "required": [
+    "storeUrl"
+  ]
 }

@@ -12,13 +12,26 @@
           "org_name": "Shinagawa Holdings K.K.",
           "representative_name": "Suzuki Ichiro",
           "holders": [
-            {"name": "Yamada Taro", "type": "individual", "directPct": 15},
-            {"name": "Yamada Asset KK", "type": "corporate", "directPct": 22, "controllerName": "Yamada Taro", "controllerPct": 80}
+            {
+              "name": "Yamada Taro",
+              "type": "individual",
+              "directPct": 15
+            },
+            {
+              "name": "Yamada Asset KK",
+              "type": "corporate",
+              "directPct": 22,
+              "controllerName": "Yamada Taro",
+              "controllerPct": 80
+            }
           ],
           "clause_text": "催告の上解除する。確認記録保存なし。"
         }
-      ]
+      ],
+      "description": "Vendor Contracts & Shareholder Structures to Audit (Audit Japanese Anti-Social Forces exclusion clauses, compute >25% indirect Beneficial Owners (UBO), and validate Revised Whistleblower Protection Act compliance)."
     }
   },
-  "required": ["items"]
+  "required": [
+    "items"
+  ]
 }
