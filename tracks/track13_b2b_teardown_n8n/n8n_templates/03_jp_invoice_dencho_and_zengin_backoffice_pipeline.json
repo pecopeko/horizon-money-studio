@@ -1,0 +1,376 @@
+{
+  "id": "horizon-tpl-03-jp-invoice-zengin",
+  "name": "Japan Invoice (NTA T-Number Mod-9) + Dencho-ho Naming + Zengin 120B CP932 Backoffice Pipeline",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 03 · Japan Invoice + Dencho-ho + Zengin Backoffice Pipeline\n\nAutomates end-to-end Japanese accounts-payable compliance from a single webhook intake:\n1. **NTA Qualified Invoice ID (`T` + 13 digits)** mathematical Modulo-9 check-digit verification (`9 - (weighted_sum % 9)`).\n2. **Electronic Books Preservation Act (改正電子帳簿保存法)** filename normalization (`YYYYMMDD_Vendor_Amount.pdf`) + 3 statutory search keys.\n3. **Bank-ready Zengin 120-Byte fixed-length transfer file** (`種別21 総合振込`, JIS X 0201 / CP932 half-width katakana bytes) + Slack finance approval + Google Sheets search ledger.\n\n### Required Environment Variables\n- `ZENGIN_CLIENT_CODE` (10-digit requester code)\n- `ZENGIN_SENDER_KANA` (half-width katakana sender name)\n- `ZENGIN_SENDER_BANK_CODE` (4 digits, e.g. `0005`)\n- `ZENGIN_SENDER_BRANCH_CODE` (3 digits, e.g. `001`)\n- `ZENGIN_SENDER_ACCOUNT_NO` (7 digits)\n- `GOOGLE_DENCHO_SHEET_ID` (Dencho-ho ledger spreadsheet ID)\n- `SLACK_FINANCE_CHANNEL` (e.g. `#jp-keiri-approval`)",
+        "height": 420,
+        "width": 440,
+        "color": 4
+      },
+      "id": "c3000003-0003-4000-8000-000000000001",
+      "name": "Sticky Note — JP Invoice & Zengin Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## NTA Modulo-9 & Dencho-ho Rules\n\n- Strips full-width characters (`Ｔ１２３...` -> `T123...`) and validates check digit `digits[0] === 9 - (sum % 9)` with weights `[1, 2]` from right across digits `2..13`.\n- Converts Gregorian (`2026-11-20`, `2026年11月20日`) and Wareki (`令和8年11月20日`, `R8.11.20`) dates into `YYYYMMDD`.\n- Rejects invalid T-numbers or missing amount/vendor keys with HTTP `422` + Slack exception alert (zero silent passes).",
+        "height": 240,
+        "width": 400,
+        "color": 5
+      },
+      "id": "c3000003-0003-4000-8000-000000000002",
+      "name": "Sticky Note — Mod-9 & Dencho Compliance",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Zengin 120-Byte CP932 Export\n\nBuilds strict 120-byte fixed-length Header (`1`), Data (`2`), Trailer (`8`), and End (`9`) records encoded directly to single-byte ASCII + JIS X 0201 Half-Width Katakana (`0xA6..0xDF`, CP932-identical) so MUFG BizSTATION / SMBC Web21 / Rakuten / SBI accept the file without Mojibake.",
+        "height": 200,
+        "width": 380,
+        "color": 6
+      },
+      "id": "c3000003-0003-4000-8000-000000000003",
+      "name": "Sticky Note — Zengin 120B CP932 Spec",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jp-invoice-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c3000003-0003-4000-8000-000000000010",
+      "name": "Receive JP Invoice Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        320
+      ],
+      "webhookId": "jp-invoice-dencho-zengin-intake"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawInput = $input.first().json || {};\nconst payload = (rawInput.body && typeof rawInput.body === 'object') ? rawInput.body : rawInput;\n\nconst toHalfWidthAscii = (s) => String(s || '')\n  .replace(/[！-～]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))\n  .replace(/　/g, ' ');\n\n// 1. NTA Qualified Invoice T-Number Modulo-9 Verification\nconst rawT = toHalfWidthAscii(payload.invoiceTNumber || payload.tNumber || '');\nconst tMatch = rawT.match(/T[-\\s]?(\\d{13})\\b/i);\nlet tNumberNormalized = '';\nlet tNumberValid = false;\nlet expectedCheckDigit = null;\nif (tMatch) {\n  const digits = tMatch[1];\n  tNumberNormalized = `T${digits}`;\n  const actualCd = Number(digits[0]);\n  let total = 0;\n  for (let idx = 1; idx < 13; idx += 1) {\n    const q = Number(digits[13 - idx]);\n    total += q * (idx % 2 === 1 ? 1 : 2);\n  }\n  expectedCheckDigit = 9 - (total % 9);\n  tNumberValid = (actualCd === expectedCheckDigit);\n}\n\n// 2. Wareki / Gregorian Date Parser -> YYYYMMDD\nconst parseDateYmd = (raw) => {\n  const norm = toHalfWidthAscii(raw);\n  const eraBase = { '令和': 2018, 'R': 2018, '平成': 1988, 'H': 1988 };\n  const wm = norm.match(/(令和|平成)\\s*(元|\\d{1,2})\\s*年\\s*(\\d{1,2})\\s*月\\s*(\\d{1,2})\\s*日?/);\n  if (wm) {\n    const y = eraBase[wm[1]] + (wm[2] === '元' ? 1 : Number(wm[2]));\n    return `${y}${String(wm[3]).padStart(2, '0')}${String(wm[4]).padStart(2, '0')}`;\n  }\n  const ws = norm.match(/\\b([RHrh])\\s*(\\d{1,2})[./-](\\d{1,2})[./-](\\d{1,2})\\b/);\n  if (ws) {\n    const y = eraBase[ws[1].toUpperCase()] + Number(ws[2]);\n    return `${y}${String(ws[3]).padStart(2, '0')}${String(ws[4]).padStart(2, '0')}`;\n  }\n  const gm = norm.match(/(20\\d{2})\\s*[-/年.]\\s*(\\d{1,2})\\s*[-/月.]\\s*(\\d{1,2})\\s*日?/);\n  if (gm) {\n    return `${gm[1]}${String(gm[2]).padStart(2, '0')}${String(gm[3]).padStart(2, '0')}`;\n  }\n  const cm = norm.match(/\\b(20\\d{2})(\\d{2})(\\d{2})\\b/);\n  return cm ? `${cm[1]}${cm[2]}${cm[3]}` : '';\n};\n\nconst transactionDate = parseDateYmd(payload.invoiceDate || payload.date || '');\nconst vendorRaw = String(payload.vendorName || '').trim();\nconst vendorClean = vendorRaw.replace(/[\\\\/:*?\"<>|\\s]+/g, '').slice(0, 48);\nconst amountNum = Number(String(payload.amountYen || payload.amount || '').replace(/[^0-9]/g, ''));\nconst amountValid = Number.isFinite(amountNum) && amountNum > 0;\n\nconst errors = [];\nif (!tNumberValid) {\n  errors.push(tNumberNormalized\n    ? `Invalid NTA T-number check digit for ${tNumberNormalized} (expected leading digit ${expectedCheckDigit})`\n    : 'Missing NTA Qualified Invoice T-number (T + 13 digits)');\n}\nif (!transactionDate) errors.push('Missing or unparseable invoiceDate (required for Dencho-ho 3-key search)');\nif (!vendorClean) errors.push('Missing vendorName (required for Dencho-ho 3-key search)');\nif (!amountValid) errors.push('Missing positive integer amountYen (required for Dencho-ho 3-key search)');\n\nconst denchoFilename = (transactionDate && vendorClean && amountValid)\n  ? `${transactionDate}_${vendorClean}_${amountNum}.pdf`\n  : '';\n\nreturn [{\n  json: {\n    isValidInvoice: errors.length === 0,\n    validationErrors: errors,\n    tNumberNormalized,\n    tNumberValid,\n    expectedCheckDigit,\n    transactionDate,\n    vendorName: vendorRaw,\n    vendorClean,\n    amountYen: amountValid ? amountNum : 0,\n    denchoFilename,\n    payeeBankCode: String(payload.payeeBankCode || '').replace(/\\D/g, '').padStart(4, '0').slice(-4),\n    payeeBranchCode: String(payload.payeeBranchCode || '').replace(/\\D/g, '').padStart(3, '0').slice(-3),\n    payeeAccountType: String(payload.payeeAccountType || '1'),\n    payeeAccountNo: String(payload.payeeAccountNo || '').replace(/\\D/g, '').padStart(7, '0').slice(-7),\n    payeeKana: String(payload.payeeKana || vendorRaw),\n    transferDateMmdd: String(payload.transferDateMmdd || (transactionDate ? transactionDate.slice(4, 8) : '1125'))\n  }\n}];"
+      },
+      "id": "c3000003-0003-4000-8000-000000000011",
+      "name": "Validate NTA T-Number & Dencho-ho Keys",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-invoice-valid",
+              "leftValue": "={{ $json.isValidInvoice }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c3000003-0003-4000-8000-000000000012",
+      "name": "Is Valid Qualified Invoice?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        760,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nconst KANA_MAP = {\n  'ア': 'ｱ', 'イ': 'ｲ', 'ウ': 'ｳ', 'エ': 'ｴ', 'オ': 'ｵ',\n  'カ': 'ｶ', 'キ': 'ｷ', 'ク': 'ｸ', 'ケ': 'ｹ', 'コ': 'ｺ',\n  'サ': 'ｻ', 'シ': 'ｼ', 'ス': 'ｽ', 'セ': 'ｾ', 'ソ': 'ｿ',\n  'タ': 'ﾀ', 'チ': 'ﾁ', 'ツ': 'ﾂ', 'テ': 'ﾃ', 'ト': 'ﾄ',\n  'ナ': 'ﾅ', 'ニ': 'ﾆ', 'ヌ': 'ﾇ', 'ネ': 'ﾈ', 'ノ': 'ﾉ',\n  'ハ': 'ﾊ', 'ヒ': 'ﾋ', 'フ': 'ﾌ', 'ヘ': 'ﾍ', 'ホ': 'ﾎ',\n  'マ': 'ﾏ', 'ミ': 'ﾐ', 'ム': 'ﾑ', 'メ': 'ﾒ', 'モ': 'ﾓ',\n  'ヤ': 'ﾔ', 'ユ': 'ﾕ', 'ヨ': 'ﾖ',\n  'ラ': 'ﾗ', 'リ': 'ﾘ', 'ル': 'ﾙ', 'レ': 'ﾚ', 'ロ': 'ﾛ',\n  'ワ': 'ﾜ', 'ヲ': 'ｦ', 'ン': 'ﾝ',\n  'ガ': 'ｶﾞ', 'ギ': 'ｷﾞ', 'グ': 'ｸﾞ', 'ゲ': 'ｹﾞ', 'ゴ': 'ｺﾞ',\n  'ザ': 'ｻﾞ', 'ジ': 'ｼﾞ', 'ズ': 'ｽﾞ', 'ゼ': 'ｾﾞ', 'ゾ': 'ｿﾞ',\n  'ダ': 'ﾀﾞ', 'ヂ': 'ﾁﾞ', 'ヅ': 'ﾂﾞ', 'デ': 'ﾃﾞ', 'ド': 'ﾄﾞ',\n  'バ': 'ﾊﾞ', 'ビ': 'ﾋﾞ', 'ブ': 'ﾌﾞ', 'ベ': 'ﾍﾞ', 'ボ': 'ﾎﾞ',\n  'パ': 'ﾊﾟ', 'ピ': 'ﾋﾟ', 'プ': 'ﾌﾟ', 'ペ': 'ﾍﾟ', 'ポ': 'ﾎﾟ',\n  'ァ': 'ｱ', 'ィ': 'ｲ', 'ゥ': 'ｳ', 'ェ': 'ｴ', 'ォ': 'ｵ',\n  'ッ': 'ﾂ', 'ャ': 'ﾔ', 'ュ': 'ﾕ', 'ョ': 'ﾖ', 'ー': '-'\n};\n\nconst toZenginKana = (raw, maxLen) => {\n  let s = String(raw || '')\n    .replace(/^株式会社\\s*/, 'ｶ)')\n    .replace(/\\s*株式会社$/, '(ｶ')\n    .replace(/^合同会社\\s*/, 'ﾄﾞ)')\n    .replace(/[ぁ-ん]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) + 0x60))\n    .replace(/[！-～]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))\n    .toUpperCase();\n  let out = '';\n  for (const ch of s) {\n    if (KANA_MAP[ch]) out += KANA_MAP[ch];\n    else if (/^[A-Z0-9 .\\-()\\/ｱ-ﾝﾞﾟ]$/.test(ch)) out += ch;\n  }\n  return out.slice(0, maxLen).padEnd(maxLen, ' ');\n};\n\nconst encodeCp932SingleByte = (str) => {\n  const bytes = [];\n  for (const ch of str) {\n    const code = ch.charCodeAt(0);\n    if (code >= 0x20 && code <= 0x7e) bytes.push(code);\n    else if (code === 0x0d || code === 0x0a) bytes.push(code);\n    else if (code >= 0xff61 && code <= 0xff9f) bytes.push(code - 0xff61 + 0xa1);\n    else bytes.push(0x20);\n  }\n  return Buffer.from(bytes);\n};\n\nconst clientCode = String($env.ZENGIN_CLIENT_CODE || '0000000001').replace(/\\D/g, '').padStart(10, '0').slice(-10);\nconst senderKana = toZenginKana($env.ZENGIN_SENDER_KANA || 'ﾎﾗｲｽﾞﾝｶﾌﾞｼｷｶﾞｲｼﾔ', 40);\nconst transferMmdd = String(item.transferDateMmdd || '1125').replace(/\\D/g, '').padStart(4, '0').slice(-4);\nconst senderBank = String($env.ZENGIN_SENDER_BANK_CODE || '0005').replace(/\\D/g, '').padStart(4, '0').slice(-4);\nconst senderBranch = String($env.ZENGIN_SENDER_BRANCH_CODE || '001').replace(/\\D/g, '').padStart(3, '0').slice(-3);\nconst senderAcct = String($env.ZENGIN_SENDER_ACCOUNT_NO || '1234567').replace(/\\D/g, '').padStart(7, '0').slice(-7);\n\nconst headerRec = (\n  '1' + '21' + '0' + clientCode + senderKana + transferMmdd +\n  senderBank + ' '.repeat(15) + senderBranch + ' '.repeat(15) + '1' + senderAcct + ' '.repeat(17)\n).slice(0, 120).padEnd(120, ' ');\n\nconst payeeKana = toZenginKana(item.payeeKana, 30);\nconst amount10 = String(item.amountYen).padStart(10, '0').slice(-10);\nconst dataRec = (\n  '2' + item.payeeBankCode + ' '.repeat(15) + item.payeeBranchCode + ' '.repeat(15) +\n  '    ' + item.payeeAccountType.slice(0, 1) + item.payeeAccountNo + payeeKana + amount10 +\n  '0' + ' '.repeat(20) + ' ' + ' ' + ' '.repeat(7)\n).slice(0, 120).padEnd(120, ' ');\n\nconst trailerRec = ('8' + '000001' + String(item.amountYen).padStart(12, '0').slice(-12) + ' '.repeat(101)).slice(0, 120);\nconst endRec = ('9' + ' '.repeat(119)).slice(0, 120);\n\nconst fullText = [headerRec, dataRec, trailerRec, endRec].join('\\r\\n') + '\\r\\n';\nconst cp932Buf = encodeCp932SingleByte(fullText);\nconst zenginFilename = `zengin_${item.transactionDate}_${item.payeeBankCode}.txt`;\n\nreturn [{\n  json: {\n    ...item,\n    zenginFilename,\n    zenginByteLength: cp932Buf.length,\n    zenginRecordCount: 1,\n    zenginBase64Cp932: cp932Buf.toString('base64'),\n    zenginPreviewHeader: headerRec\n  }\n}];"
+      },
+      "id": "c3000003-0003-4000-8000-000000000013",
+      "name": "Build Zengin 120B CP932 Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1060,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_DENCHO_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "DenchoIndex",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TransactionDate": "={{ $json.transactionDate }}",
+            "Vendor": "={{ $json.vendorName }}",
+            "AmountYen": "={{ $json.amountYen }}",
+            "InvoiceTNumber": "={{ $json.tNumberNormalized }}",
+            "DenchoFilename": "={{ $json.denchoFilename }}",
+            "ZenginFile": "={{ $json.zenginFilename }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "c3000003-0003-4000-8000-000000000014",
+      "name": "Append Dencho-ho Search Index",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1380,
+        80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $env.SLACK_FINANCE_CHANNEL || '#jp-keiri-approval' }}",
+          "mode": "name"
+        },
+        "text": "={{ `[経理承認待ち] 適格請求書検証OK (${$json.tNumberNormalized}) | 電帳法ファイル名: ${$json.denchoFilename} | 振込額: ¥${$json.amountYen} | 全銀120B生成済: ${$json.zenginFilename} (${$json.zenginByteLength} bytes CP932)` }}",
+        "otherOptions": {}
+      },
+      "id": "c3000003-0003-4000-8000-000000000015",
+      "name": "Send Slack Finance Approval Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1380,
+        240
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "REPLACE_WITH_SLACK_CREDENTIAL_ID",
+          "name": "Slack OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'approved_for_transfer', tNumber: $json.tNumberNormalized, denchoFilename: $json.denchoFilename, zenginFilename: $json.zenginFilename, zenginByteLength: $json.zenginByteLength }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "c3000003-0003-4000-8000-000000000016",
+      "name": "Respond 200 Validated Invoice",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $env.SLACK_FINANCE_CHANNEL || '#jp-keiri-approval' }}",
+          "mode": "name"
+        },
+        "text": "={{ `[要確認・差戻し] 請求書バリデーション失敗 (${$json.vendorName || '取引先不明'}) | 理由: ${($json.validationErrors || []).join(' / ')}` }}",
+        "otherOptions": {}
+      },
+      "id": "c3000003-0003-4000-8000-000000000017",
+      "name": "Alert Slack on Validation Error",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1060,
+        460
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "REPLACE_WITH_SLACK_CREDENTIAL_ID",
+          "name": "Slack OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'validation_failed', errors: $json.validationErrors }) }}",
+        "options": {
+          "responseCode": 422
+        }
+      },
+      "id": "c3000003-0003-4000-8000-000000000018",
+      "name": "Respond 422 Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1380,
+        460
+      ]
+    }
+  ],
+  "connections": {
+    "Receive JP Invoice Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate NTA T-Number & Dencho-ho Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate NTA T-Number & Dencho-ho Keys": {
+      "main": [
+        [
+          {
+            "node": "Is Valid Qualified Invoice?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Valid Qualified Invoice?": {
+      "main": [
+        [
+          {
+            "node": "Build Zengin 120B CP932 Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert Slack on Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Zengin 120B CP932 Payload": {
+      "main": [
+        [
+          {
+            "node": "Append Dencho-ho Search Index",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Slack Finance Approval Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Finance Approval Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 Validated Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Slack on Validation Error": {
+      "main": [
+        [
+          {
+            "node": "Respond 422 Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "pinData": {
+    "Receive JP Invoice Webhook": [
+      {
+        "json": {
+          "invoiceTNumber": "T7010001008844",
+          "invoiceDate": "令和8年11月20日",
+          "vendorName": "株式会社テスト商事",
+          "amountYen": 110000,
+          "payeeBankCode": "0005",
+          "payeeBranchCode": "001",
+          "payeeAccountType": "1",
+          "payeeAccountNo": "1234567",
+          "payeeKana": "カブシキガイシャテストショウジ"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "shortTitle": "03 · JP Invoice Mod-9 + Zengin CP932",
+    "description": "Validates Japanese NTA Qualified Invoice T-Numbers (Modulo-9), normalizes Dencho-ho 3-key PDF filenames, generates bank-ready 120-byte CP932 Zengin transfer files, and sends Slack finance approvals.",
+    "templateCredsSetupCompleted": false,
+    "instanceId": "horizon-n8n-template-v1"
+  },
+  "tags": [
+    {
+      "name": "japan-backoffice"
+    },
+    {
+      "name": "invoice-system"
+    },
+    {
+      "name": "zengin"
+    }
+  ]
+}

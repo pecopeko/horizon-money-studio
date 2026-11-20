@@ -1,0 +1,431 @@
+{
+  "id": "horizon-tpl-01-shopify-monitor",
+  "name": "Shopify Competitor Price & Stock Change Alert (Sheets + Slack + Discord)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 01 · Shopify Competitor Price & Stock Monitor\n\nTracks public `/products.json` feeds on target Shopify stores on a polite 6-hour schedule, diffs variant prices & inventory availability against persistent workflow static state, and alerts Slack, Discord, and Google Sheets whenever a price drop or stock-out occurs.\n\n### Required Environment Variables\n- `SHOPIFY_COMPETITOR_STORES` (comma-separated domains, e.g. `allbirds.com,gymshark.com`)\n- `PRICE_DROP_THRESHOLD_PCT` (default `5`)\n- `GOOGLE_SHEET_ID` (target spreadsheet ID)\n- `SLACK_ALERT_CHANNEL` (e.g. `#ecom-pricing-alerts`)\n- `DISCORD_WEBHOOK_URL` (Discord channel webhook URL)\n\n### Credentials to Connect\n- Google Sheets OAuth2 (`REPLACE_WITH_GOOGLE_SHEETS_CREDENTIAL_ID`)\n- Slack OAuth2 (`REPLACE_WITH_SLACK_CREDENTIAL_ID`)",
+        "height": 390,
+        "width": 420,
+        "color": 4
+      },
+      "id": "a1000001-0001-4000-8000-000000000001",
+      "name": "Sticky Note — Setup & Environment Variables",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Diff Engine & Persistent State\n\n`Compute Price & Stock Diffs` stores the last seen `{ price, available, title, handle }` map per `store::variantId` in `$getWorkflowStaticData('global')`.\n\n- **First run**: Seeds baseline prices cleanly without spamming false alerts.\n- **Subsequent runs**: Emits structured `PRICE_DROP`, `PRICE_INCREASE`, `OUT_OF_STOCK`, and `BACK_IN_STOCK` events with exact delta percentage and direct product URL.",
+        "height": 230,
+        "width": 380,
+        "color": 5
+      },
+      "id": "a1000001-0001-4000-8000-000000000002",
+      "name": "Sticky Note — State & Diff Logic",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        980,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Alert Routing & Guardrails\n\nOnly executes Slack, Discord, and Google Sheets writes when `Has Price or Stock Changes?` evaluates `true`.\n\nTo stay polite and compliant:\n- Poll no faster than every 4-6 hours.\n- Respect `robots.txt` and keep `limit=250` single-page requests.",
+        "height": 210,
+        "width": 360,
+        "color": 6
+      },
+      "id": "a1000001-0001-4000-8000-000000000003",
+      "name": "Sticky Note — Alert Routing & Guardrails",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "a1000001-0001-4000-8000-000000000010",
+      "name": "Schedule Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-stores",
+              "name": "storesCsv",
+              "value": "={{ $env.SHOPIFY_COMPETITOR_STORES || 'www.allbirds.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-thresh",
+              "name": "dropThresholdPct",
+              "value": "={{ Number($env.PRICE_DROP_THRESHOLD_PCT || 5) }}",
+              "type": "number"
+            },
+            {
+              "id": "cfg-run-ts",
+              "name": "checkedAtUtc",
+              "value": "={{ $now.toUTC().toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000011",
+      "name": "Load Competitor Store Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $input.first().json;\nconst rawStores = String(cfg.storesCsv || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);\nconst dropThresholdPct = Number(cfg.dropThresholdPct || 5);\nconst checkedAtUtc = String(cfg.checkedAtUtc || new Date().toISOString());\n\nconst items = [];\nfor (const rawHost of rawStores) {\n  const cleanHost = rawHost.replace(/^https?:\\/\\//, '').replace(/\\/.*$/, '').trim();\n  if (!cleanHost || !cleanHost.includes('.') || /^(localhost|127\\.|10\\.|192\\.168\\.|169\\.254\\.)/.test(cleanHost)) {\n    continue;\n  }\n  items.push({\n    json: {\n      storeDomain: cleanHost,\n      feedUrl: `https://${cleanHost}/products.json?limit=250`,\n      dropThresholdPct,\n      checkedAtUtc\n    }\n  });\n}\nreturn items;"
+      },
+      "id": "a1000001-0001-4000-8000-000000000012",
+      "name": "Expand Public Store Feed URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.feedUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "HorizonPriceMonitor/1.0 (polite-shopify-catalog-check)"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "a1000001-0001-4000-8000-000000000013",
+      "name": "Fetch Shopify Products Feed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.skuSnapshots) {\n  staticData.skuSnapshots = {};\n}\n\nconst events = [];\nconst inputItems = $input.all();\nconst upstreamStores = $items('Expand Public Store Feed URLs');\n\nfor (let i = 0; i < inputItems.length; i += 1) {\n  const payload = inputItems[i].json || {};\n  const meta = (upstreamStores[i] && upstreamStores[i].json) ? upstreamStores[i].json : {};\n  const domain = meta.storeDomain || 'unknown-store';\n  const thresholdPct = Number(meta.dropThresholdPct || 5);\n  const checkedAtUtc = meta.checkedAtUtc || new Date().toISOString();\n  const products = Array.isArray(payload.products) ? payload.products : [];\n\n  for (const product of products) {\n    const handle = String(product.handle || '');\n    const title = String(product.title || handle || 'Untitled Product');\n    const variants = Array.isArray(product.variants) ? product.variants : [];\n\n    for (const variant of variants) {\n      const skuKey = `${domain}::${variant.id}`;\n      const currentPrice = Number(variant.price);\n      const currentAvailable = Boolean(variant.available);\n      if (!Number.isFinite(currentPrice)) continue;\n\n      const prev = staticData.skuSnapshots[skuKey];\n      if (prev) {\n        const delta = Number((currentPrice - prev.price).toFixed(2));\n        const deltaPct = prev.price > 0 ? Number(((delta / prev.price) * 100).toFixed(2)) : 0;\n        let eventType = '';\n        if (delta < 0 && Math.abs(deltaPct) >= thresholdPct) {\n          eventType = 'PRICE_DROP';\n        } else if (delta > 0 && Math.abs(deltaPct) >= thresholdPct) {\n          eventType = 'PRICE_INCREASE';\n        } else if (prev.available === true && currentAvailable === false) {\n          eventType = 'OUT_OF_STOCK';\n        } else if (prev.available === false && currentAvailable === true) {\n          eventType = 'BACK_IN_STOCK';\n        }\n\n        if (eventType) {\n          events.push({\n            json: {\n              hasChange: true,\n              checkedAtUtc,\n              storeDomain: domain,\n              eventType,\n              productTitle: title,\n              variantTitle: String(variant.title || 'Default'),\n              sku: String(variant.sku || variant.id),\n              previousPrice: prev.price,\n              currentPrice,\n              delta,\n              deltaPct,\n              previousAvailable: prev.available,\n              currentAvailable,\n              productUrl: `https://${domain}/products/${handle}`\n            }\n          });\n        }\n      }\n      staticData.skuSnapshots[skuKey] = {\n        price: currentPrice,\n        available: currentAvailable,\n        title,\n        updatedAt: checkedAtUtc\n      };\n    }\n  }\n}\n\nif (events.length === 0) {\n  return [{\n    json: {\n      hasChange: false,\n      checkedAtUtc: new Date().toISOString(),\n      trackedSkus: Object.keys(staticData.skuSnapshots).length,\n      note: 'No price or stock changes crossed alert threshold in this cycle.'\n    }\n  }];\n}\nreturn events;"
+      },
+      "id": "a1000001-0001-4000-8000-000000000014",
+      "name": "Compute Price & Stock Diffs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-has-change",
+              "leftValue": "={{ $json.hasChange }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000015",
+      "name": "Has Price or Stock Changes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "PriceStockLog",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CheckedAtUTC": "={{ $json.checkedAtUtc }}",
+            "Store": "={{ $json.storeDomain }}",
+            "Event": "={{ $json.eventType }}",
+            "Product": "={{ $json.productTitle }}",
+            "Variant": "={{ $json.variantTitle }}",
+            "PreviousPrice": "={{ $json.previousPrice }}",
+            "CurrentPrice": "={{ $json.currentPrice }}",
+            "DeltaPct": "={{ $json.deltaPct }}",
+            "Available": "={{ $json.currentAvailable }}",
+            "URL": "={{ $json.productUrl }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000016",
+      "name": "Append Diff Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1720,
+        140
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $env.SLACK_ALERT_CHANNEL || '#ecom-pricing-alerts' }}",
+          "mode": "name"
+        },
+        "text": "={{ `[${$json.eventType}] ${$json.storeDomain} — ${$json.productTitle} (${$json.variantTitle}) | $${$json.previousPrice} -> $${$json.currentPrice} (${$json.deltaPct}%) | In Stock: ${$json.currentAvailable} | ${$json.productUrl}` }}",
+        "otherOptions": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000017",
+      "name": "Post Competitor Alert to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1720,
+        300
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "REPLACE_WITH_SLACK_CREDENTIAL_ID",
+          "name": "Slack OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "webhookUri": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "content": "={{ `**[${$json.eventType}] ${$json.storeDomain}**\\nProduct: ${$json.productTitle} (${$json.variantTitle})\\nPrice: $${$json.previousPrice} -> $${$json.currentPrice} (${$json.deltaPct}%)\\nStock: ${$json.currentAvailable ? 'In Stock' : 'Out of Stock'}\\nLink: ${$json.productUrl}` }}",
+        "options": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000018",
+      "name": "Post Price Alert to Discord",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1720,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "noop-summary",
+              "name": "cycleSummary",
+              "value": "={{ `Checked ${$json.trackedSkus || 0} SKUs at ${$json.checkedAtUtc}; no threshold breaches.` }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000001-0001-4000-8000-000000000019",
+      "name": "Record No-Change Heartbeat",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1720,
+        620
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Load Competitor Store Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Competitor Store Config": {
+      "main": [
+        [
+          {
+            "node": "Expand Public Store Feed URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Public Store Feed URLs": {
+      "main": [
+        [
+          {
+            "node": "Fetch Shopify Products Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Shopify Products Feed": {
+      "main": [
+        [
+          {
+            "node": "Compute Price & Stock Diffs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Price & Stock Diffs": {
+      "main": [
+        [
+          {
+            "node": "Has Price or Stock Changes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Price or Stock Changes?": {
+      "main": [
+        [
+          {
+            "node": "Append Diff Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post Competitor Alert to Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post Price Alert to Discord",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record No-Change Heartbeat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "pinData": {
+    "Load Competitor Store Config": [
+      {
+        "json": {
+          "storesCsv": "www.allbirds.com",
+          "dropThresholdPct": 5,
+          "checkedAtUtc": "2026-11-20T00:00:00.000Z"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "shortTitle": "01 · Shopify Price & Stock Diff",
+    "description": "Monitors public Shopify /products.json catalogs, tracks stateful SKU price & stock deltas, and fans out alerts to Google Sheets, Slack, and Discord.",
+    "templateCredsSetupCompleted": false,
+    "instanceId": "horizon-n8n-template-v1"
+  },
+  "tags": [
+    {
+      "name": "ecommerce"
+    },
+    {
+      "name": "shopify"
+    },
+    {
+      "name": "price-monitoring"
+    }
+  ]
+}

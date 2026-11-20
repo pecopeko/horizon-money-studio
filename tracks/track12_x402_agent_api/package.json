@@ -1,0 +1,30 @@
+{
+  "name": "x402-intel-worker",
+  "version": "1.0.0",
+  "description": "Zero-dependency Cloudflare Worker implementing the HTTP 402 (x402 v2/v1) USDC pay-per-call Edge API and Paid Streamable HTTP MCP Server for autonomous AI agents.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "keywords": [
+    "x402",
+    "cloudflare-workers",
+    "mcp",
+    "usdc",
+    "base",
+    "ai-agents",
+    "micropayments",
+    "http-402",
+    "bazaar"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/worker.test.mjs",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy",
+    "dry-run": "npx wrangler deploy --dry-run"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
