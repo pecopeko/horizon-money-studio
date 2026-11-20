@@ -1,7 +1,21 @@
-# Autonomous Multi-Track Studio Run Log (Waves 1–20 + v2.0 Pivot + Phase B & C Expansions)
+# Autonomous Multi-Track Studio Run Log (Waves 1–20 + v2.0 Pivot + Phases B, C & D)
 
 - **Budget Compliance**: **`$0.00` out-of-pocket spend** (strictly zero paid cloud billing, paid API keys, or paid domains).
 - **Hard Boundaries Honored**: Zero modifications inside `/Users/wakabayashishuntaira/Documents/macroTomicro`, zero SSH connections to `192.168.1.3`, zero tampering with external Colab browser sessions.
+
+---
+
+## Phase D Expansion — 4 Previously Untouched Ecosystems (Tracks 14–17, 2026-11-20)
+Entered four completely untouched ecosystems (Prediction Market Signal Subscriptions, 152-Page Programmatic SEO + Affiliate, Data-Driven Short-Form Video Production, and Native IDE Marketplace Extensions):
+- **Track 14 — Prediction Market Cross-Platform Arbitrage & Mispricing Radar (`pecopeko/predmarket-arb-radar`, auto-refresh SHA `3df894a`)**:
+  - Live Auto-Refreshing GitHub Pages Dashboard (`built`, `HTTP 200`): https://pecopeko.github.io/predmarket-arb-radar/ (30-min GitHub Actions workflow runs `44683622684` & `44683694127` `conclusion: success`, zero Mac load).
+  - Live read-only scan across Polymarket Gamma + CLOB, Kalshi Public Trade API v2, and Manifold Markets (`629` events, `6,432` contracts, `81` live orderbooks; `43` fee-adjusted cross-venue arbs up to `+1.36%` net / `+4.92%` annualized + `14` `negRiskAugmented` non-exhaustive traps flagged) + Discord/Telegram dedup alerter & `WHOP_DISCORD_LAUNCH_PLAYBOOK.md` (`14/14` pytest).
+- **Track 15 — 152-Page Programmatic SEO + High-EPC Interactive Affiliate Calculator Atlas (`pecopeko/ai-tax-cost-atlas` `1c047b6`)**:
+  - Live GitHub Pages Atlas (`built`, `HTTP 200`): https://pecopeko.github.io/ai-tax-cost-atlas/ — **152 unique static interactive pages** (`89` Global 2026 LLM API Pricing & Head-to-Head + `62` Japan Freelance Tax / Furusato / Incorporation `300万〜3000万円` + Root Hub), 0 duplicate titles/descriptions/canonicals, `SoftwareApplication`+`FAQPage`+`BreadcrumbList` JSON-LD on 100% of pages, `sitemap.xml`, `robots.txt`, `llms.txt`, single-file `affiliate_config.json` CTA swap (`9/9` pytest).
+- **Track 16 — Live Data-Driven `1080×1920` Animated Shorts Video Factory (`pecopeko/data-shorts-factory`)**:
+  - Public Repo & Playable Release `v1.0.0`: https://github.com/pecopeko/data-shorts-factory / https://github.com/pecopeko/data-shorts-factory/releases/tag/v1.0.0 — zero-temp streaming Pillow -> FFmpeg 8.0 pipe + macOS neural TTS (`Ava (Premium)` / `Kyoko`) + ambient audio bed. Rendered & visually verified 2 playable `1080×1920` 30fps H.264/AAC MP4 Shorts from live SEC EDGAR 10-K (`Big Tech Revenue Race`, `27.50s`, `2.1 MB`) & live FRED `FEDFUNDS` (`Fed Rate Shock 2020–2026`, `24.68s`, `1.3 MB`) + `CHANNEL_MONETIZATION_PLAYBOOK.md` (`11/11` pytest; `.mp4` outputs `.gitignore`d in `out/`).
+- **Track 17 — Native VS Code / Cursor / Windsurf Extension (`TokenGuard` — `pecopeko/tokenguard-vscode` `9c7b842`)**:
+  - Public Repo & Release `v1.0.0`: https://github.com/pecopeko/tokenguard-vscode / https://github.com/pecopeko/tokenguard-vscode/releases/download/v1.0.0/tokenguard-1.0.0.vsix (`47,217` bytes, `dependencies: {}`, `unzip -t` 0 errors, zero leaked private keys). Live status-bar token/cost meter, inline secret diagnostics & reversible redaction, lossless JSON `@schema` compressor, offline Ed25519 asymmetric Pro license gate (`$0.00` backend) + `MARKETPLACE_PUBLISH_GUIDE.md` (`12/12` Node + `5/5` pytest).
 
 ---
 

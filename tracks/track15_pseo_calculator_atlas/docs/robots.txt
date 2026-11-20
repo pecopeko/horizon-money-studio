@@ -1,0 +1,23 @@
+# AI & Japan Tax Cost Atlas 2026 — Search & AI Answer Engine Crawlers Welcome
+User-agent: *
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://pecopeko.github.io/ai-tax-cost-atlas/sitemap.xml

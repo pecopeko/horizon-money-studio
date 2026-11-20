@@ -1,0 +1,50 @@
+{
+  "kind": "bar_race",
+  "lang": "en",
+  "category_badge": "AI INFRASTRUCTURE BENCHMARK",
+  "highlight_phrase": "-98% COST",
+  "title": "LLM API PRICE COLLAPSE",
+  "subtitle": "Blended Cost per 1M Output Tokens ($ USD) · Frontier vs Flash",
+  "source_label": "SOURCE: PUBLIC API PRICING CARDS · ILLUSTRATIVE BENCHMARK",
+  "cta_text": "OPEN-SOURCE PYTHON VIDEO FACTORY · LINK IN BIO",
+  "unit_prefix": "$",
+  "unit_suffix": "",
+  "value_decimals": 2,
+  "total_label": "BASKET SUM",
+  "periods": ["2023 Q2", "2024 Q2", "2025 Q2", "2026 Q2"],
+  "entries": [
+    {
+      "key": "FLAGSHIP",
+      "label": "Frontier Reasoning",
+      "color": "#F59E0B",
+      "values": [60.0, 30.0, 15.0, 10.0],
+      "badge": "-83%",
+      "end_period_note": "2026"
+    },
+    {
+      "key": "WORKHORSE",
+      "label": "Mid-Tier Pro",
+      "color": "#60A5FA",
+      "values": [15.0, 7.5, 3.0, 2.5],
+      "badge": "-83%",
+      "end_period_note": "2026"
+    },
+    {
+      "key": "FLASH",
+      "label": "High-Speed Flash",
+      "color": "#10B981",
+      "values": [2.0, 0.75, 0.40, 0.30],
+      "badge": "-85%",
+      "end_period_note": "2026"
+    },
+    {
+      "key": "OPEN",
+      "label": "Hosted Open Weights",
+      "color": "#22D3EE",
+      "values": [1.5, 0.60, 0.25, 0.15],
+      "badge": "-90%",
+      "end_period_note": "2026"
+    }
+  ],
+  "narration_script": "AI token prices just fell off a cliff. Frontier reasoning dropped from sixty dollars down to ten. Workhorse models tumbled below three dollars, while fast flash and hosted open-weight models now cost pennies per million tokens."
+}

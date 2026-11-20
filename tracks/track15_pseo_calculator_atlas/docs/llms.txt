@@ -1,0 +1,128 @@
+# AI & Japan Tax Cost Atlas 2026
+
+> Static programmatic SEO (pSEO) atlas of deterministic, zero-tracking interactive calculators covering 2026 LLM API pricing comparisons and 2026-2027 Japanese freelance income tax, Furusato Nozei safe ceilings, Oct 2026 Invoice 50% cliff, and incorporation break-even simulations.
+
+- Canonical Hub: https://pecopeko.github.io/ai-tax-cost-atlas/
+- Sitemap: https://pecopeko.github.io/ai-tax-cost-atlas/sitemap.xml
+- Pricing Snapshot Date: 2026-11-20
+- Total Static Pages: 152
+
+## Cluster A — 2026 LLM API Pricing & Cost Matrix (88 Calculators)
+
+- Cluster A Directory: https://pecopeko.github.io/ai-tax-cost-atlas/llm/index.html
+- Models Covered: GPT-5, GPT-4.1, o4-mini, Claude Sonnet 4, Claude Opus 4, Claude Haiku 3.5, Gemini 2.5 Pro, Gemini 2.5 Flash, DeepSeek R1, DeepSeek V3, Qwen3 235B (OpenRouter), Llama 4 Maverick (OpenRouter)
+- Methodology: Exact standard, cached-input (75%-90% discount), 50% async Batch API, and Japanese CJK tokenizer inflation (1.55x-2.10x) calculations in USD and JPY.
+
+### Key Workload Calculators
+- [1M Tokens LLM API Cost Calculator](https://pecopeko.github.io/ai-tax-cost-atlas/llm/1m-tokens-cost-calculator.html): From $0.268/mo (Llama 4 Maverick (OpenRouter))
+- [10M Tokens RAG Pipeline Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/10m-tokens-rag-cost.html): From $1.97/mo (Llama 4 Maverick (OpenRouter))
+- [100M Tokens AI Agent Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/100m-tokens-agent-cost.html): From $17.10/mo (Llama 4 Maverick (OpenRouter))
+- [1B Tokens Enterprise LLM Spend](https://pecopeko.github.io/ai-tax-cost-atlas/llm/1b-tokens-enterprise-cost.html): From $168.70/mo (DeepSeek V3)
+- [Japanese vs English Token Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/japanese-llm-token-cost.html): From $6.70/mo (Qwen3 235B (OpenRouter))
+- [Prompt Caching ROI Calculator](https://pecopeko.github.io/ai-tax-cost-atlas/llm/prompt-caching-savings-calculator.html): From $7.86/mo (Llama 4 Maverick (OpenRouter))
+- [Batch API 50% Discount Calculator](https://pecopeko.github.io/ai-tax-cost-atlas/llm/batch-api-50-percent-discount-calculator.html): From $19.10/mo (DeepSeek V3)
+- [AI Coding Assistant API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/coding-assistant-monthly-api-cost.html): From $6.34/mo (Llama 4 Maverick (OpenRouter))
+- [Support Chatbot Cost per 1k Tickets](https://pecopeko.github.io/ai-tax-cost-atlas/llm/customer-support-chatbot-cost.html): From $5.43/mo (Llama 4 Maverick (OpenRouter))
+- [PDF & Invoice Extraction Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/pdf-ocr-document-extraction-cost.html): From $5.90/mo (DeepSeek V3)
+- [Meeting & Podcast Summary Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/voice-transcript-summarization-cost.html): From $2.72/mo (Llama 4 Maverick (OpenRouter))
+- [Multi-Agent Loop Cost Calculator](https://pecopeko.github.io/ai-tax-cost-atlas/llm/multi-agent-workflow-cost.html): From $16.29/mo (Llama 4 Maverick (OpenRouter))
+- [Hybrid RAG Reranking Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/semantic-search-reranking-cost.html): From $14.14/mo (Llama 4 Maverick (OpenRouter))
+- [GitHub PR Code Review Bot Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/code-review-ci-pr-bot-cost.html): From $3.83/mo (Llama 4 Maverick (OpenRouter))
+- [EN-to-JA Translation LLM Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/translation-localization-en-ja-cost.html): From $12.01/mo (Qwen3 235B (OpenRouter))
+- [Text-to-SQL BI Copilot Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/sql-bi-copilot-api-cost.html): From $6.54/mo (Llama 4 Maverick (OpenRouter))
+- [Synthetic Dataset Distillation Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/synthetic-dataset-generation-cost.html): From $44.12/mo (DeepSeek V3)
+- [Long-Context Contract Review Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/legal-contract-review-long-context-cost.html): From $3.54/mo (Llama 4 Maverick (OpenRouter))
+- [E-Commerce 10k SKU Enrichment Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/ecommerce-product-catalog-enrichment-cost.html): From $4.14/mo (DeepSeek V3)
+- [Self-Hosted GPU vs API Break-Even](https://pecopeko.github.io/ai-tax-cost-atlas/llm/self-hosted-gpu-vs-api-breakeven.html): From $58.80/mo (Llama 4 Maverick (OpenRouter))
+- [80/20 Model Routing Savings](https://pecopeko.github.io/ai-tax-cost-atlas/llm/openrouter-multi-model-routing-savings.html): From $11.40/mo (Llama 4 Maverick (OpenRouter))
+- [$1,000/mo Startup LLM Budget Planner](https://pecopeko.github.io/ai-tax-cost-atlas/llm/startup-1000-usd-llm-budget-planner.html): From $33.66/mo (Llama 4 Maverick (OpenRouter))
+
+### Featured Head-to-Head Comparisons (All 66 pairs in sitemap.xml)
+- [GPT-5 vs GPT-4.1 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-gpt-4-1-api-cost.html): 10M tok: $30.00 vs $32.00
+- [GPT-5 vs o4-mini API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-o4-mini-api-cost.html): 10M tok: $30.00 vs $17.60
+- [GPT-5 vs Claude Sonnet 4 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-claude-sonnet-4-api-cost.html): 10M tok: $30.00 vs $54.00
+- [GPT-5 vs Claude Opus 4 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-claude-opus-4-api-cost.html): 10M tok: $30.00 vs $270.00
+- [GPT-5 vs Claude Haiku 3.5 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-claude-haiku-3-5-api-cost.html): 10M tok: $30.00 vs $14.40
+- [GPT-5 vs Gemini 2.5 Pro API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-gemini-2-5-pro-api-cost.html): 10M tok: $30.00 vs $30.00
+- [GPT-5 vs Gemini 2.5 Flash API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-gemini-2-5-flash-api-cost.html): 10M tok: $30.00 vs $7.40
+- [GPT-5 vs DeepSeek R1 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-deepseek-r1-api-cost.html): 10M tok: $30.00 vs $8.78
+- [GPT-5 vs DeepSeek V3 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-deepseek-v3-api-cost.html): 10M tok: $30.00 vs $4.36
+- [GPT-5 vs Qwen3 235B (OpenRouter) API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-qwen-3-235b-api-cost.html): 10M tok: $30.00 vs $2.80
+- [GPT-5 vs Llama 4 Maverick (OpenRouter) API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-5-vs-llama-4-maverick-api-cost.html): 10M tok: $30.00 vs $2.64
+- [GPT-4.1 vs o4-mini API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-o4-mini-api-cost.html): 10M tok: $32.00 vs $17.60
+- [GPT-4.1 vs Claude Sonnet 4 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-claude-sonnet-4-api-cost.html): 10M tok: $32.00 vs $54.00
+- [GPT-4.1 vs Claude Opus 4 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-claude-opus-4-api-cost.html): 10M tok: $32.00 vs $270.00
+- [GPT-4.1 vs Claude Haiku 3.5 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-claude-haiku-3-5-api-cost.html): 10M tok: $32.00 vs $14.40
+- [GPT-4.1 vs Gemini 2.5 Pro API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-gemini-2-5-pro-api-cost.html): 10M tok: $32.00 vs $30.00
+- [GPT-4.1 vs Gemini 2.5 Flash API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-gemini-2-5-flash-api-cost.html): 10M tok: $32.00 vs $7.40
+- [GPT-4.1 vs DeepSeek R1 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-deepseek-r1-api-cost.html): 10M tok: $32.00 vs $8.78
+- [GPT-4.1 vs DeepSeek V3 API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-deepseek-v3-api-cost.html): 10M tok: $32.00 vs $4.36
+- [GPT-4.1 vs Qwen3 235B (OpenRouter) API Cost](https://pecopeko.github.io/ai-tax-cost-atlas/llm/gpt-4-1-vs-qwen-3-235b-api-cost.html): 10M tok: $32.00 vs $2.80
+
+## Cluster B — 2026-2027 Japan Freelance Tax, Furusato & Incorporation (61 Calculators)
+
+- Cluster B Directory: https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/index.html
+- Statutory Basis: 7-bracket progressive income tax (5%-45%) + 2.1% reconstruction tax, 10% resident tax + JPY 5,000 per-capita, Blue Return 650k deduction, Basic Deduction step-down above JPY 24M, Individual Business Tax (5% over JPY 2.9M), Tokyo 23-ward NHI caps, Furusato Nozei 95% safe ceiling, Oct 2026 Invoice 50% buyer-side cliff, and incorporation break-even (baseline break-even: 648.0万円).
+
+### Representative Exact-Income, Furusato & Incorporation Pages
+- [個人事業主 売上300万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-300man.html): 手取り 194.4万円 / ふるさと納税 ¥8,000
+- [個人事業主 売上350万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-350man.html): 手取り 224.8万円 / ふるさと納税 ¥16,000
+- [個人事業主 売上400万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-400man.html): 手取り 253.7万円 / ふるさと納税 ¥24,000
+- [個人事業主 売上450万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-450man.html): 手取り 282.1万円 / ふるさと納税 ¥32,000
+- [個人事業主 売上500万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-500man.html): 手取り 310.6万円 / ふるさと納税 ¥40,000
+- [個人事業主 売上550万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-550man.html): 手取り 338.5万円 / ふるさと納税 ¥52,000
+- [個人事業主 売上600万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-600man.html): 手取り 365.1万円 / ふるさと納税 ¥60,000
+- [個人事業主 売上650万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-650man.html): 手取り 391.6万円 / ふるさと納税 ¥69,000
+- [個人事業主 売上700万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-700man.html): 手取り 418.3万円 / ふるさと納税 ¥77,000
+- [個人事業主 売上750万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-750man.html): 手取り 442.9万円 / ふるさと納税 ¥98,000
+- [個人事業主 売上800万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-800man.html): 手取り 465.9万円 / ふるさと納税 ¥108,000
+- [個人事業主 売上850万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-850man.html): 手取り 488.8万円 / ふるさと納税 ¥118,000
+- [個人事業主 売上900万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-900man.html): 手取り 511.7万円 / ふるさと納税 ¥127,000
+- [個人事業主 売上950万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-950man.html): 手取り 534.7万円 / ふるさと納税 ¥137,000
+- [個人事業主 売上1000万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1000man.html): 手取り 557.6万円 / ふるさと納税 ¥147,000
+- [個人事業主 売上1100万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1100man.html): 手取り 603.5万円 / ふるさと納税 ¥167,000
+- [個人事業主 売上1200万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1200man.html): 手取り 652.6万円 / ふるさと納税 ¥187,000
+- [個人事業主 売上1300万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1300man.html): 手取り 701.4万円 / ふるさと納税 ¥218,000
+- [個人事業主 売上1400万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1400man.html): 手取り 750.6万円 / ふるさと納税 ¥241,000
+- [個人事業主 売上1500万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1500man.html): 手取り 798.3万円 / ふるさと納税 ¥264,000
+- [個人事業主 売上1600万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1600man.html): 手取り 839.4万円 / ふるさと納税 ¥339,000
+- [個人事業主 売上1800万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-1800man.html): 手取り 921.5万円 / ふるさと納税 ¥393,000
+- [個人事業主 売上2000万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-2000man.html): 手取り 1,003.6万円 / ふるさと納税 ¥447,000
+- [個人事業主 売上2200万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-2200man.html): 手取り 1,085.7万円 / ふるさと納税 ¥501,000
+- [個人事業主 売上2400万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-2400man.html): 手取り 1,167.7万円 / ふるさと納税 ¥555,000
+- [個人事業主 売上2500万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-2500man.html): 手取り 1,208.8万円 / ふるさと納税 ¥582,000
+- [個人事業主 売上2800万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-2800man.html): 手取り 1,320.9万円 / ふるさと納税 ¥759,000
+- [個人事業主 売上3000万円の手取り・税金・インボイス](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/income-3000man.html): 手取り 1,391.5万円 / ふるさと納税 ¥821,000
+- [個人事業主 売上300万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-300man.html): 安全上限 ¥8,000（理論 ¥9,373）
+- [個人事業主 売上350万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-350man.html): 安全上限 ¥16,000（理論 ¥17,807）
+- [個人事業主 売上400万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-400man.html): 安全上限 ¥24,000（理論 ¥26,265）
+- [個人事業主 売上450万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-450man.html): 安全上限 ¥32,000（理論 ¥34,699）
+- [個人事業主 売上500万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-500man.html): 安全上限 ¥40,000（理論 ¥43,133）
+- [個人事業主 売上600万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-600man.html): 安全上限 ¥60,000（理論 ¥63,737）
+- [個人事業主 売上700万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-700man.html): 安全上限 ¥77,000（理論 ¥81,709）
+- [個人事業主 売上800万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-800man.html): 安全上限 ¥108,000（理論 ¥114,014）
+- [個人事業主 売上900万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-900man.html): 安全上限 ¥127,000（理論 ¥134,624）
+- [個人事業主 売上1000万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1000man.html): 安全上限 ¥147,000（理論 ¥155,204）
+- [個人事業主 売上1100万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1100man.html): 安全上限 ¥167,000（理論 ¥175,814）
+- [個人事業主 売上1200万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1200man.html): 安全上限 ¥187,000（理論 ¥197,745）
+- [個人事業主 売上1300万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1300man.html): 安全上限 ¥218,000（理論 ¥230,392）
+- [個人事業主 売上1400万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1400man.html): 安全上限 ¥241,000（理論 ¥254,446）
+- [個人事業主 売上1500万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1500man.html): 安全上限 ¥264,000（理論 ¥328,637）
+- [個人事業主 売上1600万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1600man.html): 安全上限 ¥339,000（理論 ¥357,053）
+- [個人事業主 売上1800万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-1800man.html): 安全上限 ¥393,000（理論 ¥413,884）
+- [個人事業主 売上2000万円 ふるさと納税95%安全上限](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/furusato-limit-2000man.html): 安全上限 ¥447,000（理論 ¥470,716）
+- [事業利益600万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-600man.html): -¥93,412（最適報酬 108.0万円）
+- [事業利益700万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-700man.html): +¥103,151（最適報酬 108.0万円）
+- [事業利益800万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-800man.html): +¥299,714（最適報酬 108.0万円）
+- [事業利益900万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-900man.html): +¥496,277（最適報酬 108.0万円）
+- [事業利益1000万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1000man.html): +¥634,760（最適報酬 156.0万円）
+- [事業利益1100万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1100man.html): +¥739,599（最適報酬 240.0万円）
+- [事業利益1200万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1200man.html): +¥815,578（最適報酬 324.0万円）
+- [事業利益1300万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1300man.html): +¥971,747（最適報酬 366.0万円）
+- [事業利益1400万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1400man.html): +¥1,122,877（最適報酬 366.0万円）
+- [事業利益1500万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1500man.html): +¥1,274,007（最適報酬 366.0万円）
+- [事業利益1600万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1600man.html): +¥1,425,137（最適報酬 366.0万円）
+- [事業利益1700万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1700man.html): +¥1,576,267（最適報酬 366.0万円）
+- [事業利益1800万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1800man.html): +¥1,727,397（最適報酬 366.0万円）
+- [事業利益1900万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-1900man.html): +¥1,878,527（最適報酬 366.0万円）
+- [事業利益2000万円の法人成り損益分岐点・最適役員報酬](https://pecopeko.github.io/ai-tax-cost-atlas/jp-tax/houjin-nari-2000man.html): +¥2,029,657（最適報酬 366.0万円）

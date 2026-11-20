@@ -1,0 +1,13 @@
+out/
+*.mp4
+*.mov
+*.wav
+*.aiff
+__pycache__/
+*.pyc
+.DS_Store
+.pytest_cache/
+.venv/
+dist/
+build/
+*.egg-info/
