@@ -1,0 +1,9 @@
+# Strictly exclude full commercial manuscript & KDP upload artifacts
+# to preserve Amazon KDP Select / Kindle Unlimited exclusivity.
+private_commercial_build/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.pytest_cache/
+*.tmp

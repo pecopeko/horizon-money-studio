@@ -1,0 +1,22 @@
+{
+  "name": "DesignGate — WCAG 2.2 Auto-Fix & Checkout Dark-Pattern Linter",
+  "id": "designgate-wcag-darkpattern-linter",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma",
+    "figjam"
+  ],
+  "permissions": [
+    "payments"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}
