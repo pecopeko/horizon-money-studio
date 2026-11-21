@@ -10,6 +10,7 @@
 - **Track 19 — Amazon KDP Print & Kindle Book Factory (`tracks/track19_kdp_book_factory/`)**: Compiled full `29,586`-word, `133`-page `6×9 in` PDF 1.4 interior (`306 KB`), EPUB 3.0 (`336 KB`), `1600×2560` Cover PNG, and `133`-page full-wrap paperback cover PDF (`1.57 MB`) locally inside `.gitignore`d `private_commercial_build/` (`2/2` pytest).
 - **Track 20 — Native Figma Plugin `DesignGate` (`pecopeko/designgate-figma-plugin`)**: Live browser simulator https://pecopeko.github.io/designgate-figma-plugin/ (`built`, `HTTP 200`); `figma.payments` native monetization + WCAG 2.2 AA/AAA + APCA `<1ms` solver + EN/JP Dark-Pattern & 特商法12条の6 linter (`10/10` Node + `4/4` pytest).
 - **Track 21 — Native Obsidian Plugin `VaultLens` (`pecopeko/obsidian-vaultlens` `f42d47d`)**: Official Release `1.0.0` (`main.js` `151 KB`, `manifest.json`, `styles.css`, `isDesktopOnly: false`) + Web Crypto ES256 offline Pro tier (`12/12` Node + `4/4` pytest).
+- **Track 22 — `PocketBridge` iPhone Safari Remote Touch & Keyboard Console (`tracks/track22_pocket_remote/`)**: Zero-dependency Node.js v22 + native `WebSocket` CDP console allowing lid-closed iPhone Safari screenshot tap-clicking, iPhone Japanese/Password keyboard typing, 1-tap Mac-side BOOTH/KDP file attachment (`DOM.setFileInputFiles`), and 26 pre-loaded copy snippets (`6/6` Node E2E + `4/4` pytest). Also synced Zenn `¥1,200` 8-chapter AFML Paid Book live (`https://zenn.dev/pecopeko/books/afml-quant-and-local-ai-guard`).
 
 ---
 

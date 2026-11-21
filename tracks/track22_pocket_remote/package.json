@@ -1,0 +1,15 @@
+{
+  "name": "pocketbridge",
+  "version": "1.0.0",
+  "description": "Zero-dependency iPhone Safari Touch-Screen + Native Keyboard + 1-Tap File-Upload Remote Console for Headless Chrome over Loopback CDP",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs",
+    "test": "node --test test/pocket_remote.test.mjs"
+  },
+  "dependencies": {}
+}
