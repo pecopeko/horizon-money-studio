@@ -1,0 +1,4 @@
+payee_name,payee_type,category,amount_yen,invoice_id,tax_included_on_invoice
+山田太郎デザイン,individual,standard,150000,T7000012050002,true
+佐藤花子ライティング,individual,standard,80000,,true
+鈴木一郎開発事務所,individual,standard,1200000,T7000012050002,true

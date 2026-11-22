@@ -1,0 +1,80 @@
+{
+  "title": "SEC EDGAR Filings, XBRL & Form D Search Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "identifiers": {
+      "title": "Company Tickers or 10-Digit CIKs",
+      "type": "array",
+      "editor": "stringList",
+      "prefill": [
+        "AAPL"
+      ],
+      "description": "Optional list of US stock tickers (e.g. 'AAPL', 'MSFT') or SEC CIK numbers to fetch company submissions and annual/quarterly US-GAAP XBRL metrics. Leave empty to run EFTS Form D / full-text search only."
+    },
+    "forms": {
+      "title": "Company Filing Form Types",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "8-K",
+        "10-K",
+        "10-Q"
+      ],
+      "description": "SEC form types to keep per company in Company Mode (e.g. 8-K, 10-K, 10-Q, 4, S-1, DEF 14A)."
+    },
+    "limitPerCompany": {
+      "title": "Recent Filings per Company",
+      "type": "integer",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 200,
+      "description": "Maximum number of recent matching filings to include per company identifier."
+    },
+    "includeXbrl": {
+      "title": "Include Annual & Quarterly US-GAAP XBRL Financials",
+      "type": "boolean",
+      "default": true,
+      "description": "Fetch companyfacts JSON and extract clean annual (10-K/FY) and quarterly (10-Q) metrics preferring modern ASC 606 revenue tags sorted by period end date."
+    },
+    "searchQuery": {
+      "title": "EFTS Full-Text Search Query (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional full-text keyword or phrase query sent to efts.sec.gov/LATEST/search-index (e.g. '\"artificial intelligence\"' or 'merger agreement')."
+    },
+    "formTypes": {
+      "title": "EFTS Search Form Types (e.g. Form D, 8-K)",
+      "type": "array",
+      "editor": "stringList",
+      "default": [],
+      "description": "Optional SEC form filters for EFTS search mode (e.g. ['D', 'D/A'] for private startup funding filings, or ['8-K'] for M&A and material events)."
+    },
+    "dateFrom": {
+      "title": "EFTS Search Start Date (YYYY-MM-DD)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional filing start date in YYYY-MM-DD format for EFTS search mode."
+    },
+    "dateTo": {
+      "title": "EFTS Search End Date (YYYY-MM-DD)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional filing end date in YYYY-MM-DD format for EFTS search mode."
+    },
+    "maxSearchResults": {
+      "title": "Max EFTS Search Results",
+      "type": "integer",
+      "default": 25,
+      "minimum": 1,
+      "maximum": 500,
+      "description": "Maximum number of EFTS search / Form D filing records to return."
+    },
+    "contactEmail": {
+      "title": "SEC Fair Access Contact Email (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional contact email placed into the SEC EDGAR User-Agent header per SEC Fair Access Policy. Defaults to the Actor's built-in Fair Access contact."
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Japan JIS X 8341-3:2016 & WCAG 2.1 AA Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "HTML Snippets and Color Pairs to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "name": "landing.html",
+          "html_source": "<html><body><h1>Title</h1><h3>Skip</h3><img src=\"a.png\"><button></button></body></html>",
+          "foreground_hex": "#999999",
+          "background_hex": "#FFFFFF"
+        }
+      ],
+      "description": "HTML Snippets and Color Pairs to Audit (Audit HTML templates and web pages deterministically against JIS X 8341-3:2016 / WCAG 2.1 Level AA rules plus sRGB color contrast ratio math)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

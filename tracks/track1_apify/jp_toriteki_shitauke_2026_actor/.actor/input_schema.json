@@ -1,0 +1,31 @@
+{
+  "title": "Japan 2026 Toriteki Act (Revised Subcontract Act) Contract Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "B2B Subcontract / Consignment Transactions to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Example Manufacturing Co.",
+          "transaction_category": "manufacturing_or_logistics",
+          "buyer_capital_jpy": 10000000,
+          "supplier_capital_jpy": 10000000,
+          "buyer_employees": 420,
+          "supplier_employees": 85,
+          "payment_cycle_days": 90,
+          "payment_method": "promissory_note",
+          "has_unilateral_price_freeze": true,
+          "unpaid_mold_storage_months": 12,
+          "contract_text": "120日サイトの約束手形払い。価格据置とし金型無償保管・一方的値引を行う。"
+        }
+      ],
+      "description": "List of B2B procurement records with transaction_category, buyer/supplier capital and employee headcounts, payment_cycle_days, payment_method, has_unilateral_price_freeze, unpaid_mold_storage_months, and contract_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

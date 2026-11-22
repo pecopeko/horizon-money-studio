@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "postgres-mysql-migration-lock-safety-auditor",
+  "title": "PostgreSQL & MySQL Zero-Downtime Migration Lock Safety Auditor",
+  "description": "Audit SQL migrations deterministically for blocking table locks, invalid CONCURRENTLY transactions, FK validation locks, destructive DDL, and unbounded DML.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

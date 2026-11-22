@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-toriteki-2026-subcontract-act-auditor",
+  "title": "Japan 2026 Toriteki Act (Revised Subcontract Act), 300/100 Employee Rule & Bill Ban Auditor",
+  "description": "Audit Japanese B2B subcontract and specific consignment agreements against the 2026 Toriteki Act (Revised Subcontract Act): 300/100 employee headcount scope, promissory note & discount-fee payment ban, 60-day cash settlement, mandatory price negotiation upon cost pressure, and unpaid mold custody bans.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "payment_audited": {
+        "eventTitle": "Withholding & Invoice Record Audited",
+        "eventDescription": "Charged per vendor payment record calculated or gross-up solved under Art. 204 & Invoice Transitional Rules.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.002
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

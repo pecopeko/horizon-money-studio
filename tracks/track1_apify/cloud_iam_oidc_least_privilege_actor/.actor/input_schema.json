@@ -1,0 +1,22 @@
+{
+  "title": "Cloud IAM & OIDC Least-Privilege Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "IAM Policy JSON/YAML or OIDC Trust Documents to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "target_name": "ci-deploy-role-trust.json",
+          "policy_text": "{\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"token.actions.githubusercontent.com\"},\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringLike\":{\"token.actions.githubusercontent.com:sub\":\"repo:acme/*\"}}}]}"
+        }
+      ],
+      "description": "List of policy objects containing target_name and policy_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

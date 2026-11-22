@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "web-csp-cors-cookie-hardening-auditor",
+  "title": "Web / Next.js CSP, CORS, HSTS & Cookie Security Header Auditor",
+  "description": "Audit HTTP security headers and config snippets for CORS wildcard reflection, weak CSP unsafe-inline/eval, missing clickjacking guards, HSTS max-age, cookie flags, and Server/X-Powered-By banner leaks.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

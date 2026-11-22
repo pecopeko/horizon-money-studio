@@ -1,0 +1,8 @@
+{
+  "protocol": "nsdeploy-agent-mcp/v1",
+  "spec_profile": "worldwide-agentic-web-mvp/0.3",
+  "network": "aegisweave_hub",
+  "front_man": "procurement_concierge",
+  "available": false,
+  "reason": "Static Open Agentic Web bundle; runs completely client-side in the visitor browser with zero server runtime."
+}

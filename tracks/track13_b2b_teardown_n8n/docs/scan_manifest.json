@@ -1,0 +1,410 @@
+[
+  {
+    "hostname": "www.allbirds.com",
+    "final_url": "https://www.allbirds.com/",
+    "apex_domain": "allbirds.com",
+    "scanned_at_utc": "2026-11-20T02:55:50Z",
+    "total_score": 78,
+    "max_score": 100,
+    "grade": "B",
+    "gaps_count": 6,
+    "html_kb": 696.2,
+    "homepage_status": 200,
+    "japanese_detected": false,
+    "llms_txt_status": "pass",
+    "dmarc_policy": "quarantine",
+    "pillar_scores": {
+      "AI-Search / GEO Readiness": {
+        "score": 22,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Structured Revenue & Rich-Snippet Data": {
+        "score": 15,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Trust, Security & Deliverability Posture": {
+        "score": 21,
+        "max_score": 25,
+        "gaps": 2
+      },
+      "Conversion, Mobile & Regional Compliance": {
+        "score": 20,
+        "max_score": 25,
+        "gaps": 2
+      }
+    },
+    "scorecard_file": "teardown_www_allbirds_com.html",
+    "checks": [
+      {
+        "check_id": "llms_txt_readiness",
+        "title": "llms.txt AI Discovery Manifest",
+        "status": "pass",
+        "score": 9,
+        "max_score": 9,
+        "summary": "Valid /llms.txt served (5,793 bytes, 8 Markdown links, H1 present)."
+      },
+      {
+        "check_id": "robots_ai_crawlers",
+        "title": "robots.txt AI Crawler Directives",
+        "status": "warn",
+        "score": 5,
+        "max_score": 8,
+        "summary": "/robots.txt present (2,285 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot)."
+      },
+      {
+        "check_id": "sitemap_discoverability",
+        "title": "XML Sitemap Discoverability",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Valid XML sitemapindex (8 <loc> entries) declared in /robots.txt."
+      },
+      {
+        "check_id": "json_ld_schema",
+        "title": "JSON-LD Schema.org Structured Data",
+        "status": "fail",
+        "score": 0,
+        "max_score": 10,
+        "summary": "Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0)."
+      },
+      {
+        "check_id": "opengraph_social_cards",
+        "title": "OpenGraph & Social Card Metadata",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Complete OpenGraph preview metadata (og:title=34c, og:description=175c, og:image set; twitter:card=summary_large_image)."
+      },
+      {
+        "check_id": "canonical_hygiene",
+        "title": "Canonical URL Hygiene",
+        "status": "pass",
+        "score": 7,
+        "max_score": 7,
+        "summary": "Single HTTPS canonical tag declared: https://www.allbirds.com/."
+      },
+      {
+        "check_id": "https_and_hsts",
+        "title": "HTTPS & HSTS Transport Enforcement",
+        "status": "warn",
+        "score": 6,
+        "max_score": 8,
+        "summary": "HTTPS active, but HSTS max-age is short (7,889,238s < 6 months)."
+      },
+      {
+        "check_id": "security_headers_posture",
+        "title": "HTTP Security Headers Posture",
+        "status": "warn",
+        "score": 6,
+        "max_score": 8,
+        "summary": "3/4 security headers active; missing: Referrer-Policy."
+      },
+      {
+        "check_id": "email_spf_dmarc_dns",
+        "title": "Email Deliverability & Spoofing Guard (SPF + DMARC)",
+        "status": "pass",
+        "score": 9,
+        "max_score": 9,
+        "summary": "SPF & enforced DMARC active on allbirds.com (policy p=quarantine)."
+      },
+      {
+        "check_id": "meta_title_description",
+        "title": "SERP Title & Meta Description Conversion Copy",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "<title> is 50 chars; <meta description> is 151 chars (optimal: 15-65 title, 50-165 description)."
+      },
+      {
+        "check_id": "image_alt_accessibility",
+        "title": "Image Alt Accessibility & Visual SEO",
+        "status": "warn",
+        "score": 5,
+        "max_score": 8,
+        "summary": "3 of 42 <img> tags omit the alt attribute (92.9% coverage)."
+      },
+      {
+        "check_id": "viewport_weight_and_jp_compliance",
+        "title": "Mobile Viewport, HTML Weight & Legal Trust",
+        "status": "warn",
+        "score": 7,
+        "max_score": 9,
+        "summary": "Viewport=set, HTML weight=696.2 KB. Privacy & Terms trust links detected."
+      }
+    ]
+  },
+  {
+    "hostname": "linear.app",
+    "final_url": "https://linear.app/",
+    "apex_domain": "linear.app",
+    "scanned_at_utc": "2026-11-20T02:55:51Z",
+    "total_score": 85,
+    "max_score": 100,
+    "grade": "A",
+    "gaps_count": 3,
+    "html_kb": 1236.0,
+    "homepage_status": 200,
+    "japanese_detected": false,
+    "llms_txt_status": "pass",
+    "dmarc_policy": "reject",
+    "pillar_scores": {
+      "AI-Search / GEO Readiness": {
+        "score": 22,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Structured Revenue & Rich-Snippet Data": {
+        "score": 15,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Trust, Security & Deliverability Posture": {
+        "score": 25,
+        "max_score": 25,
+        "gaps": 0
+      },
+      "Conversion, Mobile & Regional Compliance": {
+        "score": 23,
+        "max_score": 25,
+        "gaps": 1
+      }
+    },
+    "scorecard_file": "teardown_linear_app.html",
+    "checks": [
+      {
+        "check_id": "llms_txt_readiness",
+        "title": "llms.txt AI Discovery Manifest",
+        "status": "pass",
+        "score": 9,
+        "max_score": 9,
+        "summary": "Valid /llms.txt served (11,672 bytes, 179 Markdown links, H1 present)."
+      },
+      {
+        "check_id": "robots_ai_crawlers",
+        "title": "robots.txt AI Crawler Directives",
+        "status": "warn",
+        "score": 5,
+        "max_score": 8,
+        "summary": "/robots.txt present (107 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot)."
+      },
+      {
+        "check_id": "sitemap_discoverability",
+        "title": "XML Sitemap Discoverability",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Valid XML urlset (1027 <loc> entries) declared in /robots.txt."
+      },
+      {
+        "check_id": "json_ld_schema",
+        "title": "JSON-LD Schema.org Structured Data",
+        "status": "fail",
+        "score": 0,
+        "max_score": 10,
+        "summary": "Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0)."
+      },
+      {
+        "check_id": "opengraph_social_cards",
+        "title": "OpenGraph & Social Card Metadata",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Complete OpenGraph preview metadata (og:title=43c, og:description=64c, og:image set; twitter:card=summary_large_image)."
+      },
+      {
+        "check_id": "canonical_hygiene",
+        "title": "Canonical URL Hygiene",
+        "status": "pass",
+        "score": 7,
+        "max_score": 7,
+        "summary": "Single HTTPS canonical tag declared: https://linear.app."
+      },
+      {
+        "check_id": "https_and_hsts",
+        "title": "HTTPS & HSTS Transport Enforcement",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "HTTPS active with strong HSTS header (max-age=63,072,000s)."
+      },
+      {
+        "check_id": "security_headers_posture",
+        "title": "HTTP Security Headers Posture",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "All 4 core browser security headers present."
+      },
+      {
+        "check_id": "email_spf_dmarc_dns",
+        "title": "Email Deliverability & Spoofing Guard (SPF + DMARC)",
+        "status": "pass",
+        "score": 9,
+        "max_score": 9,
+        "summary": "SPF & enforced DMARC active on linear.app (policy p=reject)."
+      },
+      {
+        "check_id": "meta_title_description",
+        "title": "SERP Title & Meta Description Conversion Copy",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "<title> is 43 chars; <meta description> is 64 chars (optimal: 15-65 title, 50-165 description)."
+      },
+      {
+        "check_id": "image_alt_accessibility",
+        "title": "Image Alt Accessibility & Visual SEO",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "All 38 <img> tags include alt attributes (27 decorative empty alt=\"\")."
+      },
+      {
+        "check_id": "viewport_weight_and_jp_compliance",
+        "title": "Mobile Viewport, HTML Weight & Legal Trust",
+        "status": "warn",
+        "score": 7,
+        "max_score": 9,
+        "summary": "Viewport=set, HTML weight=1236.0 KB. Privacy & Terms trust links detected."
+      }
+    ]
+  },
+  {
+    "hostname": "smarthr.jp",
+    "final_url": "https://smarthr.jp/",
+    "apex_domain": "smarthr.jp",
+    "scanned_at_utc": "2026-11-20T02:55:53Z",
+    "total_score": 69,
+    "max_score": 100,
+    "grade": "C",
+    "gaps_count": 5,
+    "html_kb": 299.2,
+    "homepage_status": 200,
+    "japanese_detected": true,
+    "llms_txt_status": "fail",
+    "dmarc_policy": "reject",
+    "pillar_scores": {
+      "AI-Search / GEO Readiness": {
+        "score": 13,
+        "max_score": 25,
+        "gaps": 2
+      },
+      "Structured Revenue & Rich-Snippet Data": {
+        "score": 15,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Trust, Security & Deliverability Posture": {
+        "score": 19,
+        "max_score": 25,
+        "gaps": 1
+      },
+      "Conversion, Mobile & Regional Compliance": {
+        "score": 22,
+        "max_score": 25,
+        "gaps": 1
+      }
+    },
+    "scorecard_file": "teardown_smarthr_jp.html",
+    "checks": [
+      {
+        "check_id": "llms_txt_readiness",
+        "title": "llms.txt AI Discovery Manifest",
+        "status": "fail",
+        "score": 0,
+        "max_score": 9,
+        "summary": "Missing machine-readable /llms.txt (returned HTTP 404 (195641 bytes))."
+      },
+      {
+        "check_id": "robots_ai_crawlers",
+        "title": "robots.txt AI Crawler Directives",
+        "status": "warn",
+        "score": 5,
+        "max_score": 8,
+        "summary": "/robots.txt present (64 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot)."
+      },
+      {
+        "check_id": "sitemap_discoverability",
+        "title": "XML Sitemap Discoverability",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Valid XML urlset (1365 <loc> entries) declared in /robots.txt."
+      },
+      {
+        "check_id": "json_ld_schema",
+        "title": "JSON-LD Schema.org Structured Data",
+        "status": "fail",
+        "score": 0,
+        "max_score": 10,
+        "summary": "Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0)."
+      },
+      {
+        "check_id": "opengraph_social_cards",
+        "title": "OpenGraph & Social Card Metadata",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "Complete OpenGraph preview metadata (og:title=35c, og:description=92c, og:image set; twitter:card=summary_large_image)."
+      },
+      {
+        "check_id": "canonical_hygiene",
+        "title": "Canonical URL Hygiene",
+        "status": "pass",
+        "score": 7,
+        "max_score": 7,
+        "summary": "Single HTTPS canonical tag declared: https://smarthr.jp/."
+      },
+      {
+        "check_id": "https_and_hsts",
+        "title": "HTTPS & HSTS Transport Enforcement",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "HTTPS active with strong HSTS header (max-age=31,536,000s)."
+      },
+      {
+        "check_id": "security_headers_posture",
+        "title": "HTTP Security Headers Posture",
+        "status": "fail",
+        "score": 2,
+        "max_score": 8,
+        "summary": "1/4 security headers active; missing: Content-Security-Policy, X-Content-Type-Options (nosniff), Referrer-Policy."
+      },
+      {
+        "check_id": "email_spf_dmarc_dns",
+        "title": "Email Deliverability & Spoofing Guard (SPF + DMARC)",
+        "status": "pass",
+        "score": 9,
+        "max_score": 9,
+        "summary": "SPF & enforced DMARC active on smarthr.jp (policy p=reject)."
+      },
+      {
+        "check_id": "meta_title_description",
+        "title": "SERP Title & Meta Description Conversion Copy",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "<title> is 35 chars; <meta description> is 92 chars (optimal: 15-65 title, 50-165 description)."
+      },
+      {
+        "check_id": "image_alt_accessibility",
+        "title": "Image Alt Accessibility & Visual SEO",
+        "status": "pass",
+        "score": 8,
+        "max_score": 8,
+        "summary": "All 110 <img> tags include alt attributes (58 decorative empty alt=\"\")."
+      },
+      {
+        "check_id": "viewport_weight_and_jp_compliance",
+        "title": "Mobile Viewport, HTML Weight & Legal Trust",
+        "status": "warn",
+        "score": 6,
+        "max_score": 9,
+        "summary": "Viewport=set, HTML weight=299.2 KB. Japanese site missing visible footer link(s): 特定商取引法に基づく表記."
+      }
+    ]
+  }
+]

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DesignGate — WCAG 2.2 &amp; Dark-Pattern Linter</title>
+<style>
+  :root {
+    --bg: var(--figma-color-bg, #ffffff);
+    --bg-subtle: var(--figma-color-bg-secondary, #f7f8fa);
+    --bg-hover: var(--figma-color-bg-hover, #f0f2f5);
+    --border: var(--figma-color-border, #e5e7eb);
+    --border-strong: #d1d5db;
+    --ink: var(--figma-color-text, #111827);
+    --ink-muted: var(--figma-color-text-secondary, #4b5563);
+    --ink-faint: var(--figma-color-text-tertiary, #6b7280);
+    --accent: #0f62fe;
+    --accent-hover: #0043ce;
+    --accent-soft: #edf5ff;
+    --err: #dc2626;
+    --err-bg: #fef2f2;
+    --err-border: #fecaca;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --warn-border: #fde68a;
+    --ok: #047857;
+    --ok-bg: #ecfdf5;
+    --ok-border: #a7f3d0;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 100%;
+  }
+
+  /* Top Header */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    gap: 8px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .brand-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .pill-pro {
+    border-color: #bfdbfe;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .pill-local {
+    border-color: var(--ok-border);
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+    gap: 8px;
+  }
+
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .seg button {
+    border: none;
+    background: transparent;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .seg button.active {
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--sans);
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-hover);
+  }
+
+  /* Score Strip */
+  .score-strip {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .score-box {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    padding-right: 12px;
+    border-right: 1px solid var(--border);
+  }
+
+  .score-num {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .score-grade {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .score-ok { color: var(--ok); }
+  .score-warn { color: var(--warn); }
+  .score-err { color: var(--err); }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .metric {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .metric-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .metric-lbl {
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  /* Filter Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    overflow-x: auto;
+  }
+
+  .tab {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--sans);
+  }
+
+  .tab:hover {
+    background: var(--bg-subtle);
+  }
+
+  .tab.active {
+    background: var(--bg-subtle);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+
+  .tab .cnt {
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-left: 3px;
+    color: var(--ink-faint);
+  }
+
+  /* Notice Banner */
+  .notice {
+    margin: 8px 12px 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #bfdbfe;
+    background: var(--accent-soft);
+    color: #1e3a8a;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .notice.hidden { display: none; }
+
+  .notice button {
+    border: none;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Scrollable Findings List */
+  .list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .card.sev-error { border-left: 3px solid var(--err); }
+  .card.sev-warning { border-left: 3px solid var(--warn); }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  .node-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .sev-tag {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .sev-tag.error {
+    background: var(--err-bg);
+    color: var(--err);
+    border: 1px solid var(--err-border);
+  }
+
+  .sev-tag.warning {
+    background: var(--warn-bg);
+    color: var(--warn);
+    border: 1px solid var(--warn-border);
+  }
+
+  .reg-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+  }
+
+  .card-msg {
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.45;
+  }
+
+  .snippet {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: var(--ink);
+    word-break: break-word;
+  }
+
+  /* Swatch Comparison Row */
+  .swatch-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 6px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+  }
+
+  .swatch-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .swatch-chip {
+    width: 28px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .swatch-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .swatch-hex {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .swatch-ratio {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--ink-faint);
+  }
+
+  .swatch-arrow {
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 700;
+  }
+
+  .fix-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .btn-fix {
+    flex: 1;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .btn-fix:hover { background: var(--accent-hover); }
+
+  .btn-fix-secondary {
+    flex: 1;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .btn-fix-secondary:hover { background: var(--bg-hover); }
+
+  .empty {
+    text-align: center;
+    padding: 36px 16px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    color: var(--ink-muted);
+  }
+
+  .empty-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ok);
+    margin-bottom: 4px;
+  }
+
+  /* Export Drawer */
+  .drawer {
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .drawer.hidden { display: none; }
+
+  .drawer textarea {
+    width: 100%;
+    height: 84px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: none;
+  }
+
+  /* Sticky Footer */
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    border: none;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .footer-right {
+    display: flex;
+    gap: 5px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 54px;
+    left: 12px;
+    right: 12px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 11px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    display: none;
+    z-index: 50;
+  }
+  .toast.show { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#111827"/>
+        <path d="M7 7h5a5 5 0 0 1 0 10H7V7Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="15.5" cy="12" r="2.2" fill="#0F62FE"/>
+      </svg>
+      <span class="brand-name">DesignGate</span>
+      <span class="pill pill-local" title="manifest.json networkAccess: none">0-Net Local</span>
+    </div>
+    <span id="tier-pill" class="pill">FREE</span>
+  </header>
+
+  <div class="controls-row">
+    <div class="seg" role="group" aria-label="Audit Scope">
+      <button id="scope-selection" class="active" type="button">Selection</button>
+      <button id="scope-page" type="button">Full Page</button>
+    </div>
+    <button id="btn-rescan" class="btn-ghost" type="button">Re-Scan</button>
+  </div>
+
+  <section class="score-strip" aria-label="Audit Score Summary">
+    <div class="score-box">
+      <span id="score-val" class="score-num">--</span>
+      <span id="score-grade" class="score-grade">--</span>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric">
+        <span id="m-errors" class="metric-val">0</span>
+        <span class="metric-lbl">Errors</span>
+      </div>
+      <div class="metric">
+        <span id="m-warnings" class="metric-val">0</span>
+        <span class="metric-lbl">Warnings</span>
+      </div>
+      <div class="metric">
+        <span id="m-contrast" class="metric-val">0/0</span>
+        <span class="metric-lbl">WCAG Pass</span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tabs" id="filter-tabs" aria-label="Category Filters">
+    <button class="tab active" data-cat="all" type="button">All <span class="cnt" id="cnt-all">0</span></button>
+    <button class="tab" data-cat="contrast" type="button">Contrast <span class="cnt" id="cnt-contrast">0</span></button>
+    <button class="tab" data-cat="darkPatterns" type="button">Dark Patterns <span class="cnt" id="cnt-darkPatterns">0</span></button>
+    <button class="tab" data-cat="ergonomics" type="button">Ergonomics <span class="cnt" id="cnt-ergonomics">0</span></button>
+    <button class="tab" data-cat="colorBlindness" type="button">CVD <span class="cnt" id="cnt-colorBlindness">0</span></button>
+  </nav>
+
+  <div id="pro-notice" class="notice hidden">
+    <span id="pro-notice-text">Unlock multi-frame batch audits, 1-click Auto-Fix All, and Certificate export.</span>
+    <button id="btn-upgrade" type="button">Pro $12/mo</button>
+  </div>
+
+  <main id="findings-list" class="list" aria-live="polite">
+    <div class="empty">
+      <div class="empty-title" style="color: var(--ink-muted);">Scanning canvas...</div>
+      <div>Select a frame in Figma or switch to Full Page to run WCAG 2.2 + EN/JP Dark-Pattern checks.</div>
+    </div>
+  </main>
+
+  <div id="export-drawer" class="drawer hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <strong id="export-title" style="font-size:11px;">Dev-Handoff Certificate</strong>
+      <div style="display:flex;gap:5px;">
+        <button id="btn-copy-export" class="btn-ghost" type="button">Copy</button>
+        <button id="btn-close-export" class="btn-ghost" type="button">Close</button>
+      </div>
+    </div>
+    <textarea id="export-text" readonly></textarea>
+  </div>
+
+  <footer class="footer">
+    <button id="btn-fix-all" class="btn-primary" type="button" disabled>Auto-Fix All (0)</button>
+    <div class="footer-right">
+      <button id="btn-export-md" class="btn-ghost" type="button" title="Export Markdown Accessibility Certificate">MD</button>
+      <button id="btn-export-csv" class="btn-ghost" type="button" title="Export CSV Report">CSV</button>
+    </div>
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var state = {
+    scope: "selection",
+    filter: "all",
+    audit: null
+  };
+
+  function postToPlugin(msg) {
+    parent.postMessage({ pluginMessage: msg }, "*");
+  }
+
+  function showToast(text) {
+    var el = document.getElementById("toast");
+    el.textContent = text;
+    el.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () {
+      el.classList.remove("show");
+    }, 2600);
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function render() {
+    var audit = state.audit;
+    if (!audit) return;
+
+    var sum = audit.summary || {
+      score: 100, grade: "A+", errors: 0, warnings: 0, fixableCount: 0,
+      contrastChecked: 0, contrastPassed: 0,
+      byCategory: { contrast: 0, darkPatterns: 0, ergonomics: 0, colorBlindness: 0 }
+    };
+
+    var ent = audit.entitlement || { tier: "FREE", isPaid: false };
+    var tierPill = document.getElementById("tier-pill");
+    tierPill.textContent = ent.isPaid ? "PRO" : "FREE";
+    tierPill.className = ent.isPaid ? "pill pill-pro" : "pill";
+
+    var scoreEl = document.getElementById("score-val");
+    scoreEl.textContent = String(sum.score);
+    scoreEl.className = "score-num " + (sum.score >= 90 ? "score-ok" : sum.score >= 70 ? "score-warn" : "score-err");
+    document.getElementById("score-grade").textContent = sum.grade;
+
+    document.getElementById("m-errors").textContent = String(sum.errors);
+    document.getElementById("m-warnings").textContent = String(sum.warnings);
+    document.getElementById("m-contrast").textContent = sum.contrastPassed + "/" + sum.contrastChecked;
+
+    var findings = Array.isArray(audit.findings) ? audit.findings : [];
+    document.getElementById("cnt-all").textContent = String(findings.length);
+    document.getElementById("cnt-contrast").textContent = String(sum.byCategory.contrast || 0);
+    document.getElementById("cnt-darkPatterns").textContent = String(sum.byCategory.darkPatterns || 0);
+    document.getElementById("cnt-ergonomics").textContent = String(sum.byCategory.ergonomics || 0);
+    document.getElementById("cnt-colorBlindness").textContent = String(sum.byCategory.colorBlindness || 0);
+
+    var notice = document.getElementById("pro-notice");
+    var noticeText = document.getElementById("pro-notice-text");
+    if (audit.truncatedByFreeTier && !ent.isPaid) {
+      notice.classList.remove("hidden");
+      noticeText.textContent =
+        "Free tier audited 1 of " +
+        audit.totalFramesSelected +
+        " frames. Upgrade via Figma Payments for full-page batch audit.";
+    } else {
+      notice.classList.add("hidden");
+    }
+
+    var fixable = findings.filter(function (f) { return f.fixable && f.aaFix; });
+    var fixAllBtn = document.getElementById("btn-fix-all");
+    fixAllBtn.textContent = "Auto-Fix All (" + fixable.length + ")" + (ent.isPaid ? "" : " · Pro");
+    fixAllBtn.disabled = fixable.length === 0;
+
+    var visible = state.filter === "all"
+      ? findings
+      : findings.filter(function (f) { return f.category === state.filter; });
+
+    var listEl = document.getElementById("findings-list");
+    if (audit.auditedFrameCount === 0) {
+      listEl.innerHTML =
+        '<div class="empty">' +
+        '<div class="empty-title" style="color:var(--ink);">No frames selected</div>' +
+        '<div>Select a Frame on your Figma canvas or click <strong>Full Page</strong> above.</div>' +
+        '</div>';
+      return;
+    }
+
+    if (visible.length === 0) {
+      listEl.innerHTML =
+        '<div class="empty">' +
+        '<div class="empty-title">All Checks Passed (0 Findings)</div>' +
+        '<div>No issues in this category across ' + audit.auditedFrameCount + ' audited frame(s).</div>' +
+        '</div>';
+      return;
+    }
+
+    var html = visible.map(function (f) {
+      var swatchHtml = "";
+      if (f.category === "contrast" && f.aaFix) {
+        swatchHtml =
+          '<div class="swatch-row">' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.backgroundHex) + ';color:' + escapeHtml(f.currentHex) + ';">Aa</div>' +
+              '<div class="swatch-info">' +
+                '<span class="swatch-hex">' + escapeHtml(f.currentHex) + '</span>' +
+                '<span class="swatch-ratio">' + f.currentRatio + ':1 · Lc ' + f.apcaLc + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<span class="swatch-arrow">→</span>' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.backgroundHex) + ';color:' + escapeHtml(f.aaFix.hex) + ';">Aa</div>' +
+              '<div class="swatch-info">' +
+                '<span class="swatch-hex">' + escapeHtml(f.aaFix.hex) + '</span>' +
+                '<span class="swatch-ratio">' + f.aaFix.ratio + ':1 AA</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="fix-actions">' +
+            '<button class="btn-fix" data-action="apply-fix" data-node="' + escapeHtml(f.nodeId) + '" data-hex="' + escapeHtml(f.aaFix.hex) + '" data-opacity="' + (f.aaFix.recommendedOpacity || 1) + '">Apply AA (' + escapeHtml(f.aaFix.hex) + ')</button>' +
+            (f.aaaFix
+              ? '<button class="btn-fix-secondary" data-action="apply-fix" data-node="' + escapeHtml(f.nodeId) + '" data-hex="' + escapeHtml(f.aaaFix.hex) + '" data-opacity="' + (f.aaaFix.recommendedOpacity || 1) + '">AAA (' + escapeHtml(f.aaaFix.hex) + ')</button>'
+              : '') +
+          '</div>';
+      }
+
+      if (f.pairColors) {
+        swatchHtml =
+          '<div class="swatch-row">' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.a.original) + ';"></div>' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.b.original) + ';"></div>' +
+              '<div class="swatch-info"><span class="swatch-hex">Normal</span></div>' +
+            '</div>' +
+            '<span class="swatch-arrow">→</span>' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.a.simulated) + ';"></div>' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.b.simulated) + ';"></div>' +
+              '<div class="swatch-info"><span class="swatch-hex">CVD View</span></div>' +
+            '</div>' +
+          '</div>';
+      }
+
+      return (
+        '<article class="card sev-' + escapeHtml(f.severity) + '">' +
+          '<div class="card-head">' +
+            '<div class="card-title">' + escapeHtml(f.title) + '</div>' +
+            '<span class="sev-tag ' + escapeHtml(f.severity) + '">' + escapeHtml(f.severity) + '</span>' +
+          '</div>' +
+          '<div class="card-meta">' +
+            '<button class="node-link" data-action="focus" data-node="' + escapeHtml(f.nodeId) + '">' + escapeHtml(f.nodeName) + '</button>' +
+            (f.regulation ? '<span class="reg-tag">' + escapeHtml(f.regulation) + '</span>' : '') +
+          '</div>' +
+          (f.snippet ? '<div class="snippet">' + escapeHtml(f.snippet) + '</div>' : '') +
+          '<div class="card-msg">' + escapeHtml(f.message) + '</div>' +
+          swatchHtml +
+        '</article>'
+      );
+    }).join("");
+
+    listEl.innerHTML = html;
+  }
+
+  // Event Delegation
+  document.getElementById("findings-list").addEventListener("click", function (ev) {
+    var btn = ev.target.closest("button[data-action]");
+    if (!btn) return;
+    var action = btn.getAttribute("data-action");
+    var nodeId = btn.getAttribute("data-node");
+    if (action === "focus") {
+      postToPlugin({ type: "focus-node", nodeId: nodeId });
+    } else if (action === "apply-fix") {
+      postToPlugin({
+        type: "apply-color-fix",
+        nodeId: nodeId,
+        hex: btn.getAttribute("data-hex"),
+        recommendedOpacity: parseFloat(btn.getAttribute("data-opacity") || "1")
+      });
+    }
+  });
+
+  document.getElementById("filter-tabs").addEventListener("click", function (ev) {
+    var tab = ev.target.closest("button[data-cat]");
+    if (!tab) return;
+    state.filter = tab.getAttribute("data-cat");
+    var allTabs = document.querySelectorAll("#filter-tabs .tab");
+    for (var i = 0; i < allTabs.length; i += 1) {
+      allTabs[i].classList.toggle("active", allTabs[i] === tab);
+    }
+    render();
+  });
+
+  document.getElementById("scope-selection").addEventListener("click", function () {
+    state.scope = "selection";
+    this.classList.add("active");
+    document.getElementById("scope-page").classList.remove("active");
+    postToPlugin({ type: "run-audit", scope: "selection" });
+  });
+
+  document.getElementById("scope-page").addEventListener("click", function () {
+    state.scope = "page";
+    this.classList.add("active");
+    document.getElementById("scope-selection").classList.remove("active");
+    postToPlugin({ type: "run-audit", scope: "page" });
+  });
+
+  document.getElementById("btn-rescan").addEventListener("click", function () {
+    postToPlugin({ type: "run-audit", scope: state.scope });
+  });
+
+  document.getElementById("btn-fix-all").addEventListener("click", function () {
+    if (!state.audit) return;
+    var fixes = (state.audit.findings || [])
+      .filter(function (f) { return f.fixable && f.aaFix; })
+      .map(function (f) {
+        return {
+          nodeId: f.nodeId,
+          hex: f.aaFix.hex,
+          recommendedOpacity: f.aaFix.recommendedOpacity
+        };
+      });
+    postToPlugin({ type: "apply-all-fixes", fixes: fixes });
+  });
+
+  document.getElementById("btn-export-md").addEventListener("click", function () {
+    postToPlugin({ type: "export-report", format: "markdown" });
+  });
+
+  document.getElementById("btn-export-csv").addEventListener("click", function () {
+    postToPlugin({ type: "export-report", format: "csv" });
+  });
+
+  document.getElementById("btn-upgrade").addEventListener("click", function () {
+    postToPlugin({ type: "initiate-checkout" });
+  });
+
+  document.getElementById("btn-close-export").addEventListener("click", function () {
+    document.getElementById("export-drawer").classList.add("hidden");
+  });
+
+  document.getElementById("btn-copy-export").addEventListener("click", function () {
+    var ta = document.getElementById("export-text");
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showToast("Copied certificate to clipboard.");
+    } catch (_e) {
+      showToast("Select and copy the report text.");
+    }
+  });
+
+  // Receive messages from Figma sandbox `code.js`
+  window.onmessage = function (event) {
+    var msg = event.data && event.data.pluginMessage;
+    if (!msg) return;
+    if (msg.type === "audit-result") {
+      state.audit = msg.payload;
+      render();
+    } else if (msg.type === "fix-applied" && msg.payload && msg.payload.ok) {
+      showToast("Applied " + msg.payload.appliedHex + " (Cmd+Z to undo)");
+    } else if (msg.type === "batch-fix-applied") {
+      showToast("Auto-fixed " + msg.payload.appliedCount + " contrast issues.");
+    } else if (msg.type === "pro-gate") {
+      var notice = document.getElementById("pro-notice");
+      notice.classList.remove("hidden");
+      document.getElementById("pro-notice-text").textContent = msg.payload.reason;
+      showToast("Pro feature — unlock via Figma Native Payments.");
+    } else if (msg.type === "export-ready" && msg.payload) {
+      document.getElementById("export-title").textContent =
+        msg.payload.format === "csv" ? "CSV Handoff Report" : "Markdown Accessibility Certificate";
+      document.getElementById("export-text").value = msg.payload.content;
+      document.getElementById("export-drawer").classList.remove("hidden");
+    } else if (msg.type === "checkout-error" && msg.payload) {
+      showToast(msg.payload.error);
+    }
+  };
+
+  postToPlugin({ type: "init", scope: "selection" });
+})();
+</script>
+</body>
+</html>

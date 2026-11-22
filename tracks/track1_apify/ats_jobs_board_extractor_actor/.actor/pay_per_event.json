@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "job_extracted": {
+        "eventTitle": "ATS Job Extracted",
+        "eventDescription": "Charged per normalized Greenhouse, Lever, or Ashby job posting extracted ($1.00 per 1,000 jobs). Failed board error records are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.001
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

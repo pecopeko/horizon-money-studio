@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "cicd-slsa-vex-provenance-auditor",
+  "title": "SLSA Provenance, OpenVEX & Build-Install Supply-Chain Security Auditor",
+  "description": "Audit CI/CD release configs, npm/Python install scripts, SLSA provenance predicates, and OpenVEX advisories for pipe-to-shell remote installers, dangerous preinstall/postinstall hooks, skipped signature/attestation checks, mutable @main/:latest refs, and unjustified VEX suppressions.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

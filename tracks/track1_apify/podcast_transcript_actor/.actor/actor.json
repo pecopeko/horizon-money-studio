@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "podcast-rss-transcript-extractor",
+  "title": "Podcast RSS, Host Contacts, Apple Reviews & Transcript Extractor",
+  "description": "Extract podcast show owner contact emails, categories, Podcasting 2.0 people/funding tags, Apple Podcasts customer reviews, clean show notes, chapters, and normalized VTT/SRT/JSON/TXT transcripts directly from RSS XML and iTunes APIs.",
+  "version": "2.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

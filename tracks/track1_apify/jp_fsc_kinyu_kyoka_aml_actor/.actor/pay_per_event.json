@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "aml_compliance_audited": {
+        "eventTitle": "Japan PSA & Crypto AML Compliance Audited",
+        "eventDescription": "Charged per Japanese fintech/prepaid/crypto policy audited for 50% deposit shortfall, Travel Rule, Type-2 transfer limit, STR timing & 7-year KYC retention.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

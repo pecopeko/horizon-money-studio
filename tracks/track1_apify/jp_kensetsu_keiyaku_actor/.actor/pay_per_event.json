@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "construction_contract_audited": {
+        "eventTitle": "Construction Contract & 2024 Overtime Audited",
+        "eventDescription": "Charged per construction contract/subcontract audited under Revised Construction Business Act & 2024 overtime caps.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

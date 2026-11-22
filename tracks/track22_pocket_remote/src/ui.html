@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>PocketBridge — iPhone Remote Console</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --panel: #131a26;
+      --panel-2: #1b2434;
+      --border: rgba(148, 163, 184, 0.18);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.45);
+      --primary: #2563eb;
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+    }
+
+    /* Top Navigation & Bookmarks */
+    #topBar {
+      flex: 0 0 auto;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 8px 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 20;
+    }
+
+    .url-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .pill-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .pill-btn.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--accent);
+      color: #67e8f9;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.22);
+    }
+
+    .pill-btn.primary {
+      background: var(--primary);
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .pill-btn.warn {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: rgba(245, 158, 11, 0.55);
+      color: #fcd34d;
+    }
+
+    #urlInput {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 34px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: #090d14;
+      color: var(--text);
+      padding: 0 10px;
+      font-size: 16px; /* >=16px prevents unwanted iOS Safari input auto-zoom */
+      outline: none;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    #urlInput:focus {
+      border-color: var(--accent);
+    }
+
+    .h-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 1px;
+    }
+    .h-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bookmark-pill {
+      font-size: 12px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #172030;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      color: #cbd5e1;
+      flex: 0 0 auto;
+    }
+
+    .tab-pill {
+      font-size: 11.5px;
+      padding: 3px 9px;
+      border-radius: 7px;
+      background: #0f1623;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .tab-pill.active {
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: rgba(6, 182, 212, 0.16);
+    }
+
+    /* Middle Stage & Mode Controls */
+    #stageArea {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: #06090f;
+      position: relative;
+    }
+
+    #stageControls {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 5px 8px;
+      background: rgba(19, 26, 38, 0.92);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #stageControls::-webkit-scrollbar {
+      display: none;
+    }
+
+    .seg-group {
+      display: inline-flex;
+      background: #0b101a;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 2px;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 5px 9px;
+      border-radius: 7px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: rgba(6, 182, 212, 0.24);
+      color: #67e8f9;
+    }
+
+    #zoomControls {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+    #zoomControls.visible {
+      display: inline-flex;
+    }
+
+    #viewportScroller {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      padding: 4px;
+    }
+
+    #screenWrap {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 1280 / 900;
+      background: #0f172a;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+      transform-origin: top left;
+      flex: 0 0 auto;
+    }
+
+    #screenImg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #tapRipple {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      margin-left: -17px;
+      margin-top: -17px;
+      border-radius: 50%;
+      border: 2.5px solid #22d3ee;
+      background: rgba(6, 182, 212, 0.28);
+      box-shadow: 0 0 16px #06b6d4;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.3);
+    }
+
+    #tapRipple.animate {
+      animation: ripplePulse 560ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes ripplePulse {
+      0% {
+        opacity: 1;
+        transform: scale(0.35);
+      }
+      70% {
+        opacity: 0.9;
+        transform: scale(1.18);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.55);
+      }
+    }
+
+    /* Bottom Sticky Native Keyboard & Quick Key Bar */
+    #bottomBar {
+      flex: 0 0 auto;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      padding: 6px 8px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 25;
+    }
+
+    #focusStatus {
+      font-size: 11px;
+      color: #67e8f9;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2px;
+    }
+    #focusStatus.visible {
+      display: flex;
+    }
+
+    .kbd-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #kbdInput {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: #090d14;
+      color: var(--text);
+      padding: 0 11px;
+      font-size: 16px; /* Prevents iPhone Safari zoom jump */
+      outline: none;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    #kbdInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+    }
+
+    .key-chip {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: #1b2434;
+      color: var(--text);
+      border-radius: 8px;
+      height: 35px;
+      padding: 0 11px;
+      font-size: 13px;
+      font-weight: 600;
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .key-chip:active {
+      background: #28354c;
+      transform: scale(0.96);
+    }
+    .key-chip.highlight {
+      border-color: rgba(6, 182, 212, 0.5);
+      background: rgba(6, 182, 212, 0.15);
+      color: #a5f3fc;
+    }
+
+    /* Toast Banner */
+    #toast {
+      position: fixed;
+      top: calc(var(--safe-top) + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid var(--accent);
+      color: #f8fafc;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      max-width: 92vw;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 100;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Bottom Sheet Drawers */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 60;
+    }
+    .drawer-backdrop.open {
+      display: flex;
+    }
+
+    .drawer-sheet {
+      width: 100%;
+      max-width: 680px;
+      max-height: 82dvh;
+      background: #111827;
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 18px 18px 0 0;
+      padding: 12px 14px calc(14px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .drawer-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .drawer-body {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+
+    .card-item {
+      background: #1a2333;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-label {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .card-meta {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+    .card-preview {
+      font-size: 12px;
+      color: #cbd5e1;
+      background: #0b101a;
+      border-radius: 7px;
+      padding: 6px 8px;
+      max-height: 62px;
+      overflow: hidden;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    select.native-select {
+      height: 34px;
+      border-radius: 8px;
+      background: #0b101a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0 8px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Bar -->
+    <header id="topBar">
+      <div class="url-row">
+        <button id="modeSwitchBtn" class="pill-btn active" title="動作モード切替">🌐 ブラウザ</button>
+        <input id="urlInput" type="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="URL または検索語を入力..." />
+        <button id="goBtn" class="pill-btn primary">Go</button>
+        <button id="autoPollBtn" class="pill-btn active" title="自動画面更新">🟢 自動</button>
+      </div>
+      <div id="bookmarkStrip" class="h-strip">
+        <button class="pill-btn bookmark-pill" data-url="https://manage.booth.pm/items">BOOTH編集</button>
+        <button class="pill-btn bookmark-pill" data-url="https://console.apify.com/actors/N0i9ILxkdAj64Kw25/publication">Apify公開</button>
+        <button class="pill-btn bookmark-pill" data-url="https://www.metaculus.com/aib/">Metaculus</button>
+        <button class="pill-btn bookmark-pill" data-url="https://kdp.amazon.com/ja_JP/bookshelf">Amazon KDP</button>
+        <button class="pill-btn bookmark-pill" data-url="https://coconala.com/mypage/services_lists">ココナラ</button>
+        <button class="pill-btn bookmark-pill" data-url="https://zenn.dev/dashboard">Zenn</button>
+        <button class="pill-btn bookmark-pill" data-url="https://www.google.com/">Google検索</button>
+      </div>
+      <div id="tabStrip" class="h-strip"></div>
+    </header>
+
+    <!-- Middle Screenshot Stage -->
+    <main id="stageArea">
+      <div id="stageControls">
+        <div class="seg-group" role="tablist" aria-label="タッチモード">
+          <button id="modeTapBtn" class="seg-btn active" type="button">👆 タップ操作</button>
+          <button id="modeZoomBtn" class="seg-btn" type="button">🔍 ピンチ拡大</button>
+        </div>
+
+        <div id="zoomControls">
+          <button class="pill-btn zoom-level-btn active" data-zoom="1" type="button">1x</button>
+          <button class="pill-btn zoom-level-btn" data-zoom="1.8" type="button">1.8x</button>
+          <button class="pill-btn zoom-level-btn" data-zoom="2.8" type="button">2.8x</button>
+        </div>
+
+        <div style="display:inline-flex; gap:5px; flex:0 0 auto;">
+          <button id="clickKindBtn" class="pill-btn" type="button" title="クリック種別">1回クリック</button>
+          <button id="scrollUpBtn" class="pill-btn" type="button">⬆️ 上スクロール</button>
+          <button id="scrollDownBtn" class="pill-btn" type="button">⬇️ 下スクロール</button>
+        </div>
+      </div>
+
+      <div id="viewportScroller">
+        <div id="screenWrap">
+          <img id="screenImg" alt="Live Remote Browser Screen" draggable="false" />
+          <div id="tapRipple"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Sticky Native Keyboard & Quick Key Strip -->
+    <footer id="bottomBar">
+      <div id="focusStatus">
+        <span id="focusLabel">✏️ 入力欄フォーカス中</span>
+        <span id="coordLabel" style="color:var(--muted);">1280×900</span>
+      </div>
+
+      <div class="kbd-row">
+        <button id="maskToggleBtn" class="pill-btn" type="button" title="手元マスク切替">🔤</button>
+        <input
+          id="kbdInput"
+          type="text"
+          autocomplete="on"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
+          enterkeyhint="send"
+          placeholder="iPhoneキーボードで文字/パスワード入力 → 送信"
+        />
+        <button id="sendTextBtn" class="pill-btn primary" type="button">送信</button>
+        <button id="clearSendBtn" class="pill-btn warn" type="button">消して送信</button>
+      </div>
+
+      <div class="h-strip" aria-label="クイックキー">
+        <button class="key-chip" data-key="Enter" type="button">Enter ⏎</button>
+        <button class="key-chip" data-key="Tab" type="button">Tab ⇥</button>
+        <button class="key-chip" data-key="Backspace" type="button">⌫</button>
+        <button class="key-chip" data-key="Escape" type="button">Esc</button>
+        <button class="key-chip" data-key="Back" type="button">←戻る</button>
+        <button class="key-chip" id="reloadKeyBtn" data-key="Reload" type="button">↻更新</button>
+        <button class="key-chip highlight" id="openFileDrawerBtn" type="button">📎ファイル添付</button>
+        <button class="key-chip highlight" id="openSnippetDrawerBtn" type="button">📋定型文投入</button>
+        <button class="key-chip" data-key="SelectAll" type="button">全選択</button>
+        <button class="key-chip" data-key="ArrowUp" type="button">↑</button>
+        <button class="key-chip" data-key="ArrowDown" type="button">↓</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 1-Tap File Upload Drawer -->
+  <div id="fileDrawer" class="drawer-backdrop" aria-hidden="true">
+    <div class="drawer-sheet">
+      <div class="drawer-header">
+        <div class="drawer-title">📎 1タップ Macローカル成果物添付</div>
+        <button class="pill-btn" data-close="fileDrawer" type="button">閉じる ✕</button>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+        <span id="fileInputsSummary" class="card-meta">ページ内のファイル選択欄を確認中...</span>
+        <select id="fileInputTargetSelect" class="native-select">
+          <option value="auto">自動判別 (accept属性に最適一致)</option>
+        </select>
+      </div>
+      <div id="filePresetList" class="drawer-body"></div>
+    </div>
+  </div>
+
+  <!-- 1-Tap Quick-Copy Snippet Drawer -->
+  <div id="snippetDrawer" class="drawer-backdrop" aria-hidden="true">
+    <div class="drawer-sheet">
+      <div class="drawer-header">
+        <div class="drawer-title">📋 定型文 1タップ投入 (Apify / BOOTH / KDP / ココナラ)</div>
+        <button class="pill-btn" data-close="snippetDrawer" type="button">閉じる ✕</button>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+        <div id="snippetCatStrip" class="h-strip" style="flex:1 1 auto;">
+          <button class="pill-btn snippet-cat-btn active" data-cat="ALL" type="button">すべて</button>
+          <button class="pill-btn snippet-cat-btn" data-cat="Apify" type="button">Apify (6)</button>
+          <button class="pill-btn snippet-cat-btn" data-cat="BOOTH" type="button">BOOTH</button>
+          <button class="pill-btn snippet-cat-btn" data-cat="KDP" type="button">Amazon KDP</button>
+          <button class="pill-btn snippet-cat-btn" data-cat="ココナラ" type="button">ココナラ (3)</button>
+        </div>
+        <label style="font-size:12px; color:#cbd5e1; display:inline-flex; align-items:center; gap:4px;">
+          <input id="snippetClearFirst" type="checkbox" checked /> 消して投入
+        </label>
+      </div>
+      <div id="snippetList" class="drawer-body"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    (() => {
+      const state = {
+        viewport: { width: 1280, height: 900 },
+        touchMode: "tap", // "tap" | "zoom"
+        zoomScale: 1,
+        clickModeIndex: 0, // 0: single-left, 1: double-left, 2: right-click
+        autoPoll: true,
+        isRefreshing: false,
+        lastBlobUrl: null,
+        presets: [],
+        snippets: [],
+        snippetCategory: "ALL",
+        tabs: [],
+        lastTapPoint: { x: 640, y: 450 },
+      };
+
+      const CLICK_MODES = [
+        { label: "1回クリック", button: "left", clickCount: 1 },
+        { label: "2回クリック", button: "left", clickCount: 2 },
+        { label: "右クリック", button: "right", clickCount: 1 },
+      ];
+
+      const els = {
+        urlInput: document.getElementById("urlInput"),
+        goBtn: document.getElementById("goBtn"),
+        modeSwitchBtn: document.getElementById("modeSwitchBtn"),
+        autoPollBtn: document.getElementById("autoPollBtn"),
+        bookmarkStrip: document.getElementById("bookmarkStrip"),
+        tabStrip: document.getElementById("tabStrip"),
+        modeTapBtn: document.getElementById("modeTapBtn"),
+        modeZoomBtn: document.getElementById("modeZoomBtn"),
+        zoomControls: document.getElementById("zoomControls"),
+        clickKindBtn: document.getElementById("clickKindBtn"),
+        scrollUpBtn: document.getElementById("scrollUpBtn"),
+        scrollDownBtn: document.getElementById("scrollDownBtn"),
+        viewportScroller: document.getElementById("viewportScroller"),
+        screenWrap: document.getElementById("screenWrap"),
+        screenImg: document.getElementById("screenImg"),
+        tapRipple: document.getElementById("tapRipple"),
+        focusStatus: document.getElementById("focusStatus"),
+        focusLabel: document.getElementById("focusLabel"),
+        coordLabel: document.getElementById("coordLabel"),
+        maskToggleBtn: document.getElementById("maskToggleBtn"),
+        kbdInput: document.getElementById("kbdInput"),
+        sendTextBtn: document.getElementById("sendTextBtn"),
+        clearSendBtn: document.getElementById("clearSendBtn"),
+        fileDrawer: document.getElementById("fileDrawer"),
+        fileInputsSummary: document.getElementById("fileInputsSummary"),
+        fileInputTargetSelect: document.getElementById("fileInputTargetSelect"),
+        filePresetList: document.getElementById("filePresetList"),
+        snippetDrawer: document.getElementById("snippetDrawer"),
+        snippetClearFirst: document.getElementById("snippetClearFirst"),
+        snippetList: document.getElementById("snippetList"),
+        toast: document.getElementById("toast"),
+      };
+
+      let toastTimer = null;
+      function showToast(msg, durationMs = 2600) {
+        els.toast.textContent = msg;
+        els.toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => els.toast.classList.remove("show"), durationMs);
+      }
+
+      async function apiPost(path, body = {}) {
+        const res = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
+        return data;
+      }
+
+      async function apiGet(path) {
+        const res = await fetch(path, { credentials: "same-origin" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
+        return data;
+      }
+
+      async function refreshScreenshot() {
+        if (state.isRefreshing) return;
+        state.isRefreshing = true;
+        try {
+          const res = await fetch(`/api/screenshot?t=${Date.now()}`, {
+            credentials: "same-origin",
+            cache: "no-store",
+          });
+          if (!res.ok) return;
+
+          const rawUrl = res.headers.get("x-page-url");
+          if (rawUrl && document.activeElement !== els.urlInput) {
+            els.urlInput.value = decodeURIComponent(rawUrl);
+          }
+          const vw = Number(res.headers.get("x-viewport-width"));
+          const vh = Number(res.headers.get("x-viewport-height"));
+          if (vw > 0 && vh > 0) {
+            state.viewport = { width: vw, height: vh };
+          }
+
+          const blob = await res.blob();
+          const nextUrl = URL.createObjectURL(blob);
+          els.screenImg.src = nextUrl;
+          if (state.lastBlobUrl) {
+            URL.revokeObjectURL(state.lastBlobUrl);
+          }
+          state.lastBlobUrl = nextUrl;
+        } catch {
+          // transient wifi hiccup
+        } finally {
+          state.isRefreshing = false;
+        }
+      }
+
+      function scheduleFollowupScreenshots() {
+        setTimeout(() => refreshScreenshot(), 180);
+        setTimeout(() => {
+          refreshScreenshot();
+          refreshTabsQuietly();
+        }, 650);
+      }
+
+      async function refreshTabsQuietly() {
+        try {
+          const data = await apiGet("/api/tabs");
+          state.tabs = data.tabs || [];
+          renderTabs();
+        } catch {
+          // ignore
+        }
+      }
+
+      function renderTabs() {
+        els.tabStrip.innerHTML = "";
+        state.tabs.forEach((tab, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "tab-pill" + (tab.active ? " active" : "");
+          const label = (tab.title && tab.title !== "about:blank" ? tab.title : tab.url) || `Tab ${i + 1}`;
+          btn.textContent = `${i + 1}: ${label}`;
+          btn.addEventListener("click", async () => {
+            try {
+              await apiPost("/api/tabs/switch", { targetId: tab.id });
+              await refreshTabsQuietly();
+              await refreshScreenshot();
+            } catch (e) {
+              showToast(e.message);
+            }
+          });
+          els.tabStrip.appendChild(btn);
+        });
+
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "tab-pill";
+        addBtn.textContent = "＋ 新規タブ";
+        addBtn.addEventListener("click", async () => {
+          try {
+            await apiPost("/api/tabs/new", { url: "https://www.google.com/" });
+            await refreshTabsQuietly();
+            scheduleFollowupScreenshots();
+          } catch (e) {
+            showToast(e.message);
+          }
+        });
+        els.tabStrip.appendChild(addBtn);
+      }
+
+      async function loadInitialState() {
+        try {
+          const st = await apiGet("/api/state");
+          if (st.viewport) state.viewport = st.viewport;
+          if (st.url) els.urlInput.value = st.url;
+          state.presets = st.presets || [];
+          state.snippets = st.snippets || [];
+          state.tabs = st.tabs || [];
+
+          if (Array.isArray(st.bookmarks) && st.bookmarks.length > 0) {
+            els.bookmarkStrip.innerHTML = "";
+            st.bookmarks.forEach((bm) => {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.className = "pill-btn bookmark-pill";
+              b.textContent = bm.label;
+              b.addEventListener("click", () => navigateTo(bm.url));
+              els.bookmarkStrip.appendChild(b);
+            });
+          }
+
+          renderTabs();
+          renderPresets();
+          renderSnippets();
+        } catch (e) {
+          showToast("初期化エラー: " + e.message);
+        }
+        await refreshScreenshot();
+      }
+
+      async function navigateTo(rawInput) {
+        const trimmed = (rawInput || "").trim();
+        if (!trimmed) return;
+        let targetUrl = trimmed;
+        if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed) && (trimmed.includes(" ") || !trimmed.includes("."))) {
+          targetUrl = "https://www.google.com/search?q=" + encodeURIComponent(trimmed);
+        }
+        els.urlInput.value = targetUrl;
+        els.urlInput.blur();
+        try {
+          showToast("移動中...");
+          await apiPost("/api/navigate", { url: targetUrl });
+          await refreshScreenshot();
+          await refreshTabsQuietly();
+        } catch (e) {
+          showToast("移動失敗: " + e.message);
+        }
+      }
+
+      els.goBtn.addEventListener("click", () => navigateTo(els.urlInput.value));
+      els.urlInput.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          navigateTo(els.urlInput.value);
+        }
+      });
+
+      document.querySelectorAll(".bookmark-pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.url) navigateTo(btn.dataset.url);
+        });
+      });
+
+      // Browser vs macOS Desktop mode probe
+      els.modeSwitchBtn.addEventListener("click", async () => {
+        try {
+          const res = await apiPost("/api/mode", { mode: "desktop" });
+          showToast(res.message || "ブラウザモードで動作中", 3600);
+        } catch (e) {
+          showToast(e.message, 3400);
+        }
+      });
+
+      els.autoPollBtn.addEventListener("click", () => {
+        state.autoPoll = !state.autoPoll;
+        els.autoPollBtn.textContent = state.autoPoll ? "🟢 自動" : "⏸ 手動";
+        els.autoPollBtn.classList.toggle("active", state.autoPoll);
+      });
+
+      // Touch Mode & Zoom Controls
+      function applyZoom(scale) {
+        state.zoomScale = scale;
+        if (scale <= 1) {
+          els.screenWrap.style.width = "100%";
+          els.screenWrap.style.maxWidth = "960px";
+          els.viewportScroller.style.justifyContent = "center";
+        } else {
+          const baseW = els.viewportScroller.clientWidth - 8;
+          els.screenWrap.style.maxWidth = "none";
+          els.screenWrap.style.width = Math.round(baseW * scale) + "px";
+          els.viewportScroller.style.justifyContent = "flex-start";
+        }
+        document.querySelectorAll(".zoom-level-btn").forEach((b) => {
+          b.classList.toggle("active", Number(b.dataset.zoom) === scale);
+        });
+      }
+
+      els.modeTapBtn.addEventListener("click", () => {
+        state.touchMode = "tap";
+        els.modeTapBtn.classList.add("active");
+        els.modeZoomBtn.classList.remove("active");
+        els.zoomControls.classList.remove("visible");
+        applyZoom(1);
+      });
+
+      els.modeZoomBtn.addEventListener("click", () => {
+        state.touchMode = "zoom";
+        els.modeZoomBtn.classList.add("active");
+        els.modeTapBtn.classList.remove("active");
+        els.zoomControls.classList.add("visible");
+        if (state.zoomScale === 1) applyZoom(1.8);
+        showToast("ピンチ・スクロールで拡大移動 → タップで正確クリック");
+      });
+
+      document.querySelectorAll(".zoom-level-btn").forEach((btn) => {
+        btn.addEventListener("click", () => applyZoom(Number(btn.dataset.zoom)));
+      });
+
+      els.clickKindBtn.addEventListener("click", () => {
+        state.clickModeIndex = (state.clickModeIndex + 1) % CLICK_MODES.length;
+        els.clickKindBtn.textContent = CLICK_MODES[state.clickModeIndex].label;
+      });
+
+      // Smooth Scroll Buttons
+      async function sendScroll(deltaY) {
+        try {
+          await apiPost("/api/scroll", {
+            deltaX: 0,
+            deltaY,
+            x: state.lastTapPoint.x,
+            y: state.lastTapPoint.y,
+          });
+          scheduleFollowupScreenshots();
+        } catch (e) {
+          showToast(e.message);
+        }
+      }
+      els.scrollUpBtn.addEventListener("click", () => sendScroll(-440));
+      els.scrollDownBtn.addEventListener("click", () => sendScroll(440));
+
+      // Exact Coordinate Tap + Gesture Detection on Screenshot
+      let gesture = null;
+      let lastTapHandledAt = 0;
+
+      els.screenImg.addEventListener(
+        "touchstart",
+        (ev) => {
+          if (ev.touches.length !== 1) {
+            gesture = { multiTouch: true };
+            return;
+          }
+          const t = ev.touches[0];
+          gesture = {
+            multiTouch: false,
+            startX: t.clientX,
+            startY: t.clientY,
+            lastX: t.clientX,
+            lastY: t.clientY,
+            moved: 0,
+            startedAt: Date.now(),
+          };
+        },
+        { passive: true },
+      );
+
+      els.screenImg.addEventListener(
+        "touchmove",
+        (ev) => {
+          if (!gesture) return;
+          if (ev.touches.length > 1) {
+            gesture.multiTouch = true;
+            return;
+          }
+          const t = ev.touches[0];
+          gesture.lastX = t.clientX;
+          gesture.lastY = t.clientY;
+          gesture.moved = Math.hypot(t.clientX - gesture.startX, t.clientY - gesture.startY);
+        },
+        { passive: true },
+      );
+
+      els.screenImg.addEventListener("touchend", (ev) => {
+        if (!gesture || gesture.multiTouch) {
+          gesture = null;
+          return;
+        }
+        const elapsed = Date.now() - gesture.startedAt;
+        const dy = gesture.lastY - gesture.startY;
+        const dx = gesture.lastX - gesture.startX;
+
+        // Deliberate 1-finger vertical swipe in 1x Tap mode scrolls the remote page!
+        if (state.touchMode === "tap" && state.zoomScale === 1 && gesture.moved > 42 && Math.abs(dy) > Math.abs(dx) * 1.4) {
+          lastTapHandledAt = Date.now();
+          sendScroll(Math.round(-dy * 1.35));
+          gesture = null;
+          return;
+        }
+
+        if (gesture.moved <= 10 && elapsed < 650) {
+          lastTapHandledAt = Date.now();
+          ev.preventDefault();
+          performCoordinateTap(gesture.lastX, gesture.lastY);
+        }
+        gesture = null;
+      });
+
+      // Desktop/mouse fallback click
+      els.screenImg.addEventListener("click", (ev) => {
+        if (Date.now() - lastTapHandledAt < 450) return;
+        performCoordinateTap(ev.clientX, ev.clientY);
+      });
+
+      async function performCoordinateTap(clientX, clientY) {
+        const rect = els.screenImg.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        const ratioX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        const ratioY = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+
+        // Glowing cyan ripple marker
+        els.tapRipple.style.left = (ratioX * 100).toFixed(2) + "%";
+        els.tapRipple.style.top = (ratioY * 100).toFixed(2) + "%";
+        els.tapRipple.classList.remove("animate");
+        void els.tapRipple.offsetWidth;
+        els.tapRipple.classList.add("animate");
+
+        const clickSpec = CLICK_MODES[state.clickModeIndex];
+        try {
+          const result = await apiPost("/api/click", {
+            clientX,
+            clientY,
+            rect: {
+              left: rect.left,
+              top: rect.top,
+              width: rect.width,
+              height: rect.height,
+            },
+            button: clickSpec.button,
+            clickCount: clickSpec.clickCount,
+          });
+          state.lastTapPoint = { x: result.x, y: result.y };
+          els.coordLabel.textContent = `(${result.x}, ${result.y})`;
+
+          if (result.activeElement && result.activeElement.isEditable) {
+            const desc =
+              result.activeElement.placeholder ||
+              result.activeElement.name ||
+              result.activeElement.id ||
+              result.activeElement.type ||
+              result.activeElement.tag;
+            els.focusLabel.textContent = `✏️ 入力欄フォーカス中: ${desc}`;
+            els.focusStatus.classList.add("visible");
+          } else {
+            els.focusStatus.classList.remove("visible");
+          }
+
+          scheduleFollowupScreenshots();
+        } catch (e) {
+          showToast("クリック失敗: " + e.message);
+        }
+      }
+
+      // Native iPhone Keyboard Text Input
+      els.maskToggleBtn.addEventListener("click", () => {
+        const isPw = els.kbdInput.type === "password";
+        els.kbdInput.type = isPw ? "text" : "password";
+        els.maskToggleBtn.textContent = isPw ? "🔤" : "🔒";
+      });
+
+      async function transmitText(clearFirst) {
+        const text = els.kbdInput.value;
+        if (!text && !clearFirst) {
+          els.kbdInput.focus();
+          return;
+        }
+        try {
+          await apiPost("/api/type", { text, clearFirst });
+          els.kbdInput.value = "";
+          showToast(clearFirst ? "消去して入力しました" : "文字を送信しました", 1500);
+          scheduleFollowupScreenshots();
+        } catch (e) {
+          showToast("入力失敗: " + e.message);
+        }
+      }
+
+      els.sendTextBtn.addEventListener("click", () => transmitText(false));
+      els.clearSendBtn.addEventListener("click", () => transmitText(true));
+      els.kbdInput.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" && !ev.isComposing) {
+          ev.preventDefault();
+          transmitText(false);
+        }
+      });
+
+      // Hardware / Special Keys
+      document.querySelectorAll("[data-key]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const key = btn.dataset.key;
+          try {
+            await apiPost("/api/key", { key });
+            scheduleFollowupScreenshots();
+          } catch (e) {
+            showToast(e.message);
+          }
+        });
+      });
+
+      // Drawers Open/Close
+      function closeDrawers() {
+        els.fileDrawer.classList.remove("open");
+        els.snippetDrawer.classList.remove("open");
+      }
+      document.querySelectorAll("[data-close]").forEach((btn) => {
+        btn.addEventListener("click", closeDrawers);
+      });
+      [els.fileDrawer, els.snippetDrawer].forEach((bd) => {
+        bd.addEventListener("click", (ev) => {
+          if (ev.target === bd) closeDrawers();
+        });
+      });
+
+      // 1-Tap File Upload Drawer
+      function formatBytes(bytes) {
+        if (!bytes) return "0 B";
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
+      function renderPresets() {
+        els.filePresetList.innerHTML = "";
+        state.presets.forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "card-item";
+          card.innerHTML = `
+            <div class="card-top">
+              <div>
+                <div class="card-label">${escapeHtml(p.label)}</div>
+                <div class="card-meta">${escapeHtml(p.filename)} · ${formatBytes(p.sizeBytes)}</div>
+              </div>
+              <button class="pill-btn primary attach-btn" type="button">📎 1タップ添付</button>
+            </div>
+          `;
+          card.querySelector(".attach-btn").addEventListener("click", async () => {
+            const targetVal = els.fileInputTargetSelect.value;
+            const body = { presetId: p.id };
+            if (targetVal !== "auto") body.inputIndex = Number(targetVal);
+            try {
+              const res = await apiPost("/api/upload-preset", body);
+              closeDrawers();
+              showToast(`✅ 添付完了: ${res.filename} (欄 #${res.matchedIndex + 1})`, 3000);
+              scheduleFollowupScreenshots();
+            } catch (e) {
+              showToast("添付エラー: " + e.message, 3500);
+            }
+          });
+          els.filePresetList.appendChild(card);
+        });
+      }
+
+      document.getElementById("openFileDrawerBtn").addEventListener("click", async () => {
+        els.fileDrawer.classList.add("open");
+        try {
+          const info = await apiGet("/api/file-inputs");
+          const inputs = info.inputs || [];
+          els.fileInputsSummary.textContent =
+            inputs.length > 0
+              ? `現在のページ上のファイル欄: ${inputs.length}個検出`
+              : "現在のページ上に input[type=file] はまだありません";
+          els.fileInputTargetSelect.innerHTML = `<option value="auto">自動判別 (accept属性に最適一致)</option>`;
+          inputs.forEach((inp) => {
+            const opt = document.createElement("option");
+            opt.value = String(inp.index);
+            const current = inp.currentFiles?.length ? ` [済: ${inp.currentFiles.join(",")}]` : "";
+            opt.textContent = `欄 #${inp.index + 1} (${inp.accept || "すべて許可"} ${inp.id || inp.name || ""})${current}`;
+            els.fileInputTargetSelect.appendChild(opt);
+          });
+        } catch (e) {
+          els.fileInputsSummary.textContent = e.message;
+        }
+      });
+
+      // 1-Tap Quick-Copy Snippet Drawer
+      function escapeHtml(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function renderSnippets() {
+        els.snippetList.innerHTML = "";
+        const items =
+          state.snippetCategory === "ALL"
+            ? state.snippets
+            : state.snippets.filter((s) => s.category === state.snippetCategory);
+
+        items.forEach((sn) => {
+          const card = document.createElement("div");
+          card.className = "card-item";
+          card.innerHTML = `
+            <div class="card-top">
+              <div class="card-label">${escapeHtml(sn.title)}</div>
+              <div class="card-meta">${escapeHtml(sn.meta || "")} · ${sn.text.length}文字</div>
+            </div>
+            <div class="card-preview">${escapeHtml(sn.text)}</div>
+            <div class="card-actions">
+              <button class="pill-btn primary sn-insert-btn" type="button">📥 入力欄へ直接投入</button>
+              <button class="pill-btn sn-copy-btn" type="button">📋 iPhoneへコピー</button>
+              ${sn.jumpUrl ? `<button class="pill-btn sn-jump-btn" type="button">🌐 公開画面を開く</button>` : ""}
+            </div>
+          `;
+
+          card.querySelector(".sn-insert-btn").addEventListener("click", async () => {
+            try {
+              await apiPost("/api/type", {
+                text: sn.text,
+                clearFirst: els.snippetClearFirst.checked,
+              });
+              closeDrawers();
+              showToast(`✅ 投入完了: ${sn.title}`, 2400);
+              scheduleFollowupScreenshots();
+            } catch (e) {
+              showToast("投入失敗: " + e.message);
+            }
+          });
+
+          card.querySelector(".sn-copy-btn").addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(sn.text);
+              showToast("📋 iPhoneクリップボードにコピーしました");
+            } catch {
+              els.kbdInput.value = sn.text;
+              closeDrawers();
+              showToast("下部入力バーにセットしました");
+            }
+          });
+
+          const jumpBtn = card.querySelector(".sn-jump-btn");
+          if (jumpBtn && sn.jumpUrl) {
+            jumpBtn.addEventListener("click", () => {
+              closeDrawers();
+              navigateTo(sn.jumpUrl);
+            });
+          }
+
+          els.snippetList.appendChild(card);
+        });
+      }
+
+      document.getElementById("openSnippetDrawerBtn").addEventListener("click", () => {
+        els.snippetDrawer.classList.add("open");
+      });
+
+      document.querySelectorAll(".snippet-cat-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.snippetCategory = btn.dataset.cat;
+          document.querySelectorAll(".snippet-cat-btn").forEach((b) => {
+            b.classList.toggle("active", b === btn);
+          });
+          renderSnippets();
+        });
+      });
+
+      // Background live auto-refresh loop (2.4s interval when active and visible)
+      setInterval(() => {
+        if (state.autoPoll && !document.hidden && !gesture) {
+          refreshScreenshot();
+        }
+      }, 2400);
+
+      loadInitialState();
+    })();
+  </script>
+</body>
+</html>

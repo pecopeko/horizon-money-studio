@@ -1,0 +1,30 @@
+{
+  "title": "Japan Labor Notice & Art. 36 Overtime Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Employment Notices and Attendance Records to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "notice_text": "契約期間1年。勤務場所：本社。業務：開発。月給30万円（固定残業代含む）。末日締め翌25日払。始業9時・終業18時・休憩60分・土日祝休。退職・解雇規定あり。",
+          "is_fixed_term": true,
+          "monthly_hours": [
+            40,
+            48,
+            82,
+            85,
+            78,
+            42
+          ]
+        }
+      ],
+      "description": "Employment Notices and Attendance Records to Audit (Audit Japanese employment notices against April 2024 Labor Standards Act rules (change scope, renewal caps, conversion), Supreme Court fixed-overtime rules, >60h 1.50x overtime pay, and Art. 36 rolling 80h caps)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

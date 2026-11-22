@@ -1,0 +1,59 @@
+{
+  "title": "Substack Newsletter Posts Extractor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "publications": {
+      "title": "Substack Publications (Handles, Substack URLs, or Custom Domains)",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of Substack handles (e.g. 'pragmaticengineer'), Substack URLs (e.g. 'https://pragmaticengineer.substack.com'), or custom newsletter domains (e.g. 'https://newsletter.pragmaticengineer.com').",
+      "prefill": [
+        "pragmaticengineer"
+      ]
+    },
+    "maxPostsPerPublication": {
+      "title": "Max Posts Per Publication",
+      "type": "integer",
+      "default": 25,
+      "minimum": 1,
+      "maximum": 500,
+      "description": "Maximum number of newest matching posts to extract per publication."
+    },
+    "includeFullText": {
+      "title": "Include Public Full Text (Markdown & Plain Text)",
+      "type": "boolean",
+      "default": true,
+      "description": "Merge public full-article HTML into clean body_markdown and body_text from /feed RSS or public /api/v1/posts/{slug} strictly for free (audience='everyone') posts. Paywalled posts return honest public preview text only."
+    },
+    "onlyFree": {
+      "title": "Only Free / Public Posts",
+      "type": "boolean",
+      "default": false,
+      "description": "When enabled, skip subscriber-only/paywalled posts and return only free public (audience='everyone') articles."
+    },
+    "publishedAfter": {
+      "title": "Published After (ISO Date)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional ISO-8601 date or timestamp (e.g. '2026-01-01') to stop pagination once posts are older than this cutoff."
+    },
+    "keywordFilter": {
+      "title": "Keyword Filter (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional case-insensitive keyword filter matched against publication name, post title, subtitle, and extracted text."
+    },
+    "requestDelayMs": {
+      "title": "Polite Delay Between Requests (ms)",
+      "type": "integer",
+      "default": 350,
+      "minimum": 0,
+      "maximum": 5000,
+      "description": "Polite delay in milliseconds between archive pages and public post fetches. 429/503 responses automatically trigger Retry-After backoff."
+    }
+  },
+  "required": [
+    "publications"
+  ]
+}

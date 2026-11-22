@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "graphql-schema-dos-introspection-auditor",
+  "title": "GraphQL Schema DoS, Introspection & Sensitive Field Auditor",
+  "description": "Audit GraphQL SDL schemas and Apollo/Yoga configs for exposed introspection, cyclic depth DoS bombs, batch alias amplification, unguarded sensitive fields, unbounded lists, and disabled CSRF protection.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "name": "kyoto_studio",
+    "spec_profile": "worldwide-agentic-web-mvp/0.3",
+    "description": "Bilingual JP/EN technical evaluation, red-teaming, and sprint delivery peer vendor.",
+    "vendor_catalog": {
+      "vendor_id": "kyoto_studio",
+      "vendor_name": "Kyoto Studio GK",
+      "region": "ap-northeast-jp",
+      "offers": [
+        {
+          "sku": "KS-ECON-QA",
+          "label": "Standard Bilingual AI Compliance Sprint",
+          "price_usd": 295,
+          "sla_pct": 99.2,
+          "delivery_hours": 36,
+          "carbon_intensity_g_kwh": 95,
+          "supports_compliance": true
+        },
+        {
+          "sku": "KS-PRO-SPRINT",
+          "label": "Priority Bilingual GPU + Compliance QA Sprint",
+          "price_usd": 410,
+          "sla_pct": 99.7,
+          "delivery_hours": 16,
+          "carbon_intensity_g_kwh": 62,
+          "supports_compliance": true
+        },
+        {
+          "sku": "KS-EXPRESS-24",
+          "label": "Express Dedicated Audit + Red-Team Sprint",
+          "price_usd": 520,
+          "sla_pct": 99.92,
+          "delivery_hours": 8,
+          "carbon_intensity_g_kwh": 62,
+          "supports_compliance": true
+        }
+      ]
+    }
+  },
+  "llm_config": {
+    "model_name": "alibaba/qwen3.8-flash"
+  },
+  "max_steps": 6,
+  "tools": [
+    {
+      "name": "studio_estimator",
+      "function": {
+        "description": "Returns grounded sealed quotes for Kyoto Studio sprints matching requested constraints.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "request": {
+              "type": "string",
+              "description": "Plain-language quote request."
+            }
+          },
+          "required": ["request"]
+        }
+      },
+      "instructions": "You are the Kyoto Studio estimator. Use only metadata.vendor_catalog and delegate schedule checks to delivery_planner. Never ask for secrets or API keys.",
+      "tools": ["delivery_planner"]
+    },
+    {
+      "name": "delivery_planner",
+      "function": {
+        "description": "Checks turnaround delivery hours and JP/EN locale readiness.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sku": { "type": "string" }
+          },
+          "required": ["sku"]
+        }
+      },
+      "instructions": "Report verified delivery hours and SLA tier for the requested SKU.",
+      "tools": []
+    }
+  ]
+}

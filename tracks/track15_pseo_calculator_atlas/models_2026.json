@@ -1,0 +1,581 @@
+{
+  "pricing_as_of": "2026-11-20",
+  "usd_jpy_default": 150.0,
+  "disclaimer": "Indicative 2026 list API pricing (USD per 1M tokens) compiled for comparative budgeting. Always verify current vendor pricing pages before production commitments, or override rates directly in the interactive calculator.",
+  "models": [
+    {
+      "id": "gpt-5",
+      "name": "GPT-5",
+      "provider": "OpenAI",
+      "tier": "Flagship",
+      "input_per_1m": 1.25,
+      "cached_input_per_1m": 0.125,
+      "output_per_1m": 10.0,
+      "batch_discount": 0.5,
+      "context_window_k": 400,
+      "jp_token_multiplier": 1.75,
+      "best_for": "General flagship reasoning, structured tool calling, and high-cache-hit agent loops",
+      "strengths": [
+        "90% cached input discount ($0.125/1M)",
+        "50% Batch API discount for async workloads",
+        "Strong output quality per dollar vs legacy frontier tiers"
+      ],
+      "watchouts": [
+        "Output tokens ($10/1M) are 8x input cost — verbose reasoning chains inflate spend",
+        "400k context window is smaller than 1M-context peers"
+      ]
+    },
+    {
+      "id": "gpt-4-1",
+      "name": "GPT-4.1",
+      "provider": "OpenAI",
+      "tier": "Flagship Long-Context",
+      "input_per_1m": 2.0,
+      "cached_input_per_1m": 0.5,
+      "output_per_1m": 8.0,
+      "batch_discount": 0.5,
+      "context_window_k": 1000,
+      "jp_token_multiplier": 1.75,
+      "best_for": "1M-token long-context coding diffs, strict JSON schema adherence, and deterministic instruction following",
+      "strengths": [
+        "1M token context window with low needle-in-a-haystack degradation",
+        "Lower output price ($8/1M) than GPT-5 and Claude Sonnet 4",
+        "50% Batch API discount + 75% prompt cache discount"
+      ],
+      "watchouts": [
+        "Base input ($2.00/1M) is 60% higher than GPT-5 and Gemini 2.5 Pro",
+        "Cache read discount (75%) trails 90%-discount competitors"
+      ]
+    },
+    {
+      "id": "o4-mini",
+      "name": "o4-mini",
+      "provider": "OpenAI",
+      "tier": "Reasoning Fast",
+      "input_per_1m": 1.1,
+      "cached_input_per_1m": 0.275,
+      "output_per_1m": 4.4,
+      "batch_discount": 0.5,
+      "context_window_k": 200,
+      "jp_token_multiplier": 1.75,
+      "best_for": "STEM reasoning, automated code review, SQL synthesis, and cost-sensitive reasoning pipelines",
+      "strengths": [
+        "Reasoning-model performance at $4.40/1M output",
+        "50% Batch API and 75% cached input discounts",
+        "Predictable budget for math/logic verification steps"
+      ],
+      "watchouts": [
+        "Hidden reasoning tokens count as billable output tokens",
+        "200k context window limits full-repo single-shot prompts"
+      ]
+    },
+    {
+      "id": "claude-sonnet-4",
+      "name": "Claude Sonnet 4",
+      "provider": "Anthropic",
+      "tier": "Frontier Coding",
+      "input_per_1m": 3.0,
+      "cached_input_per_1m": 0.3,
+      "output_per_1m": 15.0,
+      "batch_discount": 0.5,
+      "context_window_k": 200,
+      "jp_token_multiplier": 1.95,
+      "best_for": "Agentic software engineering, multi-file refactoring, and nuanced editorial writing",
+      "strengths": [
+        "90% prompt cache read savings ($0.30/1M) drastically cuts multi-turn agent cost",
+        "50% Message Batches API discount for offline evaluations",
+        "Top-tier agentic coding reliability with fewer retry loops"
+      ],
+      "watchouts": [
+        "Uncached input ($3/1M) and output ($15/1M) sit above GPT-5 and Gemini 2.5 Pro",
+        "Japanese CJK tokenization averages ~1.95x English character efficiency"
+      ]
+    },
+    {
+      "id": "claude-opus-4",
+      "name": "Claude Opus 4",
+      "provider": "Anthropic",
+      "tier": "Peak Flagship",
+      "input_per_1m": 15.0,
+      "cached_input_per_1m": 1.5,
+      "output_per_1m": 75.0,
+      "batch_discount": 0.5,
+      "context_window_k": 200,
+      "jp_token_multiplier": 1.95,
+      "best_for": "High-stakes architecture synthesis, security auditing, and complex executive research",
+      "strengths": [
+        "Maximum reasoning depth where avoiding a single error justifies premium unit cost",
+        "90% cached input discount ($1.50/1M) and 50% Batch API support",
+        "Ideal as the 5%–10% escalation tier in a routed architecture"
+      ],
+      "watchouts": [
+        "$75/1M output makes unrouted high-volume chat prohibitively expensive",
+        "5x more expensive than Claude Sonnet 4 at list rates"
+      ]
+    },
+    {
+      "id": "claude-haiku-3-5",
+      "name": "Claude Haiku 3.5",
+      "provider": "Anthropic",
+      "tier": "Fast Budget",
+      "input_per_1m": 0.8,
+      "cached_input_per_1m": 0.08,
+      "output_per_1m": 4.0,
+      "batch_discount": 0.5,
+      "context_window_k": 200,
+      "jp_token_multiplier": 1.95,
+      "best_for": "Low-latency classification, Anthropic-stack guardrails, and high-cache customer support bots",
+      "strengths": [
+        "90% prompt caching brings repeated system-prompt reads down to $0.08/1M",
+        "Same Anthropic Messages API format as Sonnet 4 / Opus 4 for seamless tiering",
+        "50% Batch API discount ($0.40/$2.00 effective)"
+      ],
+      "watchouts": [
+        "Higher per-token list price than Gemini 2.5 Flash, DeepSeek V3, and Qwen3",
+        "Output ($4/1M) is ~6.7x higher than Qwen3 235B via OpenRouter"
+      ]
+    },
+    {
+      "id": "gemini-2-5-pro",
+      "name": "Gemini 2.5 Pro",
+      "provider": "Google",
+      "tier": "Long-Context Reasoning",
+      "input_per_1m": 1.25,
+      "cached_input_per_1m": 0.3125,
+      "output_per_1m": 10.0,
+      "batch_discount": 0.5,
+      "context_window_k": 1000,
+      "jp_token_multiplier": 1.65,
+      "best_for": "Full-codebase analysis, massive PDF/video ingestion, and Japanese/multilingual long-context RAG",
+      "strengths": [
+        "1M+ context window at $1.25/1M standard input (<=200k tier)",
+        "Efficient SentencePiece vocabulary keeps Japanese token inflation lower (~1.65x)",
+        "50% Batch API and 75% context caching support"
+      ],
+      "watchouts": [
+        "Prompts exceeding 200k tokens step up to higher long-context tier pricing on Google AI",
+        "75% cache discount trails 90% cache tiers on GPT-5 and Claude"
+      ]
+    },
+    {
+      "id": "gemini-2-5-flash",
+      "name": "Gemini 2.5 Flash",
+      "provider": "Google",
+      "tier": "High-Throughput Budget",
+      "input_per_1m": 0.3,
+      "cached_input_per_1m": 0.075,
+      "output_per_1m": 2.5,
+      "batch_discount": 0.5,
+      "context_window_k": 1000,
+      "jp_token_multiplier": 1.65,
+      "best_for": "High-throughput extraction, 1M-context document triage, and real-time SaaS copilot routing",
+      "strengths": [
+        "1M context window at $0.30/1M input — ideal for bulk PDF & transcript ingestion",
+        "Low Japanese token overhead (~1.65x) makes it a strong default for JP SaaS",
+        "50% Batch API discount reduces input to $0.15/1M"
+      ],
+      "watchouts": [
+        "Thinking/output tokens ($2.50/1M) can outpace ultra-cheap open-weight models if unconstrained",
+        "Complex multi-file code synthesis still benefits from Sonnet 4 / GPT-5 escalation"
+      ]
+    },
+    {
+      "id": "deepseek-r1",
+      "name": "DeepSeek R1",
+      "provider": "DeepSeek",
+      "tier": "Open-Weight Reasoning",
+      "input_per_1m": 0.55,
+      "cached_input_per_1m": 0.14,
+      "output_per_1m": 2.19,
+      "batch_discount": 0.5,
+      "context_window_k": 128,
+      "jp_token_multiplier": 1.85,
+      "best_for": "Cost-disruptive chain-of-thought reasoning, math/logic verification, and synthetic training generation",
+      "strengths": [
+        "Reasoning performance at $0.55/$2.19 per 1M — roughly 4–5x cheaper than frontier closed models",
+        "Automatic prefix caching ($0.14/1M) + off-peak/batch savings",
+        "Open weights allow migrating to self-hosted RunPod GPUs at scale"
+      ],
+      "watchouts": [
+        "Long chain-of-thought traces multiply generated output tokens",
+        "Data residency compliance often requires US/EU OpenRouter or self-hosted endpoints"
+      ]
+    },
+    {
+      "id": "deepseek-v3",
+      "name": "DeepSeek V3",
+      "provider": "DeepSeek",
+      "tier": "Value General",
+      "input_per_1m": 0.27,
+      "cached_input_per_1m": 0.07,
+      "output_per_1m": 1.1,
+      "batch_discount": 0.5,
+      "context_window_k": 128,
+      "jp_token_multiplier": 1.85,
+      "best_for": "Bulk summarization, translation, synthetic labeling, and ultra-low-cost SaaS backends",
+      "strengths": [
+        "Sub-$0.30 input and $1.10 output with automatic cache hits at $0.07/1M",
+        "Strong general coding and multilingual fluency for the price tier",
+        "Open weights eliminate single-vendor lock-in"
+      ],
+      "watchouts": [
+        "128k context ceiling vs 400k–1M proprietary models",
+        "Enterprise privacy teams should route via zero-data-retention OpenRouter providers or self-host"
+      ]
+    },
+    {
+      "id": "qwen-3-235b",
+      "name": "Qwen3 235B (OpenRouter)",
+      "provider": "Alibaba via OpenRouter",
+      "tier": "Open-Weight MoE",
+      "input_per_1m": 0.2,
+      "cached_input_per_1m": 0.1,
+      "output_per_1m": 0.6,
+      "batch_discount": 0.0,
+      "context_window_k": 128,
+      "jp_token_multiplier": 1.55,
+      "best_for": "CJK/Japanese high-volume localization, cost-optimized RAG synthesis, and open-weight MoE pipelines",
+      "strengths": [
+        "One of the lowest output prices ($0.60/1M) among large MoE models",
+        "Best-in-class CJK/Japanese tokenizer efficiency (~1.55x vs English)",
+        "Accessible via OpenRouter with zero-data-retention provider filtering"
+      ],
+      "watchouts": [
+        "No standardized 50% async Batch API across all serverless OpenRouter hosts",
+        "Prompt cache hit discounts vary by underlying inference provider"
+      ]
+    },
+    {
+      "id": "llama-4-maverick",
+      "name": "Llama 4 Maverick (OpenRouter)",
+      "provider": "Meta via OpenRouter",
+      "tier": "Open-Weight Multimodal",
+      "input_per_1m": 0.18,
+      "cached_input_per_1m": 0.09,
+      "output_per_1m": 0.6,
+      "batch_discount": 0.0,
+      "context_window_k": 1000,
+      "jp_token_multiplier": 2.1,
+      "best_for": "English-heavy high-throughput pipelines, multimodal extraction, and portable self-hosted migration",
+      "strengths": [
+        "Ultra-low $0.18/$0.60 per 1M open-weight MoE pricing on OpenRouter",
+        "1M-token context support with wide third-party GPU host competition",
+        "Smooth path from serverless API to dedicated RunPod vLLM cluster"
+      ],
+      "watchouts": [
+        "Higher Japanese token expansion (~2.10x) narrows its lead on CJK workloads",
+        "Serverless OpenRouter endpoints rarely offer native 50% batch queues"
+      ]
+    }
+  ],
+  "workloads": [
+    {
+      "slug": "1m-tokens-cost-calculator",
+      "title_short": "1M Tokens LLM API Cost Calculator",
+      "h1": "1 Million Tokens LLM API Cost Calculator (2026 All-Model Matrix)",
+      "description_focus": "exact USD and JPY cost for 1,000,000 LLM tokens across 12 leading 2026 models with 75/25 input-output split, prompt caching, and batch API toggles",
+      "monthly_input_m": 0.75,
+      "monthly_output_m": 0.25,
+      "cache_hit_ratio": 0.25,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 500,
+      "category": "Volume Benchmark",
+      "context_note": "Baseline benchmark for solo developers, indie SaaS MVPs, and prototyping (~500 requests/mo averaging 1,500 input + 500 output tokens)."
+    },
+    {
+      "slug": "10m-tokens-rag-cost",
+      "title_short": "10M Tokens RAG Pipeline Cost",
+      "h1": "10M Tokens Monthly RAG Pipeline API Cost Calculator (2026)",
+      "description_focus": "monthly cost of a 10M-token Retrieval-Augmented Generation pipeline (85% input context, 15% output synthesis) with 60% system/doc prompt caching",
+      "monthly_input_m": 8.5,
+      "monthly_output_m": 1.5,
+      "cache_hit_ratio": 0.6,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 2500,
+      "category": "RAG & Search",
+      "context_note": "Production knowledge-base RAG (~2,500 queries/mo, 3,400 retrieved input tokens + 600 cited answer tokens per call, shared system prompt & FAQ chunks cached)."
+    },
+    {
+      "slug": "100m-tokens-agent-cost",
+      "title_short": "100M Tokens AI Agent Cost",
+      "h1": "100M Tokens Autonomous AI Agent Monthly Cost Calculator (2026)",
+      "description_focus": "monthly spend for 100M-token multi-turn agent loops where repeated tool schemas & conversation history achieve 75% prompt cache hits",
+      "monthly_input_m": 88.0,
+      "monthly_output_m": 12.0,
+      "cache_hit_ratio": 0.75,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 12000,
+      "category": "Autonomous Agents",
+      "context_note": "Multi-step coding or operations agent (~12,000 turns/mo). Because each tool step re-sends full history + tool definitions, 90% prompt caching dominates total cost."
+    },
+    {
+      "slug": "1b-tokens-enterprise-cost",
+      "title_short": "1B Tokens Enterprise LLM Spend",
+      "h1": "1 Billion Tokens Enterprise LLM API Cost & Batch Savings Calculator",
+      "description_focus": "enterprise-scale 1B-token monthly LLM budget comparison across 12 models, Batch API 50% discounts, and self-hosted GPU break-even",
+      "monthly_input_m": 820.0,
+      "monthly_output_m": 180.0,
+      "cache_hit_ratio": 0.5,
+      "use_batch": true,
+      "is_japanese": false,
+      "calls_per_month": 250000,
+      "category": "Enterprise Scale",
+      "context_note": "Enterprise production scale (1B tokens/month across ~250k API calls). At this volume, switching from flagship to routed or self-hosted models saves tens of thousands per year."
+    },
+    {
+      "slug": "japanese-llm-token-cost",
+      "title_short": "Japanese vs English Token Cost",
+      "h1": "Japanese LLM Token Inflation & API Cost Calculator (EN vs JP 2026)",
+      "description_focus": "how Japanese Kanji/Kana BPE tokenization (1.55x–2.10x expansion) changes real API costs in USD and JPY across GPT-5, Claude, Gemini, DeepSeek, and Qwen",
+      "monthly_input_m": 12.0,
+      "monthly_output_m": 4.0,
+      "cache_hit_ratio": 0.4,
+      "use_batch": false,
+      "is_japanese": true,
+      "calls_per_month": 4000,
+      "category": "Japanese / CJK",
+      "context_note": "Japanese business SaaS workload (equivalent to 16M English tokens before CJK multiplier). Tokenizer efficiency varies dramatically: Qwen3 (~1.55x) & Gemini (~1.65x) vs Llama 4 (~2.10x)."
+    },
+    {
+      "slug": "prompt-caching-savings-calculator",
+      "title_short": "Prompt Caching ROI Calculator",
+      "h1": "LLM Prompt Caching Savings Calculator (75% vs 90% Discount ROI)",
+      "description_focus": "exact monthly dollar savings from 80% prompt cache hit rates across OpenAI GPT-5, Anthropic Claude Sonnet 4, Google Gemini 2.5, and DeepSeek",
+      "monthly_input_m": 45.0,
+      "monthly_output_m": 5.0,
+      "cache_hit_ratio": 0.8,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 5000,
+      "category": "Cost Optimization",
+      "context_note": "Heavy static-prefix workload (9k input tokens of docs/tools/few-shot examples + 1k output per call, 80% cache hit rate)."
+    },
+    {
+      "slug": "batch-api-50-percent-discount-calculator",
+      "title_short": "Batch API 50% Discount Calculator",
+      "h1": "LLM Batch API 50% Discount & Async ETL Cost Calculator (2026)",
+      "description_focus": "exact cost reduction from 24-hour async Batch APIs across OpenAI, Anthropic, Google Gemini, and DeepSeek versus synchronous OpenRouter endpoints",
+      "monthly_input_m": 60.0,
+      "monthly_output_m": 20.0,
+      "cache_hit_ratio": 0.0,
+      "use_batch": true,
+      "is_japanese": false,
+      "calls_per_month": 40000,
+      "category": "Cost Optimization",
+      "context_note": "Overnight ETL, classification, and enrichment jobs tolerant of <24h SLA. Models with native 50% Batch queues slash synchronous pricing in half."
+    },
+    {
+      "slug": "coding-assistant-monthly-api-cost",
+      "title_short": "AI Coding Assistant API Cost",
+      "h1": "AI Coding Assistant (IDE & Repo Context) Monthly API Cost Calculator",
+      "description_focus": "monthly BYOK developer API spend for heavy IDE coding agents (35M input with 75% repo cache, 4M output tokens per engineer)",
+      "monthly_input_m": 35.0,
+      "monthly_output_m": 4.0,
+      "cache_hit_ratio": 0.75,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 3000,
+      "category": "Developer Tools",
+      "context_note": "Single full-time engineer using a BYOK agentic IDE (~150 turns/workday, large cached codebase context + unified diff output)."
+    },
+    {
+      "slug": "customer-support-chatbot-cost",
+      "title_short": "Support Chatbot Cost per 1k Tickets",
+      "h1": "SaaS Customer Support Chatbot API Cost Calculator (Per 1,000 Tickets)",
+      "description_focus": "exact API cost to resolve 5,000 monthly support tickets (3 turns per ticket, help-center context cached at 65%)",
+      "monthly_input_m": 22.5,
+      "monthly_output_m": 4.5,
+      "cache_hit_ratio": 0.65,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 15000,
+      "category": "SaaS Operations",
+      "context_note": "5,000 support tickets/month x 3 turns each (15,000 calls; 1,500 input tokens of KB + history, 300 output tokens per reply)."
+    },
+    {
+      "slug": "pdf-ocr-document-extraction-cost",
+      "title_short": "PDF & Invoice Extraction Cost",
+      "h1": "PDF & Invoice Structured JSON Extraction LLM Cost Calculator (2026)",
+      "description_focus": "cost per 10,000 invoices/receipts parsed into strict JSON schemas using batchable and fast vision/text LLMs",
+      "monthly_input_m": 30.0,
+      "monthly_output_m": 5.0,
+      "cache_hit_ratio": 0.3,
+      "use_batch": true,
+      "is_japanese": false,
+      "calls_per_month": 10000,
+      "category": "Document Processing",
+      "context_note": "10,000 multi-page invoices/documents per month (3,000 input tokens + 500 structured JSON output tokens per document, batch-eligible)."
+    },
+    {
+      "slug": "voice-transcript-summarization-cost",
+      "title_short": "Meeting & Podcast Summary Cost",
+      "h1": "Meeting & Podcast Transcript Summarization LLM Cost Calculator",
+      "description_focus": "monthly API cost to summarize 1,000 one-hour meetings or podcasts (~12k transcript input + 1.2k action-item summary output)",
+      "monthly_input_m": 12.0,
+      "monthly_output_m": 1.2,
+      "cache_hit_ratio": 0.15,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 1000,
+      "category": "Media & Audio",
+      "context_note": "1,000 one-hour recordings/month (~12,000 transcript input tokens + 1,200 structured summary/action items output per session)."
+    },
+    {
+      "slug": "multi-agent-workflow-cost",
+      "title_short": "Multi-Agent Loop Cost Calculator",
+      "h1": "Multi-Agent Orchestration & Tool-Loop API Cost Calculator (2026)",
+      "description_focus": "true token amplification cost of planner-worker-critic multi-agent workflows (60M input, 15M output, 65% prompt caching)",
+      "monthly_input_m": 60.0,
+      "monthly_output_m": 15.0,
+      "cache_hit_ratio": 0.65,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 18000,
+      "category": "Autonomous Agents",
+      "context_note": "1,500 complex tasks/month averaging 12 agent LLM calls per task across planner, executor, and verifier roles."
+    },
+    {
+      "slug": "semantic-search-reranking-cost",
+      "title_short": "Hybrid RAG Reranking Cost",
+      "h1": "LLM Search Reranking & Citation Grounding Cost Calculator (2026)",
+      "description_focus": "high-volume listwise reranking and grounding cost (50,000 search queries/mo, short structured scores output)",
+      "monthly_input_m": 75.0,
+      "monthly_output_m": 5.0,
+      "cache_hit_ratio": 0.35,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 50000,
+      "category": "RAG & Search",
+      "context_note": "50,000 search queries/month scoring top-10 candidate snippets (1,500 input + 100 compact JSON ranking output tokens)."
+    },
+    {
+      "slug": "code-review-ci-pr-bot-cost",
+      "title_short": "GitHub PR Code Review Bot Cost",
+      "h1": "Automated GitHub PR Code Review Bot Monthly API Cost Calculator",
+      "description_focus": "monthly CI/CD code review token cost for 1,500 pull requests (diff + style rules cached at 50%)",
+      "monthly_input_m": 15.0,
+      "monthly_output_m": 3.0,
+      "cache_hit_ratio": 0.5,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 1500,
+      "category": "Developer Tools",
+      "context_note": "Engineering org merging ~1,500 PRs/month (~10,000 diff & repo rule input tokens + 2,000 inline review comment tokens per PR)."
+    },
+    {
+      "slug": "translation-localization-en-ja-cost",
+      "title_short": "EN-to-JA Translation LLM Cost",
+      "h1": "English-to-Japanese Documentation Translation LLM Cost Calculator",
+      "description_focus": "exact cost to translate 20M tokens of technical docs or SaaS UI into Japanese accounting for CJK output token expansion",
+      "monthly_input_m": 10.0,
+      "monthly_output_m": 10.0,
+      "cache_hit_ratio": 0.25,
+      "use_batch": true,
+      "is_japanese": true,
+      "calls_per_month": 5000,
+      "category": "Japanese / CJK",
+      "context_note": "Balanced 1:1 input-to-output translation pipeline with glossary prefix caching (25%) and Japanese token expansion applied."
+    },
+    {
+      "slug": "sql-bi-copilot-api-cost",
+      "title_short": "Text-to-SQL BI Copilot Cost",
+      "h1": "Text-to-SQL & Analytics Copilot Monthly LLM Cost Calculator",
+      "description_focus": "monthly API budget for an internal BI copilot sending cached DDL warehouse schemas (85% cache hit) across 8,000 analyst queries",
+      "monthly_input_m": 40.0,
+      "monthly_output_m": 4.0,
+      "cache_hit_ratio": 0.85,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 8000,
+      "category": "SaaS Operations",
+      "context_note": "8,000 BI queries/month sharing a 4,500-token warehouse schema definition (85% cached) + 500 tokens of SQL & explanation output."
+    },
+    {
+      "slug": "synthetic-dataset-generation-cost",
+      "title_short": "Synthetic Dataset Distillation Cost",
+      "h1": "Synthetic Training Data & Distillation Batch API Cost Calculator",
+      "description_focus": "exact budget to generate 50,000 high-quality synthetic instruction/reasoning pairs using 50% async Batch APIs",
+      "monthly_input_m": 25.0,
+      "monthly_output_m": 75.0,
+      "cache_hit_ratio": 0.2,
+      "use_batch": true,
+      "is_japanese": false,
+      "calls_per_month": 50000,
+      "category": "ML & Fine-Tuning",
+      "context_note": "Output-heavy distillation job (50k prompts x 500 input + 1,500 rich CoT output tokens). Output pricing dominates 85%+ of total spend."
+    },
+    {
+      "slug": "legal-contract-review-long-context-cost",
+      "title_short": "Long-Context Contract Review Cost",
+      "h1": "Long-Context Legal Contract & MSA Review LLM Cost Calculator",
+      "description_focus": "per-contract and monthly API spend for 500 lengthy MSAs/filings (~40,000 input tokens + 2,500 redline output tokens each)",
+      "monthly_input_m": 20.0,
+      "monthly_output_m": 1.25,
+      "cache_hit_ratio": 0.45,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 500,
+      "category": "Document Processing",
+      "context_note": "500 long contracts/month (~40k tokens each, playbook cached across reviews). Long-context input pricing drives >80% of spend."
+    },
+    {
+      "slug": "ecommerce-product-catalog-enrichment-cost",
+      "title_short": "E-Commerce 10k SKU Enrichment Cost",
+      "h1": "E-Commerce Product Catalog & SEO Enrichment Cost Calculator (10k SKUs)",
+      "description_focus": "exact batch cost to normalize attributes and generate SEO copy for 10,000 e-commerce SKUs across 12 models",
+      "monthly_input_m": 8.0,
+      "monthly_output_m": 6.0,
+      "cache_hit_ratio": 0.3,
+      "use_batch": true,
+      "is_japanese": false,
+      "calls_per_month": 10000,
+      "category": "E-Commerce",
+      "context_note": "10,000 SKU enrichment calls (800 raw spec input tokens + 600 clean attributes & copy output tokens, batch-eligible)."
+    },
+    {
+      "slug": "self-hosted-gpu-vs-api-breakeven",
+      "title_short": "Self-Hosted GPU vs API Break-Even",
+      "h1": "Self-Hosted RunPod GPU vs Hosted LLM API Break-Even Calculator (2026)",
+      "description_focus": "compare a 250M-token/month production API bill against dedicated H100/L40S GPU hosting ($1,400–$2,400/mo) to find your exact break-even point",
+      "monthly_input_m": 200.0,
+      "monthly_output_m": 50.0,
+      "cache_hit_ratio": 0.4,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 100000,
+      "category": "Infrastructure",
+      "context_note": "Mid-scale 250M-token/month workload (~100k calls). Compare API bills directly against a dedicated 24/7 GPU (~$1,500–$2,200/mo on RunPod)."
+    },
+    {
+      "slug": "openrouter-multi-model-routing-savings",
+      "title_short": "80/20 Model Routing Savings",
+      "h1": "Multi-Model Routing (80% Fast / 20% Frontier) Savings Calculator",
+      "description_focus": "how routing 80% of 50M monthly tokens to fast models (Gemini Flash / DeepSeek V3 / Qwen3) and 20% to GPT-5 or Claude Sonnet 4 cuts bills by 60–80%",
+      "monthly_input_m": 40.0,
+      "monthly_output_m": 10.0,
+      "cache_hit_ratio": 0.5,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 20000,
+      "category": "Cost Optimization",
+      "context_note": "Blended SaaS traffic (50M tokens/mo). Splitting simple classification/RAG from complex reasoning unlocks massive unit-economics gains."
+    },
+    {
+      "slug": "startup-1000-usd-llm-budget-planner",
+      "title_short": "$1,000/mo Startup LLM Budget Planner",
+      "h1": "$1,000/Month Startup LLM API Budget & Token Capacity Planner (2026)",
+      "description_focus": "how many millions of tokens and active SaaS users a fixed $1,000/month LLM API budget supports on every 2026 model",
+      "monthly_input_m": 120.0,
+      "monthly_output_m": 30.0,
+      "cache_hit_ratio": 0.55,
+      "use_batch": false,
+      "is_japanese": false,
+      "calls_per_month": 50000,
+      "category": "Volume Benchmark",
+      "context_note": "Growth-stage startup budgeting $1,000/mo for AI features (150M tokens/mo benchmark = 50,000 active user sessions)."
+    }
+  ]
+}

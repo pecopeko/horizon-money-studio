@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>YAKKIGATE Extension</title>
+  <link rel="stylesheet" href="./popup.css">
+</head>
+<body>
+  <main class="popup">
+    <header class="popup__head">
+      <strong>YAKKIGATE 薬影</strong>
+      <span>外部送信 0 回</span>
+    </header>
+    <textarea id="extInput" rows="5" placeholder="ページの選択文字列または原稿を貼付..."></textarea>
+    <div class="popup__actions">
+      <button type="button" id="grabSelectionBtn">選択文字を取込</button>
+      <button type="button" id="auditBtn" class="primary">ローカル審査</button>
+    </div>
+    <div id="extResult" class="popup__result">待機中</div>
+  </main>
+  <script type="module" src="./popup.mjs"></script>
+</body>
+</html>

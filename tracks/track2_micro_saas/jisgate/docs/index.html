@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JISGATE 基準門 | JIS X 8341-3:2016 AA・改正障害者差別解消法アクセシビリティ診断</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロでHTMLのJIS X 8341-3:2016 / WCAG 2.1 Level AA適合チェック、sRGB明度コントラスト比検算、ウェブアクセシビリティ方針Markdown自動生成を行います。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">基準</span>
+        <div>
+          <h1>JISGATE <span class="title-sub">基準門</span></h1>
+          <p class="subtitle">JIS X 8341-3:2016（WCAG 2.1 AA）・改正障害者差別解消法 アクセシビリティHTML＆配色コントラスト診断</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル検査</span>
+        <span class="trust-pill" data-ui="badge">外部送信ゼロ・方針Markdown生成</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. HTML・配色コントラスト入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">不備HTMLサンプル</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">AA準拠HTMLサンプル</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            事業者・自治体名称
+            <input id="in-org" type="text" value="株式会社品川パブリックデザイン" />
+          </label>
+          <label>
+            相談窓口メール
+            <input id="in-email" type="text" value="a11y-support@shinagawa-public.jp" />
+          </label>
+          <label>
+            文字色 HEX（コントラストAA検証）
+            <input id="in-fg" type="text" value="#525252" />
+          </label>
+          <label>
+            背景色 HEX（コントラストAA検証）
+            <input id="in-bg" type="text" value="#FFFFFF" />
+          </label>
+        </div>
+
+        <label class="field-block">
+          診断対象のHTMLソース（全ページまたはセクション）
+          <textarea id="in-html" rows="12" placeholder="<html>...</html> ソースを貼り付けてください..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">JIS基準チェック＆方針を生成</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. 診断スコア・コントラスト比・指摘事項</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">AA診断スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">コントラスト比</span>
+            <strong id="m-contrast" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">検出指摘数</span>
+            <strong id="m-issues" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出されたアクセシビリティ改善項目</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『ウェブアクセシビリティ方針』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>JISGATE 基準門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・JIS X 8341-3:2016試験基準に基づく自動検査補助ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

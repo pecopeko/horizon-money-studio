@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnostic Teardown: linear.app (85/100)</title>
+  <style>
+    :root {
+      --ground: #F3F1EA;
+      --surface: #FFFFFF;
+      --surface-alt: #EAE6DC;
+      --ink: #14171A;
+      --muted: #525860;
+      --pass: #0F5132;
+      --pass-bg: #E6F4EC;
+      --warn: #92400E;
+      --warn-bg: #FEF3C7;
+      --fail: #991B1B;
+      --fail-bg: #FEE2E2;
+      --accent: #1D4ED8;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--ground); color: var(--ink); font-family: var(--font-sans); line-height: 1.55; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .num { font-variant-numeric: tabular-nums; }
+    .shell { max-width: 1120px; margin: 0 auto; padding: 0 24px 64px; }
+    header.topbar {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 22px 0 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--ink); }
+    .brand svg { display: block; }
+    .top-meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--muted); }
+    .hero-panel {
+      display: grid; grid-template-columns: 180px 1fr; gap: 28px; align-items: center;
+      background: var(--surface); border-radius: 12px;
+      padding: 30px; margin-top: 12px;
+    }
+    .gauge-wrap { display: flex; flex-direction: column; align-items: center; }
+    .gauge-label { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .hero-copy h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; }
+    .hero-url { font-size: 14px; color: var(--muted); margin: 0 0 18px; word-break: break-all; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .kpi-item { background: var(--ground); border-radius: 8px; padding: 12px 14px; }
+    .kpi-label { font-size: 12px; color: var(--muted); }
+    .kpi-val { font-size: 18px; font-weight: 700; margin-top: 2px; }
+    .section-head { margin: 36px 0 14px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .section-head h2 { margin: 0; font-size: 20px; letter-spacing: -0.01em; }
+    .section-sub { font-size: 14px; color: var(--muted); }
+    .strip-grid {
+      display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px;
+      background: var(--surface); border-radius: 12px; padding: 14px;
+    }
+    .strip-cell {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 10px 4px; border-radius: 6px; text-decoration: none; font-weight: 600;
+    }
+    .strip-cell:hover { text-decoration: none; outline: 2px solid var(--ink); }
+    .strip-idx { font-size: 11px; opacity: 0.8; }
+    .strip-pts { font-size: 12px; font-variant-numeric: tabular-nums; }
+    .st-pass { background: var(--pass-bg); color: var(--pass); }
+    .st-warn { background: var(--warn-bg); color: var(--warn); }
+    .st-fail, .st-error { background: var(--fail-bg); color: var(--fail); }
+    .pillar-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .pillar-card { background: var(--surface); border-radius: 12px; padding: 20px; }
+    .pillar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+    .pillar-name { font-weight: 600; font-size: 15px; }
+    .pillar-score { font-weight: 700; font-size: 15px; }
+    .pillar-track { height: 8px; background: var(--surface-alt); border-radius: 4px; overflow: hidden; }
+    .pillar-fill { height: 100%; border-radius: 4px; }
+    .bar-pass { background: var(--pass); }
+    .bar-warn { background: #D97706; }
+    .bar-fail { background: #DC2626; }
+    .pillar-meta { margin-top: 8px; font-size: 13px; color: var(--muted); }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn {
+      appearance: none; border: none; background: var(--surface-alt); color: var(--ink);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn:hover { background: #DDD8CC; }
+    .btn.active { background: var(--ink); color: #FFFFFF; }
+    .ledger { display: flex; flex-direction: column; gap: 10px; }
+    .check-row {
+      background: var(--surface); border-radius: 12px; padding: 20px 22px;
+    }
+    .check-row.hidden { display: none; }
+    .check-title-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .check-title-line h3 { margin: 0; font-size: 16px; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    }
+    .check-pillar { font-size: 12px; color: var(--muted); }
+    .check-pts { margin-left: auto; font-size: 14px; font-weight: 700; }
+    .check-summary { margin: 0 0 6px; font-size: 15px; }
+    .check-rec { margin: 0 0 10px; font-size: 14px; color: var(--muted); }
+    details.ev-details { font-size: 13px; }
+    details.ev-details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+    pre {
+      background: #14171A; color: #F1F5F9; padding: 16px; border-radius: 8px;
+      overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* taste-skill-ignore */
+      font-size: 12.5px; line-height: 1.5; margin: 10px 0 0;
+    }
+    .studio-panel {
+      background: var(--surface); border-radius: 12px; padding: 22px;
+    }
+    .studio-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+    .copy-btn { margin-left: auto; background: var(--pass); color: #FFFFFF; }
+    .copy-btn:hover { background: #0B3F26; }
+    .fix-pane { display: none; }
+    .fix-pane.active { display: block; }
+    .cta-box {
+      margin-top: 36px; background: #14171A; color: #F3F1EA; border-radius: 12px;
+      padding: 30px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .cta-box h2 { margin: 0 0 6px; font-size: 22px; color: #FFFFFF; }
+    .cta-box p { margin: 0; font-size: 15px; color: #CBD5E1; max-width: 640px; }
+    .cta-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .cta-primary {
+      display: inline-block; background: #FFFFFF; color: #14171A; padding: 10px 18px;
+      border-radius: 6px; font-weight: 700; font-size: 14px;
+    }
+    .cta-primary:hover { text-decoration: none; background: #EAE6DC; }
+    .cta-secondary {
+      display: inline-block; background: #262C33; color: #FFFFFF; padding: 10px 18px;
+      border-radius: 6px; font-weight: 600; font-size: 14px;
+    }
+    .cta-secondary:hover { text-decoration: none; background: #333B44; }
+    @media (max-width: 820px) {
+      .hero-panel { grid-template-columns: 1fr; text-align: left; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .strip-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .check-pts { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="4" fill="#14171A"></rect>
+          <path d="M7 15L10.5 11.5L13 14L17 9" stroke="#F6F5F0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span>Horizon Live B2B Diagnostic Scorecard</span>
+      </div>
+      <div class="top-meta">
+        <span>Scanned 2026-11-20T02:55:51Z</span>
+        <a href="index.html">&larr; Back to Teardown Gallery</a>
+      </div>
+    </header>
+
+    <section class="hero-panel" aria-label="Diagnostic Summary">
+      <div class="gauge-wrap">
+        <svg width="136" height="136" viewBox="0 0 136 136" role="img" aria-label="Score 85 out of 100">
+          <circle cx="68" cy="68" r="54" fill="none" stroke="#EFECE4" stroke-width="11"></circle>
+          <circle cx="68" cy="68" r="54" fill="none" stroke="#0F5132" stroke-width="11"
+                  stroke-dasharray="339.29" stroke-dashoffset="50.89"
+                  stroke-linecap="round" transform="rotate(-90 68 68)"></circle>
+          <text x="68" y="66" text-anchor="middle" font-size="30" font-weight="800" fill="#14171A" class="num">85</text>
+          <text x="68" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="#525860">Grade A / 100</text>
+        </svg>
+        <div class="gauge-label">9 passed &middot; 3 gaps</div>
+      </div>
+      <div class="hero-copy">
+        <h1>linear.app</h1>
+        <p class="hero-url">
+          Target: <a href="https://linear.app/" rel="noopener noreferrer" target="_blank">https://linear.app/</a>
+          &middot; Apex DNS: <code>linear.app</code> &middot; Global Mode
+        </p>
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-label">Homepage Response</div>
+            <div class="kpi-val num">HTTP 200</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Uncompressed HTML</div>
+            <div class="kpi-val num">1236.0 KB</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Response Time</div>
+            <div class="kpi-val num">701 ms</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label">Actionable Gaps</div>
+            <div class="kpi-val num">3 of 12</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>12-Point Evidence Map</h2>
+      <span class="section-sub">Click any cell to jump directly to measured evidence</span>
+    </div>
+    <nav class="strip-grid" aria-label="12 diagnostic checks"><a href="#chk-llms_txt_readiness" class="strip-cell st-pass" title="llms.txt AI Discovery Manifest: 9/9 (PASS)"><span class="strip-idx">1</span><span class="strip-pts">9/9</span></a>
+<a href="#chk-robots_ai_crawlers" class="strip-cell st-warn" title="robots.txt AI Crawler Directives: 5/8 (WARN)"><span class="strip-idx">2</span><span class="strip-pts">5/8</span></a>
+<a href="#chk-sitemap_discoverability" class="strip-cell st-pass" title="XML Sitemap Discoverability: 8/8 (PASS)"><span class="strip-idx">3</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-json_ld_schema" class="strip-cell st-fail" title="JSON-LD Schema.org Structured Data: 0/10 (LEAK)"><span class="strip-idx">4</span><span class="strip-pts">0/10</span></a>
+<a href="#chk-opengraph_social_cards" class="strip-cell st-pass" title="OpenGraph &amp; Social Card Metadata: 8/8 (PASS)"><span class="strip-idx">5</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-canonical_hygiene" class="strip-cell st-pass" title="Canonical URL Hygiene: 7/7 (PASS)"><span class="strip-idx">6</span><span class="strip-pts">7/7</span></a>
+<a href="#chk-https_and_hsts" class="strip-cell st-pass" title="HTTPS &amp; HSTS Transport Enforcement: 8/8 (PASS)"><span class="strip-idx">7</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-security_headers_posture" class="strip-cell st-pass" title="HTTP Security Headers Posture: 8/8 (PASS)"><span class="strip-idx">8</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-email_spf_dmarc_dns" class="strip-cell st-pass" title="Email Deliverability &amp; Spoofing Guard (SPF + DMARC): 9/9 (PASS)"><span class="strip-idx">9</span><span class="strip-pts">9/9</span></a>
+<a href="#chk-meta_title_description" class="strip-cell st-pass" title="SERP Title &amp; Meta Description Conversion Copy: 8/8 (PASS)"><span class="strip-idx">10</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-image_alt_accessibility" class="strip-cell st-pass" title="Image Alt Accessibility &amp; Visual SEO: 8/8 (PASS)"><span class="strip-idx">11</span><span class="strip-pts">8/8</span></a>
+<a href="#chk-viewport_weight_and_jp_compliance" class="strip-cell st-warn" title="Mobile Viewport, HTML Weight &amp; Legal Trust: 7/9 (WARN)"><span class="strip-idx">12</span><span class="strip-pts">7/9</span></a></nav>
+
+    <div class="section-head">
+      <h2>4-Pillar Readiness Breakdown</h2>
+      <span class="section-sub">Each pillar carries 25 weighted points (total 100)</span>
+    </div>
+    <section class="pillar-grid"><div class="pillar-card">
+  <div class="pillar-head">
+    <span class="pillar-name">AI-Search / GEO Readiness</span>
+    <span class="pillar-score num">22 / 25</span>
+  </div>
+  <div class="pillar-track"><div class="pillar-fill bar-pass" style="width: 88%;"></div></div>
+  <div class="pillar-meta">88% readiness &middot; 1 gap(s) flagged</div>
+</div>
+<div class="pillar-card">
+  <div class="pillar-head">
+    <span class="pillar-name">Structured Revenue &amp; Rich-Snippet Data</span>
+    <span class="pillar-score num">15 / 25</span>
+  </div>
+  <div class="pillar-track"><div class="pillar-fill bar-warn" style="width: 60%;"></div></div>
+  <div class="pillar-meta">60% readiness &middot; 1 gap(s) flagged</div>
+</div>
+<div class="pillar-card">
+  <div class="pillar-head">
+    <span class="pillar-name">Trust, Security &amp; Deliverability Posture</span>
+    <span class="pillar-score num">25 / 25</span>
+  </div>
+  <div class="pillar-track"><div class="pillar-fill bar-pass" style="width: 100%;"></div></div>
+  <div class="pillar-meta">100% readiness &middot; 0 gap(s) flagged</div>
+</div>
+<div class="pillar-card">
+  <div class="pillar-head">
+    <span class="pillar-name">Conversion, Mobile &amp; Regional Compliance</span>
+    <span class="pillar-score num">23 / 25</span>
+  </div>
+  <div class="pillar-track"><div class="pillar-fill bar-pass" style="width: 92%;"></div></div>
+  <div class="pillar-meta">92% readiness &middot; 1 gap(s) flagged</div>
+</div></section>
+
+    <div class="section-head">
+      <h2>Measured Diagnostic Ledger</h2>
+      <div class="filter-bar" role="group" aria-label="Filter diagnostic checks">
+        <button type="button" class="btn active" data-filter="all">All (12)</button>
+        <button type="button" class="btn" data-filter="gaps">Gaps &amp; Warnings (3)</button>
+        <button type="button" class="btn" data-filter="pass">Passed (9)</button>
+      </div>
+    </div>
+    <section class="ledger" id="diagnostic-ledger"><article id="chk-llms_txt_readiness" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>llms.txt AI Discovery Manifest</h3>
+      <span class="check-pillar">AI-Search / GEO Readiness</span>
+      <span class="check-pts num">9 / 9 pts</span>
+    </div>
+    <p class="check-summary">Valid /llms.txt served (11,672 bytes, 179 Markdown links, H1 present).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Keep /llms.txt updated with canonical pricing, docs, and product URLs.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;status_code&quot;: 200,
+  &quot;content_type&quot;: &quot;text/plain; charset=utf-8&quot;,
+  &quot;bytes&quot;: 11672,
+  &quot;has_h1&quot;: true,
+  &quot;markdown_links&quot;: 179
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-robots_ai_crawlers" class="check-row" data-status="warn">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-warn">WARN</span>
+      <h3>robots.txt AI Crawler Directives</h3>
+      <span class="check-pillar">AI-Search / GEO Readiness</span>
+      <span class="check-pts num">5 / 8 pts</span>
+    </div>
+    <p class="check-summary">/robots.txt present (107 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Add explicit User-agent directives separating search-citation bots (OAI-SearchBot, PerplexityBot) from training crawlers.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;status_code&quot;: 200,
+  &quot;bytes&quot;: 107,
+  &quot;crawler_policies&quot;: {
+    &quot;GPTBot&quot;: &quot;default_unspecified&quot;,
+    &quot;ClaudeBot&quot;: &quot;default_unspecified&quot;,
+    &quot;PerplexityBot&quot;: &quot;default_unspecified&quot;,
+    &quot;OAI-SearchBot&quot;: &quot;default_unspecified&quot;
+  },
+  &quot;sitemaps_declared&quot;: [
+    &quot;https://linear.app/sitemap.xml&quot;
+  ]
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-sitemap_discoverability" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>XML Sitemap Discoverability</h3>
+      <span class="check-pillar">AI-Search / GEO Readiness</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">Valid XML urlset (1027 &lt;loc&gt; entries) declared in /robots.txt.</p>
+    <p class="check-rec"><strong>Remediation:</strong> Keep sitemap &lt;lastmod&gt; timestamps synced with product &amp; landing page updates.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;url&quot;: &quot;https://linear.app/sitemap.xml&quot;,
+  &quot;declared_in_robots&quot;: true,
+  &quot;valid_xml&quot;: true,
+  &quot;kind&quot;: &quot;urlset&quot;,
+  &quot;loc_count&quot;: 1027,
+  &quot;bytes&quot;: 112112
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-json_ld_schema" class="check-row" data-status="fail">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-fail">LEAK</span>
+      <h3>JSON-LD Schema.org Structured Data</h3>
+      <span class="check-pillar">Structured Revenue &amp; Rich-Snippet Data</span>
+      <span class="check-pts num">0 / 10 pts</span>
+    </div>
+    <p class="check-summary">Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Embed the bespoke Organization + WebSite + FAQPage/Product JSON-LD snippet to enable rich search snippets and AI answer citations.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;valid_blocks&quot;: 0,
+  &quot;parse_errors&quot;: 0,
+  &quot;detected_types&quot;: [],
+  &quot;high_value_types&quot;: []
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-opengraph_social_cards" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>OpenGraph &amp; Social Card Metadata</h3>
+      <span class="check-pillar">Structured Revenue &amp; Rich-Snippet Data</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">Complete OpenGraph preview metadata (og:title=43c, og:description=64c, og:image set; twitter:card=summary_large_image).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Populate og:title, og:description, og:image (1200x630), and twitter:card=summary_large_image for high-CTR shares.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;og_title_len&quot;: 43,
+  &quot;og_description_len&quot;: 64,
+  &quot;og_image_present&quot;: true,
+  &quot;twitter_card&quot;: &quot;summary_large_image&quot;,
+  &quot;missing&quot;: []
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-canonical_hygiene" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>Canonical URL Hygiene</h3>
+      <span class="check-pillar">Structured Revenue &amp; Rich-Snippet Data</span>
+      <span class="check-pts num">7 / 7 pts</span>
+    </div>
+    <p class="check-summary">Single HTTPS canonical tag declared: https://linear.app.</p>
+    <p class="check-rec"><strong>Remediation:</strong> Set a single absolute HTTPS canonical tag: &lt;link rel=&quot;canonical&quot; href=&quot;https://linear.app/&quot;&gt;.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;canonical_count&quot;: 1,
+  &quot;canonicals&quot;: [
+    &quot;https://linear.app&quot;
+  ]
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-https_and_hsts" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>HTTPS &amp; HSTS Transport Enforcement</h3>
+      <span class="check-pillar">Trust, Security &amp; Deliverability Posture</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">HTTPS active with strong HSTS header (max-age=63,072,000s).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Enable `Strict-Transport-Security: max-age=31536000; includeSubDomains` at edge/CDN.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;final_url&quot;: &quot;https://linear.app/&quot;,
+  &quot;is_https&quot;: true,
+  &quot;strict_transport_security&quot;: &quot;max-age=63072000; includeSubDomains&quot;,
+  &quot;hsts_max_age&quot;: 63072000
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-security_headers_posture" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>HTTP Security Headers Posture</h3>
+      <span class="check-pillar">Trust, Security &amp; Deliverability Posture</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">All 4 core browser security headers present.</p>
+    <p class="check-rec"><strong>Remediation:</strong> Add the missing response headers via Cloudflare Transform Rules, Vercel/Netlify headers, or Nginx.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;present&quot;: [
+    &quot;Content-Security-Policy&quot;,
+    &quot;X-Content-Type-Options (nosniff)&quot;,
+    &quot;X-Frame-Options / frame-ancestors&quot;,
+    &quot;Referrer-Policy&quot;
+  ],
+  &quot;missing&quot;: [],
+  &quot;headers_measured&quot;: {
+    &quot;content-security-policy&quot;: &quot;default-src &#x27;self&#x27; https://static.linear.app https://static.linear.dev; connect-src https://*.ads.linkedin.com &#x27;self&#x27; ht...&quot;,
+    &quot;x-content-type-options&quot;: &quot;nosniff&quot;,
+    &quot;x-frame-options&quot;: null,
+    &quot;referrer-policy&quot;: &quot;same-origin&quot;
+  }
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-email_spf_dmarc_dns" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>Email Deliverability &amp; Spoofing Guard (SPF + DMARC)</h3>
+      <span class="check-pillar">Trust, Security &amp; Deliverability Posture</span>
+      <span class="check-pts num">9 / 9 pts</span>
+    </div>
+    <p class="check-summary">SPF &amp; enforced DMARC active on linear.app (policy p=reject).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Publish SPF + enforcing DMARC (`p=quarantine` or `p=reject`) with RUA reporting to protect outbound B2B inbox placement.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;apex_domain&quot;: &quot;linear.app&quot;,
+  &quot;spf_present&quot;: true,
+  &quot;spf_record&quot;: &quot;v=spf1 include:_spf.google.com include:spf.mtasv.net include:44092442.spf10.hubspotemail.net include:amazonses.com ~all&quot;,
+  &quot;dmarc_present&quot;: true,
+  &quot;dmarc_policy&quot;: &quot;reject&quot;,
+  &quot;dmarc_record&quot;: &quot;v=DMARC1; p=reject; rua=mailto:re+1790296a475d@inbound.dmarcdigests.com; aspf=r; pct=100&quot;,
+  &quot;spf_error&quot;: null,
+  &quot;dmarc_error&quot;: null
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-meta_title_description" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>SERP Title &amp; Meta Description Conversion Copy</h3>
+      <span class="check-pillar">Conversion, Mobile &amp; Regional Compliance</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">&lt;title&gt; is 43 chars; &lt;meta description&gt; is 64 chars (optimal: 15-65 title, 50-165 description).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Keep &lt;title&gt; between 15-65 characters and &lt;meta name=&quot;description&quot;&gt; between 50-165 characters with a clear value proposition.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;title&quot;: &quot;Linear – The system for product development&quot;,
+  &quot;title_length&quot;: 43,
+  &quot;meta_description&quot;: &quot;Purpose-built for planning and building products with AI agents.&quot;,
+  &quot;meta_description_length&quot;: 64
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-image_alt_accessibility" class="check-row" data-status="pass">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-pass">PASS</span>
+      <h3>Image Alt Accessibility &amp; Visual SEO</h3>
+      <span class="check-pillar">Conversion, Mobile &amp; Regional Compliance</span>
+      <span class="check-pts num">8 / 8 pts</span>
+    </div>
+    <p class="check-summary">All 38 &lt;img&gt; tags include alt attributes (27 decorative empty alt=&quot;&quot;).</p>
+    <p class="check-rec"><strong>Remediation:</strong> Add descriptive alt text to every informative product/UI &lt;img&gt; and explicit alt=&quot;&quot; only on decorative icons.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;total_images&quot;: 38,
+  &quot;missing_alt_count&quot;: 0,
+  &quot;empty_alt_count&quot;: 27,
+  &quot;coverage_pct&quot;: 100.0
+}</code></pre>
+    </details>
+  </div>
+</article>
+<article id="chk-viewport_weight_and_jp_compliance" class="check-row" data-status="warn">
+  <div class="check-main">
+    <div class="check-title-line">
+      <span class="badge st-warn">WARN</span>
+      <h3>Mobile Viewport, HTML Weight &amp; Legal Trust</h3>
+      <span class="check-pillar">Conversion, Mobile &amp; Regional Compliance</span>
+      <span class="check-pts num">7 / 9 pts</span>
+    </div>
+    <p class="check-summary">Viewport=set, HTML weight=1236.0 KB. Privacy &amp; Terms trust links detected.</p>
+    <p class="check-rec"><strong>Remediation:</strong> Keep initial HTML payload under 250 KB, maintain responsive viewport, and expose clear Privacy &amp; Terms trust links.</p>
+    <details class="ev-details">
+      <summary>Inspect raw measured evidence</summary>
+      <pre><code>{
+  &quot;viewport_present&quot;: true,
+  &quot;viewport_value&quot;: &quot;width=device-width, height=device-height, initial-scale=1, viewport-fit=cover&quot;,
+  &quot;html_bytes&quot;: 1265625,
+  &quot;html_kb&quot;: 1236.0,
+  &quot;japanese_detected&quot;: false,
+  &quot;html_lang&quot;: &quot;en&quot;,
+  &quot;jp_tokusho_found&quot;: null,
+  &quot;jp_privacy_found&quot;: null,
+  &quot;en_privacy_found&quot;: true,
+  &quot;en_terms_found&quot;: true
+}</code></pre>
+    </details>
+  </div>
+</article></section>
+
+    <div class="section-head">
+      <h2>Bespoke Copy-Paste Fix Studio</h2>
+      <span class="section-sub">Auto-generated directly from linear.app measured responses</span>
+    </div>
+    <section class="studio-panel">
+      <div class="studio-tabs" role="tablist">
+        <button type="button" class="btn active" data-tab="llms">llms.txt</button>
+        <button type="button" class="btn" data-tab="jsonld">JSON-LD Schema</button>
+        <button type="button" class="btn" data-tab="dns">DMARC &amp; Security Headers</button>
+        <button type="button" class="btn" data-tab="robots">robots.txt AI Policy</button>
+        <button type="button" class="btn" data-tab="pitch-en">EN Outreach Pitch</button>
+        <button type="button" class="btn" data-tab="pitch-jp">JP Outreach Pitch</button>
+        <button type="button" class="btn copy-btn" id="copy-active-snippet">Copy Active Snippet</button>
+      </div>
+      <div class="fix-pane active" data-pane="llms"><pre><code id="code-llms"># Linear – The system for product development
+
+&gt; Purpose-built for planning and building products with AI agents.
+
+## Canonical Resources
+- [Homepage](https://linear.app/): Primary overview of Linear – The system for product development
+- [XML Sitemap](https://linear.app/sitemap.xml): Complete index of public pages
+- [Customers](https://linear.app/customers)
+- [Pricing](https://linear.app/pricing)
+- [Now](https://linear.app/now)
+- [Contact](https://linear.app/contact)
+- [Docs](https://linear.app/docs)
+- [Open app](https://linear.app/login)
+
+## Citation &amp; Contact Guidelines
+- Primary domain: https://linear.app
+- Automated diagnostic baseline generated: 2026-11-20T02:55:51Z</code></pre></div>
+      <div class="fix-pane" data-pane="jsonld"><pre><code id="code-jsonld">&lt;script type=&quot;application/ld+json&quot;&gt;
+{
+  &quot;@context&quot;: &quot;https://schema.org&quot;,
+  &quot;@graph&quot;: [
+    {
+      &quot;@type&quot;: &quot;Organization&quot;,
+      &quot;@id&quot;: &quot;https://linear.app/#organization&quot;,
+      &quot;name&quot;: &quot;Linear – The system for product development&quot;,
+      &quot;url&quot;: &quot;https://linear.app/&quot;,
+      &quot;description&quot;: &quot;Purpose-built for planning and building products with AI agents.&quot;,
+      &quot;logo&quot;: &quot;https://linear.app/api/og/main?title=Linear&amp;v=4&quot;
+    },
+    {
+      &quot;@type&quot;: &quot;WebSite&quot;,
+      &quot;@id&quot;: &quot;https://linear.app/#website&quot;,
+      &quot;url&quot;: &quot;https://linear.app/&quot;,
+      &quot;name&quot;: &quot;Linear – The system for product development&quot;,
+      &quot;publisher&quot;: {
+        &quot;@id&quot;: &quot;https://linear.app/#organization&quot;
+      }
+    },
+    {
+      &quot;@type&quot;: &quot;FAQPage&quot;,
+      &quot;mainEntity&quot;: [
+        {
+          &quot;@type&quot;: &quot;Question&quot;,
+          &quot;name&quot;: &quot;What does Linear – The system for product development offer?&quot;,
+          &quot;acceptedAnswer&quot;: {
+            &quot;@type&quot;: &quot;Answer&quot;,
+            &quot;text&quot;: &quot;Purpose-built for planning and building products with AI agents.&quot;
+          }
+        }
+      ]
+    }
+  ]
+}
+&lt;/script&gt;</code></pre></div>
+      <div class="fix-pane" data-pane="dns"><pre><code id="code-dns"># Tailored DNS &amp; Edge Security Fixes for linear.app
+# Measured at 2026-11-20T02:55:51Z
+
+## 1. DNS TXT Records (Cloudflare / Route53 / Registrar)
+# SPF already present: v=spf1 include:_spf.google.com include:spf.mtasv.net include:44092442.spf10.hubspotemail.net include:amazonses.com ~all
+# DMARC already enforced (p=reject): v=DMARC1; p=reject; rua=mailto:re+1790296a475d@inbound.dmarcdigests.com; aspf=r; pct=100
+
+## 2. Missing HTTP Response Headers (Nginx / Cloudflare Transform Rules)
+# All measured transport &amp; browser security headers are already configured.</code></pre></div>
+      <div class="fix-pane" data-pane="robots"><pre><code id="code-robots"># Recommended AI-Search Policy addition for https://linear.app/robots.txt
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://linear.app/sitemap.xml</code></pre></div>
+      <div class="fix-pane" data-pane="pitch-en"><pre><code id="code-pitch-en"># Verified Live Diagnostic Outreach — linear.app
+
+- **Measured Score**: 85/100 (Grade A)
+- **Scan Timestamp (UTC)**: 2026-11-20T02:55:51Z
+- **Interactive Scorecard**: `teardown_linear_app.html`
+
+## 1. Cold Email (Under 140 Words, Zero Fluff)
+
+**Subject**: 3 verified AI-search &amp; trust gaps found on linear.app (85/100)
+
+Hi [Name],
+
+I ran a quick, read-only 12-point technical diagnostic on **linear.app** today (2026-11-20T02:55:51Z) and put the measured findings + copy-paste fixes into a private scorecard (`teardown_linear_app.html`).
+
+Specifically, our automated check measured **85/100** with 3 concrete gap(s):
+- **JSON-LD Schema.org Structured Data** (0/10 pts): Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0).
+- **robots.txt AI Crawler Directives** (5/8 pts): /robots.txt present (107 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot).
+- **Mobile Viewport, HTML Weight &amp; Legal Trust** (7/9 pts): Viewport=set, HTML weight=1236.0 KB. Privacy &amp; Terms trust links detected.
+
+I already generated the drop-in `llms.txt`, Schema.org JSON-LD, and DNS/header config tailored to **linear.app** inside the scorecard — yours to hand straight to engineering at zero cost.
+
+If you&#x27;d like us to deploy these fixes and wire up an automated n8n monitoring pipeline (so regressions, competitor pricing shifts, or DNS drift alert Slack instantly), happy to share a fixed-scope 48-hour setup option.
+
+Best,
+[Your Name]
+
+## 2. LinkedIn / X DM Version
+
+Hey [Name] — ran a quick non-intrusive diagnostic on linear.app and spotted 3 measurable gap(s) (scored 85/100), including: Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0).. Built an interactive scorecard with copy-paste fixes specifically for linear.app. Want me to send the link over?
+</code></pre></div>
+      <div class="fix-pane" data-pane="pitch-jp"><pre><code id="code-pitch-jp"># 実測データ基づく法人診断アプローチ文面 — linear.app
+
+- **実測スコア**: 85/100点（評価 A）
+- **計測日時 (UTC)**: 2026-11-20T02:55:51Z
+- **添付レポート**: `teardown_linear_app.html`
+
+## 1. 法人問い合わせフォーム / 提案メール版
+
+件名：linear.app のAI検索対応・セキュリティ実測診断（85/100点）と修正コードのご共有
+
+[ご担当者様]
+
+初めまして。[自社名/氏名]と申します。
+本日（2026-11-20T02:55:51Z）、貴社サイト **linear.app** に対し、公開ページ・ヘッダー・DNS（SPF/DMARC）のみを対象とした負荷のかからない12項目診断を実施いたしました。
+
+実測スコアは **85/100点** となり、以下の具体的な改善余地が計測されました：
+- **JSON-LD Schema.org Structured Data** (0/10点): Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0).
+- **robots.txt AI Crawler Directives** (5/8点): /robots.txt present (107 B) but leaves 4/4 AI crawlers unspecified (no explicit policy for GPTBot/ClaudeBot/PerplexityBot/OAI-SearchBot).
+- **Mobile Viewport, HTML Weight &amp; Legal Trust** (7/9点): Viewport=set, HTML weight=1236.0 KB. Privacy &amp; Terms trust links detected.
+
+上記の修正にそのままお使いいただける **linear.app 専用の `llms.txt`・構造化データ（JSON-LD）・セキュリティヘッダー/DMARC設定コード** を、1枚のインタラクティブHTMLレポート（`teardown_linear_app.html`）にまとめております。こちらは無償でお役立てください。
+
+もし社内での実装や、n8nを用いた「設定劣化・競合価格変動・請求書/バックオフィス処理」の自動監視ワークフロー構築まで一括でお任せいただける場合は、固定額・48時間納品での対応も可能です。ご興味があればお気軽にお知らせください。
+
+## 2. ランサーズ / X DM 向け短文版
+
+[お名前]様、はじめまして！linear.app の公開構成を12項目で実測チェックしたところ、85/100点（特に「Zero valid application/ld+json Schema.org blocks on homepage (raw_blocks=0, parse_errors=0).」）という結果が出ました。貴社ドメイン専用に生成した修正スニペット付きレポートを作成したのですが、無償でお送りしてもよろしいでしょうか？
+</code></pre></div>
+    </section>
+
+    <section class="cta-box">
+      <div>
+        <h2>Close all 3 verified gap(s) on linear.app in 48 hours</h2>
+        <p>Hand the copy-paste fixes above directly to your engineering team at $0 cost, or deploy our turnkey n8n monitoring &amp; B2B AI-Ops automation suite so regressions alert Slack automatically.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="cta-primary" href="index.html#n8n-templates">Inspect n8n Workflow Pack</a>
+        <a class="cta-secondary" href="https://github.com/pecopeko/n8n-ai-ops-templates" target="_blank" rel="noopener noreferrer">View GitHub Repository</a>
+      </div>
+    </section>
+  </div>
+  <script>
+    (function () {
+      var filterBtns = document.querySelectorAll("[data-filter]");
+      var rows = document.querySelectorAll("#diagnostic-ledger .check-row");
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          filterBtns.forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          var mode = btn.getAttribute("data-filter");
+          rows.forEach(function (row) {
+            var st = row.getAttribute("data-status");
+            var show = mode === "all" || (mode === "pass" && st === "pass") || (mode === "gaps" && st !== "pass");
+            row.classList.toggle("hidden", !show);
+          });
+        });
+      });
+      var tabBtns = document.querySelectorAll("[data-tab]");
+      var panes = document.querySelectorAll(".fix-pane");
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          tabBtns.forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          var target = btn.getAttribute("data-tab");
+          panes.forEach(function (p) {
+            p.classList.toggle("active", p.getAttribute("data-pane") === target);
+          });
+        });
+      });
+      var copyBtn = document.getElementById("copy-active-snippet");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", function () {
+          var activeCode = document.querySelector(".fix-pane.active code");
+          if (!activeCode) return;
+          var txt = activeCode.textContent || "";
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt).then(function () {
+              copyBtn.textContent = "Copied!";
+              setTimeout(function () { copyBtn.textContent = "Copy Active Snippet"; }, 1800);
+            });
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

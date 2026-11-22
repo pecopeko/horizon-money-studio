@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "record_validated": {
+        "eventTitle": "Dencho-ho Record Normalized & Validated",
+        "eventDescription": "Charged per electronic transaction record parsed, Wareki-converted, T-number verified, and normalized to YYYYMMDD_Partner_Amount.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.001
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

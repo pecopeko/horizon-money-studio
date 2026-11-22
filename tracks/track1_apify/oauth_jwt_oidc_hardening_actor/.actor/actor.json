@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "oauth2-oidc-jwt-security-hardening-auditor",
+  "title": "OAuth2 / OIDC & JWT Security Hardening Auditor",
+  "description": "Audit OAuth2/OIDC and JWT verification configs for alg=none confusion, disabled aud/iss/exp/signature checks, hardcoded signing secrets or private JWKs, implicit/no-PKCE grants, wildcard redirect_uri, and insecure localStorage token persistence or long TTLs.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

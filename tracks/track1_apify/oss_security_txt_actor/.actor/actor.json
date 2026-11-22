@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "security-txt-caa-dmarc-posture-auditor",
+  "title": "Security.txt (RFC 9116) & Security Headers Posture Auditor",
+  "description": "Audit public domains for RFC 9116 /.well-known/security.txt fields (Contact, Expires, Encryption, Canonical, Policy) and baseline HTTP response hardening headers (HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy).",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

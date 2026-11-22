@@ -1,0 +1,31 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "AegisWeave Hub",
+  "description": "Policy-bound multi-agent procurement concierge, deterministic sealed-bid arbiter, destination-scoped sly_data firewall, and Open Agentic Web MVP Profile 0.3 conformance auditor.",
+  "url": "./agent-manifest.json",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "policy_bound_procurement",
+      "name": "Policy-Bound Sealed-Bid Procurement & Arbitration",
+      "description": "Collects peer vendor quotes across origins, enforces declarative budget/SLA mandates, computes Pareto + Vickrey clearing prices, and emits SHA-256 verifiable receipts."
+    },
+    {
+      "id": "sly_data_privacy_firewall",
+      "name": "Destination-Scoped sly_data Firewall",
+      "description": "Enforces deny-by-default private context across peer network boundaries and guarantees BYOK credential isolation."
+    },
+    {
+      "id": "mvp_03_conformance_auditor",
+      "name": "MVP Profile 0.3 Conformance & Trust Auditor",
+      "description": "Verifies any peer Open Agentic Web site against 14 normative spec & security assertions including SHA-256 artifact pinning and untrusted instruction scanning."
+    }
+  ]
+}

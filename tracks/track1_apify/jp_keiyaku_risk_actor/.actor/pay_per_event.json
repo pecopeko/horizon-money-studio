@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "contract_audited": {
+        "eventTitle": "Contract Audited",
+        "eventDescription": "Charged per Japanese B2B contract draft audited for Subcontract Act, Freelance Act, Liability/IP risks, and Stamp Tax.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "shopify-public-catalog-feed-extractor",
+  "title": "Shopify Public Catalog JSON Feed Extractor",
+  "description": "Fast, browserless batch extraction of Shopify products, full variant objects (SKU, price, compare-at price, discount %, options, grams, stock), plain-text descriptions, image URLs, and /collections.json discovery — $1 per 1,000 products.",
+  "version": "2.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

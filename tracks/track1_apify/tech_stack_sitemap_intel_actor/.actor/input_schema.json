@@ -1,0 +1,48 @@
+{
+  "title": "Website Tech Stack & Sitemap Intelligence Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "urls": {
+      "title": "Website URLs or Domains",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of public website URLs or bare domains to profile (e.g. 'https://stripe.com', 'vercel.com'). Failed or blocked sites emit structured error records without halting the batch.",
+      "prefill": [
+        "https://stripe.com",
+        "https://vercel.com"
+      ]
+    },
+    "maxSitemapUrls": {
+      "title": "Max Sample Sitemap URLs Per Site",
+      "type": "integer",
+      "default": 200,
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Maximum number of discovered sitemap URLs returned in sample_urls per site (total discovered_url_count is still counted accurately across fetched sitemaps)."
+    },
+    "followSitemapIndexes": {
+      "title": "Follow XML Sitemap Indexes",
+      "type": "boolean",
+      "default": true,
+      "description": "When enabled, traverses <sitemapindex> child sitemaps (up to 5 child sitemaps per site, including .xml.gz compressed sitemaps)."
+    },
+    "extractPublicContacts": {
+      "title": "Extract Public Mailto & Official Social Links",
+      "type": "boolean",
+      "default": true,
+      "description": "When enabled, extracts public mailto: email links and official GitHub, X/Twitter, LinkedIn, and YouTube links from HTML and JSON-LD sameAs."
+    },
+    "requestDelayMs": {
+      "title": "Polite Delay Between Sites (ms)",
+      "type": "integer",
+      "default": 250,
+      "minimum": 0,
+      "maximum": 5000,
+      "description": "Polite delay in milliseconds between consecutive websites. 429/503 responses automatically trigger Retry-After exponential backoff."
+    }
+  },
+  "required": [
+    "urls"
+  ]
+}

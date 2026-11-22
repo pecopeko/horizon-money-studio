@@ -1,0 +1,61 @@
+{
+  "title": "Japan Corporate IR & Disclosure Extractor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "sourcePresets": {
+      "title": "Public Japanese Financial & IR Presets",
+      "type": "array",
+      "description": "Curated unauthenticated public Japanese disclosure feeds to fetch. Supported presets: tdnet_recent, jpx_markets, jpx_news, boj_whatsnew, meti_releases, prtimes_all.",
+      "editor": "stringList",
+      "default": [
+        "tdnet_recent",
+        "jpx_markets",
+        "jpx_news",
+        "boj_whatsnew"
+      ]
+    },
+    "feedUrls": {
+      "title": "Custom IR / RSS / Atom / JSON Feed URLs",
+      "type": "array",
+      "description": "Additional HTTP(S) corporate IR or disclosure feeds (RSS 2.0, RSS 1.0 RDF, Atom 1.0, or JSON).",
+      "editor": "stringList",
+      "default": []
+    },
+    "stockCodes": {
+      "title": "Filter by TSE Stock Codes",
+      "type": "array",
+      "description": "Optional list of 4-character Japanese securities codes (e.g. '7203', '141A'). Leave empty to include all companies.",
+      "editor": "stringList",
+      "default": []
+    },
+    "categories": {
+      "title": "Filter by Disclosure Categories",
+      "type": "array",
+      "description": "Optional disclosure category filter: earnings_revision, buyback, dividend, m_and_a, guidance, governance, other.",
+      "editor": "stringList",
+      "default": []
+    },
+    "keywords": {
+      "title": "Filter by Keywords",
+      "type": "array",
+      "description": "Optional keywords matched case-insensitively against title, summary, and company name.",
+      "editor": "stringList",
+      "default": []
+    },
+    "maxItemsPerFeed": {
+      "title": "Max Items Per Feed",
+      "type": "integer",
+      "description": "Maximum number of disclosure records parsed from each feed.",
+      "default": 30,
+      "minimum": 1,
+      "maximum": 300
+    },
+    "deduplicateByUrl": {
+      "title": "Deduplicate Records by URL",
+      "type": "boolean",
+      "description": "Skip duplicate announcements sharing the same normalized URL across feeds.",
+      "default": true
+    }
+  }
+}

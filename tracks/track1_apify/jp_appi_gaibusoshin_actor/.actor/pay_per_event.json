@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "policy_audited": {
+        "eventTitle": "APPI Policy & External SDKs Audited",
+        "eventDescription": "Charged per privacy policy and script snippet pair audited under APPI and Art. 27-12 Gaibusoshin.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

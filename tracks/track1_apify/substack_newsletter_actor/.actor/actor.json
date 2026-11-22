@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "substack-newsletter-posts-extractor",
+  "title": "Substack Newsletter Posts & Public Markdown Extractor",
+  "description": "Fast, browserless extraction of Substack newsletter posts, engagement metrics (reactions, comments, restacks), podcast audio URLs, and LLM/RAG-ready Markdown & plain text from public archive JSON and RSS feeds — $1 per 1,000 posts.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

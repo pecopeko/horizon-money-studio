@@ -1,0 +1,22 @@
+{
+  "title": "OAuth2 / OIDC & JWT Security Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "OAuth2 / OIDC Client Configs & JWT Verification Snippets to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "service_name": "auth-gateway",
+          "config_text": "jwt.verify(token, publicKey, { ignoreExpiration: true })\nresponse_type: \"token\"\nredirect_uri: \"https://*.example.com/callback\"\nlocalStorage.setItem(\"access_token\", tok)"
+        }
+      ],
+      "description": "OAuth2 / OIDC Client Configs & JWT Verification Snippets to Audit (Audit OAuth2/OIDC and JWT verification configs for alg=none confusion, disabled aud/iss/exp/signature checks, hardcoded signing secrets or private JWKs, implicit/no-PKCE grants, wildcard redirect_uri, and insecure localStorage token persistence or long TTLs)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

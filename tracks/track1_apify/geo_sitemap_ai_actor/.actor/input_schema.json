@@ -1,0 +1,19 @@
+{
+  "title": "GEO Sitemap & JSON-LD Citation Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "domains": {
+      "title": "Domains or Origins to Audit",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "https://docs.python.org"
+      ],
+      "description": "Domains or Origins to Audit (Audit websites for AI search engine citation readiness: Schema.org JSON-LD @type structured data, canonical/OG/meta description tags, XML sitemap freshness, and robots.txt AI crawler allowances)."
+    }
+  },
+  "required": [
+    "domains"
+  ]
+}

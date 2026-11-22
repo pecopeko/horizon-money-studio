@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-qualified-invoice-zengin-validator",
+  "title": "Japan Qualified Invoice (Mod-9) & Zengin 120-Byte Banking Validator",
+  "description": "Batch validate Japanese T+13 Qualified Invoice IDs and 13-digit Corporate Numbers via NTA Modulo-9, normalize payee names into Zengin half-width kana, and check 120-byte banking lines.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

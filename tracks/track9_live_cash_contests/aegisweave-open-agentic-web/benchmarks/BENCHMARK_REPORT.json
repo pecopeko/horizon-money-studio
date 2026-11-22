@@ -1,0 +1,224 @@
+{
+  "generated_at_utc": "2026-11-20T05:54:25.760Z",
+  "runtime": "AegisWeave MVP Profile 0.3 Reference Runtime (Zero-Dep ESM)",
+  "node_version": "v22.20.0",
+  "part_a_security_and_interop": {
+    "total_scenarios": 20,
+    "naive_baseline_passed": 1,
+    "naive_baseline_pass_rate_pct": 5,
+    "aegisweave_passed": 20,
+    "aegisweave_pass_rate_pct": 100,
+    "latency_p50_ms": 0.29,
+    "latency_p95_ms": 11.205,
+    "scenarios": [
+      {
+        "id": "S01",
+        "section": "§3.1",
+        "name": "Reject malformed network (dangling agent ref)",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.074,
+        "evidence": "INVALID_NETWORK: Agent 'front' references missing/unresolved agent or tool 'ghost_agent'."
+      },
+      {
+        "id": "S02",
+        "section": "§2.0",
+        "name": "Reject unresolved HOCON env/include substitution",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.364,
+        "evidence": "INVALID_NETWORK: rejected ${DB_PASSWORD}"
+      },
+      {
+        "id": "S03",
+        "section": "§2.2",
+        "name": "Reject inline executable code in declarative network",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.247,
+        "evidence": "INVALID_NETWORK: rejected inline 'eval'"
+      },
+      {
+        "id": "S04",
+        "section": "§3.2",
+        "name": "Exact network match (no fallback on missing name)",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 11.205,
+        "evidence": "EXACT_NETWORK_NOT_FOUND (naive fell back to 'nordic_compute')"
+      },
+      {
+        "id": "S05",
+        "section": "§3.2",
+        "name": "Enforce HTTPS for non-loopback peer origins",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.079,
+        "evidence": "HTTPS_REQUIRED: blocked plaintext remote HTTP"
+      },
+      {
+        "id": "S06",
+        "section": "§6.7",
+        "name": "Block origin listed in peer_policy.deny_origins",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.787,
+        "evidence": "DENIED_ORIGIN: blocked before fetch"
+      },
+      {
+        "id": "S07",
+        "section": "§5.0",
+        "name": "Honor visitor consent denial before third-party contact",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.337,
+        "evidence": "USER_DECLINED_CONSENT; 0 HTTP requests sent to peer"
+      },
+      {
+        "id": "S08",
+        "section": "§5.0",
+        "name": "Detect cross-origin redirect & enforce fresh consent",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 8.797,
+        "evidence": "Redirect consent triggered=true; final fail-closed=SRI_MISMATCH"
+      },
+      {
+        "id": "S09",
+        "section": "§4.0",
+        "name": "Cross-origin peer load with zero BYOK key transmission",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 3.987,
+        "evidence": "2 cross-origin HTTP GETs verified with 0 Authorization headers"
+      },
+      {
+        "id": "S10",
+        "section": "§4.0",
+        "name": "Prevent peer manifest from overriding caller LLM router",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.238,
+        "evidence": "Caller router stayed 'local-browser://aegisweave-deterministic-v1' (naive hijacked to 'https://attacker-collector.invalid/v1')"
+      },
+      {
+        "id": "S11",
+        "section": "§4.0",
+        "name": "Fail closed with clear error when BYOK key is missing",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.128,
+        "evidence": "MISSING_BYOK_KEY: stopped before outbound fetch"
+      },
+      {
+        "id": "S12",
+        "section": "§5.0",
+        "name": "Destination-scoped sly_data filtering (deny-by-default)",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.101,
+        "evidence": "Forwarded [project_budget_tier,required_sla_pct]; blocked unlisted & cross-network same-origin leak"
+      },
+      {
+        "id": "S13",
+        "section": "§5.0",
+        "name": "Hard-block BYOK/session/secret keys from sly_data",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.054,
+        "evidence": "Hard-blocked [byok_api_key,session_token] while passing safe_field"
+      },
+      {
+        "id": "S14",
+        "section": "§3.2",
+        "name": "Filter unsolicited upstream sly_data returned by peer",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.29,
+        "evidence": "Accepted [audit_digest]; dropped [unsolicited_peer_tracker]"
+      },
+      {
+        "id": "S15",
+        "section": "§5.0",
+        "name": "Detect & block adversarial rogue_peer prompt injection",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 5.248,
+        "evidence": "Audit grade=F (9/15), risk=critical, findings=8"
+      },
+      {
+        "id": "S16",
+        "section": "§5.0",
+        "name": "Reject coded-tool bundle on SHA-256 SRI mismatch",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.632,
+        "evidence": "SRI_MISMATCH: rejected tampered coded-tool bundle"
+      },
+      {
+        "id": "S17",
+        "section": "§3.1",
+        "name": "Detect and halt active composition cycle (A -> B -> A)",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 0.087,
+        "evidence": "COMPOSITION_CYCLE: halted active cycle"
+      },
+      {
+        "id": "S18",
+        "section": "§3.1",
+        "name": "Allow legitimate sequential re-invocation of same agent",
+        "naive_baseline_passed": true,
+        "aegisweave_passed": true,
+        "latency_ms": 0.054,
+        "evidence": "privacy_steward invoked sequentially 2 times without false-positive cycle block"
+      },
+      {
+        "id": "S19",
+        "section": "§7.0",
+        "name": "Detect peer artifact SHA-256 tamper/drift & force re-consent",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 2.878,
+        "evidence": "pinStatus=drifted, mandatory re-consent triggered=true"
+      },
+      {
+        "id": "S20",
+        "section": "§3.1",
+        "name": "Unknown-outcome write timeout blocks unsafe auto-retry",
+        "naive_baseline_passed": false,
+        "aegisweave_passed": true,
+        "latency_ms": 18.099,
+        "evidence": "1st=unknown, 2nd=blocked_unknown_retry (naive blindly retried 2x)"
+      }
+    ]
+  },
+  "part_b_sealed_bid_commerce_100_auctions": {
+    "seed": 20261119,
+    "total_auctions": 100,
+    "auctions_with_compliant_bids": 100,
+    "total_elapsed_ms": 13.69,
+    "avg_auction_ms": 0.137,
+    "naive_lowest_price_baseline": {
+      "mandate_compliance_rate_pct": 33,
+      "pareto_optimal_rate_pct": 32,
+      "mean_realized_utility": 0.1159
+    },
+    "filtered_lowest_price_baseline": {
+      "mandate_compliance_rate_pct": 100,
+      "pareto_optimal_rate_pct": 100,
+      "mean_realized_utility": 0.3225,
+      "mean_sla_pct": 99.626
+    },
+    "aegisweave_policy_arbiter": {
+      "mandate_compliance_rate_pct": 100,
+      "pareto_optimal_rate_pct": 100,
+      "mean_realized_utility": 0.5398,
+      "utility_uplift_vs_filtered_lowest_pct": 67.4,
+      "mean_sla_pct": 99.887,
+      "mean_savings_vs_budget_usd": 99.15,
+      "sha256_receipts_verified": 100,
+      "sha256_receipt_integrity_pct": 100
+    }
+  }
+}

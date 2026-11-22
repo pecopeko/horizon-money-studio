@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-jis8341-wcag-accessibility-auditor",
+  "title": "Japan JIS X 8341-3:2016 & WCAG 2.1 AA Accessibility Auditor",
+  "description": "Audit HTML templates and web pages deterministically against JIS X 8341-3:2016 / WCAG 2.1 Level AA rules plus sRGB color contrast ratio math.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "mcp-registry-llms-txt-auditor",
+  "title": "Domain AI Readiness (/llms.txt, /.well-known/mcp.json & AI Bots) Auditor",
+  "description": "Audit target websites for /llms.txt, /llms-full.txt, /.well-known/mcp.json manifests, and robots.txt AI crawler policies (GPTBot, ClaudeBot, Google-Extended), scoring AI agent readiness (0-100).",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

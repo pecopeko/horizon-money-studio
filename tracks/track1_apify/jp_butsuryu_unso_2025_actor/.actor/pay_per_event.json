@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "logistics_contract_audited": {
+        "eventTitle": "Logistics Efficiency & Truck Act Contract Audited",
+        "eventDescription": "Charged per shipper/carrier logistics contract, Standard Tariff comparison, wait+handling 2h check & 2024 driver rest audit.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

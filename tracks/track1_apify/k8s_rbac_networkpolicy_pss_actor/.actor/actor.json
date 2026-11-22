@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "kubernetes-rbac-networkpolicy-pss-auditor",
+  "title": "Kubernetes RBAC, NetworkPolicy Zero-Trust, PodSecurity & Admission Webhook Auditor",
+  "description": "Audit Kubernetes RBAC manifests, ServiceAccount automounting, NetworkPolicy CIDR/podSelector rules, Pod Security Standards, Admission webhooks, and resource quotas for privilege escalation and lateral movement risks.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

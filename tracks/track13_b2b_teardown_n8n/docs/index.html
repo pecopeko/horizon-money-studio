@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>n8n AI-Ops Templates &amp; Live B2B Teardown Engine</title>
+  <meta name="description" content="Evidence-backed 12-point B2B website diagnostic teardowns paired with 3 schema-validated, zero-secret n8n v1 workflow JSON templates.">
+  <style>
+    :root {
+      --ground: #F3F1EA;
+      --surface: #FFFFFF;
+      --surface-alt: #EAE6DC;
+      --ink: #14171A;
+      --muted: #525860;
+      --line: #DFDCD2;
+      --pass: #0F5132;
+      --pass-bg: #E6F4EC;
+      --warn: #92400E;
+      --warn-bg: #FEF3C7;
+      --fail: #991B1B;
+      --fail-bg: #FEE2E2;
+      --accent: #1D4ED8;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--ground); color: var(--ink); font-family: var(--font-sans); line-height: 1.55; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .num { font-variant-numeric: tabular-nums; }
+    .shell { max-width: 1120px; margin: 0 auto; padding: 0 24px 72px; }
+    header.nav {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 24px 0 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--ink); }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 14px; font-weight: 600; }
+    .nav-links a { color: var(--ink); }
+    .hero {
+      display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: end;
+      padding: 40px 0 40px;
+    }
+    .hero h1 { margin: 0 0 14px; font-size: 46px; line-height: 1.08; letter-spacing: -0.03em; }
+    .hero p { margin: 0 0 22px; font-size: 18px; color: var(--muted); max-width: 58ch; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .primary-btn {
+      display: inline-block; background: var(--ink); color: #FFFFFF; padding: 12px 20px;
+      border-radius: 6px; font-weight: 700; font-size: 15px;
+    }
+    .primary-btn:hover { text-decoration: none; opacity: 0.9; }
+    .secondary-btn {
+      display: inline-block; background: var(--surface-alt); color: var(--ink); padding: 12px 20px;
+      border-radius: 6px; font-weight: 600; font-size: 15px;
+    }
+    .secondary-btn:hover { text-decoration: none; background: #DDD8CC; }
+    .hero-ledger {
+      background: var(--surface); border-radius: 12px; padding: 22px;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
+    }
+    .stat-cell { background: var(--ground); border-radius: 8px; padding: 14px; }
+    .stat-label { font-size: 12px; color: var(--muted); }
+    .stat-val { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+    section.block { margin-top: 52px; }
+    section.block h2 { margin: 0 0 8px; font-size: 28px; letter-spacing: -0.02em; }
+    .block-lead { margin: 0 0 18px; font-size: 16px; color: var(--muted); max-width: 72ch; }
+    .table-wrap {
+      background: var(--surface); border-radius: 12px; overflow-x: auto; padding: 6px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line); /* taste-skill-ignore */ vertical-align: middle; }
+    th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--surface-alt); }
+    tr:last-child td { border-bottom: none; }
+    .cell-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+    .st-pass { background: var(--pass-bg); color: var(--pass); }
+    .st-warn { background: var(--warn-bg); color: var(--warn); }
+    .st-fail, .st-error { background: var(--fail-bg); color: var(--fail); }
+    .row-link { font-weight: 700; white-space: nowrap; }
+    .tpl-box { background: var(--surface); border-radius: 12px; padding: 26px; }
+    .tpl-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .btn {
+      appearance: none; border: none; background: var(--surface-alt); color: var(--ink);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-block;
+    }
+    .btn:hover { background: #DDD8CC; text-decoration: none; }
+    .btn.active { background: var(--ink); color: #FFFFFF; }
+    .tpl-pane { display: none; }
+    .tpl-pane.active { display: block; }
+    .tpl-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .tpl-head h3 { margin: 0 0 6px; font-size: 20px; }
+    .tpl-desc { margin: 0; color: var(--muted); max-width: 62ch; font-size: 15px; }
+    .tpl-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tpl-stats {
+      display: flex; flex-wrap: wrap; gap: 18px; padding: 14px 16px; background: var(--ground);
+      border-radius: 8px; font-size: 13.5px; margin-bottom: 18px;
+    }
+    .pipe-label { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; }
+    .pipe-flow { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .pipe-node {
+      background: var(--ground); border-radius: 8px; padding: 11px 13px;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .pipe-type { font-size: 11px; color: var(--pass); font-weight: 700; }
+    .pipe-name { font-size: 13.5px; font-weight: 600; }
+    .env-row { font-size: 13px; color: var(--muted); line-height: 2.0; }
+    .env-row code { background: var(--surface-alt); color: var(--ink); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* taste-skill-ignore */ font-size: 12px; }
+    .cli-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .cli-card { background: var(--surface); border-radius: 12px; padding: 24px; }
+    .cli-card h3 { margin: 0 0 8px; font-size: 17px; }
+    .cli-card p { margin: 0 0 12px; font-size: 14.5px; color: var(--muted); }
+    pre {
+      margin: 0; background: #14171A; color: #F1F5F9; padding: 14px; border-radius: 8px;
+      overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* taste-skill-ignore */ font-size: 12.5px; line-height: 1.5;
+    }
+    footer {
+      margin-top: 64px; padding: 24px 0 8px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13.5px; color: var(--muted);
+    }
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero h1 { font-size: 32px; }
+      .cli-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="nav">
+      <div class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="4" fill="#14171A"></rect>
+          <path d="M7 15L10.5 11.5L13 14L17 9" stroke="#F6F5F0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span>Horizon AI-Ops Diagnostics</span>
+      </div>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#live-teardowns">Live Teardowns</a>
+        <a href="#n8n-templates">n8n Templates</a>
+        <a href="#quickstart">Run Locally</a>
+        <a href="https://github.com/pecopeko/n8n-ai-ops-templates" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Proof-First B2B Diagnostics</h1>
+        <p>Polite, SSRF-safe 12-point Revenue &amp; AI-Search Readiness audits paired with three schema-validated, zero-secret n8n v1 workflow templates.</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#live-teardowns">Inspect Live Scorecards</a>
+          <a class="secondary-btn" href="#n8n-templates">Browse n8n Workflows</a>
+        </div>
+      </div>
+      <div class="hero-ledger" aria-label="Live Portfolio Metrics">
+        <div class="stat-cell">
+          <div class="stat-label">Live Sites Audited</div>
+          <div class="stat-val num">3</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Average Readiness Score</div>
+          <div class="stat-val num">77.3 / 100</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Verified Gaps Surfaced</div>
+          <div class="stat-val num">14</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Validated n8n Templates</div>
+          <div class="stat-val num">3</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="live-teardowns">
+      <h2>Live Public Diagnostic Teardowns</h2>
+      <p class="block-lead">Every score below comes from real, polite single-domain HTTP GET checks (<code>/</code>, <code>/robots.txt</code>, <code>/sitemap.xml</code>, <code>/llms.txt</code>) plus Cloudflare DoH SPF &amp; DMARC DNS lookups. Open any scorecard to inspect raw evidence and copy tailored fixes.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Public Domain</th>
+              <th>Measured Score</th>
+              <th>llms.txt</th>
+              <th>DMARC Policy</th>
+              <th>HTML Weight</th>
+              <th>Gaps Found</th>
+              <th>Interactive Report</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+  <td><strong>www.allbirds.com</strong><div class="cell-sub">2026-11-20T02:55:50Z</div></td>
+  <td class="num"><span class="badge st-warn">78 / 100 (B)</span></td>
+  <td><span class="badge st-pass">PASS</span></td>
+  <td><span class="badge st-pass">quarantine</span></td>
+  <td class="num">696.2 KB</td>
+  <td class="num">6</td>
+  <td><a class="row-link" href="teardown_www_allbirds_com.html">Open Scorecard &rarr;</a></td>
+</tr>
+<tr>
+  <td><strong>linear.app</strong><div class="cell-sub">2026-11-20T02:55:51Z</div></td>
+  <td class="num"><span class="badge st-pass">85 / 100 (A)</span></td>
+  <td><span class="badge st-pass">PASS</span></td>
+  <td><span class="badge st-pass">reject</span></td>
+  <td class="num">1236.0 KB</td>
+  <td class="num">3</td>
+  <td><a class="row-link" href="teardown_linear_app.html">Open Scorecard &rarr;</a></td>
+</tr>
+<tr>
+  <td><strong>smarthr.jp</strong><div class="cell-sub">2026-11-20T02:55:53Z</div></td>
+  <td class="num"><span class="badge st-warn">69 / 100 (C)</span></td>
+  <td><span class="badge st-fail">LEAK</span></td>
+  <td><span class="badge st-pass">reject</span></td>
+  <td class="num">299.2 KB</td>
+  <td class="num">5</td>
+  <td><a class="row-link" href="teardown_smarthr_jp.html">Open Scorecard &rarr;</a></td>
+</tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="n8n-templates">
+      <h2>Schema-Validated n8n v1 Workflow Pack</h2>
+      <p class="block-lead">Built to official n8n v1 Creator Marketplace standards: clean node graphs, zero dangling edges, setup sticky notes, and strictly <code>$env.*</code> variables with zero hardcoded secrets.</p>
+      <div class="tpl-box">
+        <div class="tpl-tabs" role="tablist"><button type="button" class="btn active" data-tpl="01_shopify_competitor_price_stock_alert">Shopify Price &amp; Stock Diff</button><button type="button" class="btn" data-tpl="02_sec_form_d_and_ats_hiring_b2b_lead_enricher">SEC Form D + ATS Lead Enricher</button><button type="button" class="btn" data-tpl="03_jp_invoice_dencho_and_zengin_backoffice_pipeline">JP Invoice Mod-9 + Zengin CP932</button></div>
+        <div class="tpl-pane active" data-tpl-pane="01_shopify_competitor_price_stock_alert">
+  <div class="tpl-head">
+    <div>
+      <h3>Shopify Competitor Price &amp; Stock Change Alert (Sheets + Slack + Discord)</h3>
+      <p class="tpl-desc">Monitors public Shopify /products.json catalogs, tracks stateful SKU price &amp; stock deltas, and fans out alerts to Google Sheets, Slack, and Discord.</p>
+    </div>
+    <div class="tpl-actions">
+      <a class="btn" href="https://github.com/pecopeko/n8n-ai-ops-templates/blob/main/n8n_templates/01_shopify_competitor_price_stock_alert.json" target="_blank" rel="noopener noreferrer">View JSON on GitHub</a>
+      <a class="btn active" href="https://raw.githubusercontent.com/pecopeko/n8n-ai-ops-templates/main/n8n_templates/01_shopify_competitor_price_stock_alert.json" target="_blank" rel="noopener noreferrer">Download Raw JSON</a>
+    </div>
+  </div>
+  <div class="tpl-stats">
+    <span><strong>13</strong> total nodes (3 setup sticky notes)</span>
+    <span><strong>9</strong> verified connections</span>
+    <span><strong>0</strong> hardcoded secrets</span>
+    <span>Schema: <code>n8n v1 (v1)</code></span>
+  </div>
+  <div class="pipe-label">Verified Node Execution Pipeline</div>
+  <div class="pipe-flow"><div class="pipe-node"><span class="pipe-type">scheduleTrigger</span><span class="pipe-name">Schedule Every 6 Hours</span></div><div class="pipe-node"><span class="pipe-type">set</span><span class="pipe-name">Load Competitor Store Config</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Expand Public Store Feed URLs</span></div><div class="pipe-node"><span class="pipe-type">httpRequest</span><span class="pipe-name">Fetch Shopify Products Feed</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Compute Price &amp; Stock Diffs</span></div><div class="pipe-node"><span class="pipe-type">if</span><span class="pipe-name">Has Price or Stock Changes?</span></div><div class="pipe-node"><span class="pipe-type">googleSheets</span><span class="pipe-name">Append Diff Log to Google Sheets</span></div><div class="pipe-node"><span class="pipe-type">slack</span><span class="pipe-name">Post Competitor Alert to Slack</span></div><div class="pipe-node"><span class="pipe-type">discord</span><span class="pipe-name">Post Price Alert to Discord</span></div><div class="pipe-node"><span class="pipe-type">set</span><span class="pipe-name">Record No-Change Heartbeat</span></div></div>
+  <div class="env-row"><strong>Required Environment Variables:</strong> <code>DISCORD_WEBHOOK_URL</code> <code>GOOGLE_SHEET_ID</code> <code>PRICE_DROP_THRESHOLD_PCT</code> <code>SHOPIFY_COMPETITOR_STORES</code> <code>SLACK_ALERT_CHANNEL</code> </div>
+</div><div class="tpl-pane" data-tpl-pane="02_sec_form_d_and_ats_hiring_b2b_lead_enricher">
+  <div class="tpl-head">
+    <div>
+      <h3>SEC Form D Funding + ATS Hiring Signal B2B Lead Enricher (Airtable + Notion + Slack)</h3>
+      <p class="tpl-desc">Ingests daily SEC EDGAR Form D funding filings and public Greenhouse/Lever/Ashby hiring signals, checks /llms.txt readiness, and routes hot ICP leads to Airtable, Notion, and Slack.</p>
+    </div>
+    <div class="tpl-actions">
+      <a class="btn" href="https://github.com/pecopeko/n8n-ai-ops-templates/blob/main/n8n_templates/02_sec_form_d_and_ats_hiring_b2b_lead_enricher.json" target="_blank" rel="noopener noreferrer">View JSON on GitHub</a>
+      <a class="btn active" href="https://raw.githubusercontent.com/pecopeko/n8n-ai-ops-templates/main/n8n_templates/02_sec_form_d_and_ats_hiring_b2b_lead_enricher.json" target="_blank" rel="noopener noreferrer">Download Raw JSON</a>
+    </div>
+  </div>
+  <div class="tpl-stats">
+    <span><strong>18</strong> total nodes (3 setup sticky notes)</span>
+    <span><strong>15</strong> verified connections</span>
+    <span><strong>0</strong> hardcoded secrets</span>
+    <span>Schema: <code>n8n v1 (v1)</code></span>
+  </div>
+  <div class="pipe-label">Verified Node Execution Pipeline</div>
+  <div class="pipe-flow"><div class="pipe-node"><span class="pipe-type">scheduleTrigger</span><span class="pipe-name">Schedule Daily 09:00 UTC</span></div><div class="pipe-node"><span class="pipe-type">httpRequest</span><span class="pipe-name">Fetch SEC EDGAR Form D Filings</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Parse Form D Funded Issuers</span></div><div class="pipe-node"><span class="pipe-type">set</span><span class="pipe-name">Load Target ATS Watchlist</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Expand Public ATS Board URLs</span></div><div class="pipe-node"><span class="pipe-type">httpRequest</span><span class="pipe-name">Fetch Public ATS Job Boards</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Score Hiring Velocity &amp; Ops Roles</span></div><div class="pipe-node"><span class="pipe-type">merge</span><span class="pipe-name">Merge Funding &amp; Hiring Signals</span></div><div class="pipe-node"><span class="pipe-type">httpRequest</span><span class="pipe-name">Check Prospect llms.txt Readiness</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Compute ICP Score &amp; Outreach Hook</span></div><div class="pipe-node"><span class="pipe-type">if</span><span class="pipe-name">Is Hot ICP Lead (Score &gt;= 65)?</span></div><div class="pipe-node"><span class="pipe-type">airtable</span><span class="pipe-name">Upsert Hot Lead in Airtable CRM</span></div><div class="pipe-node"><span class="pipe-type">notion</span><span class="pipe-name">Create Deal Card in Notion</span></div><div class="pipe-node"><span class="pipe-type">slack</span><span class="pipe-name">Notify Sales Team on Slack</span></div><div class="pipe-node"><span class="pipe-type">set</span><span class="pipe-name">Log Warm Signal for Review</span></div></div>
+  <div class="env-row"><strong>Required Environment Variables:</strong> <code>AIRTABLE_BASE_ID</code> <code>AIRTABLE_TABLE_NAME</code> <code>ATS_ASHBY_SLUGS</code> <code>ATS_GREENHOUSE_SLUGS</code> <code>ATS_LEVER_SLUGS</code> <code>NOTION_DATABASE_ID</code> <code>SEC_USER_AGENT</code> <code>SLACK_LEADS_CHANNEL</code> </div>
+</div><div class="tpl-pane" data-tpl-pane="03_jp_invoice_dencho_and_zengin_backoffice_pipeline">
+  <div class="tpl-head">
+    <div>
+      <h3>Japan Invoice (NTA T-Number Mod-9) + Dencho-ho Naming + Zengin 120B CP932 Backoffice Pipeline</h3>
+      <p class="tpl-desc">Validates Japanese NTA Qualified Invoice T-Numbers (Modulo-9), normalizes Dencho-ho 3-key PDF filenames, generates bank-ready 120-byte CP932 Zengin transfer files, and sends Slack finance approvals.</p>
+    </div>
+    <div class="tpl-actions">
+      <a class="btn" href="https://github.com/pecopeko/n8n-ai-ops-templates/blob/main/n8n_templates/03_jp_invoice_dencho_and_zengin_backoffice_pipeline.json" target="_blank" rel="noopener noreferrer">View JSON on GitHub</a>
+      <a class="btn active" href="https://raw.githubusercontent.com/pecopeko/n8n-ai-ops-templates/main/n8n_templates/03_jp_invoice_dencho_and_zengin_backoffice_pipeline.json" target="_blank" rel="noopener noreferrer">Download Raw JSON</a>
+    </div>
+  </div>
+  <div class="tpl-stats">
+    <span><strong>12</strong> total nodes (3 setup sticky notes)</span>
+    <span><strong>8</strong> verified connections</span>
+    <span><strong>0</strong> hardcoded secrets</span>
+    <span>Schema: <code>n8n v1 (v1)</code></span>
+  </div>
+  <div class="pipe-label">Verified Node Execution Pipeline</div>
+  <div class="pipe-flow"><div class="pipe-node"><span class="pipe-type">webhook</span><span class="pipe-name">Receive JP Invoice Webhook</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Validate NTA T-Number &amp; Dencho-ho Keys</span></div><div class="pipe-node"><span class="pipe-type">if</span><span class="pipe-name">Is Valid Qualified Invoice?</span></div><div class="pipe-node"><span class="pipe-type">code</span><span class="pipe-name">Build Zengin 120B CP932 Payload</span></div><div class="pipe-node"><span class="pipe-type">googleSheets</span><span class="pipe-name">Append Dencho-ho Search Index</span></div><div class="pipe-node"><span class="pipe-type">slack</span><span class="pipe-name">Send Slack Finance Approval Alert</span></div><div class="pipe-node"><span class="pipe-type">respondToWebhook</span><span class="pipe-name">Respond 200 Validated Invoice</span></div><div class="pipe-node"><span class="pipe-type">slack</span><span class="pipe-name">Alert Slack on Validation Error</span></div><div class="pipe-node"><span class="pipe-type">respondToWebhook</span><span class="pipe-name">Respond 422 Validation Error</span></div></div>
+  <div class="env-row"><strong>Required Environment Variables:</strong> <code>GOOGLE_DENCHO_SHEET_ID</code> <code>SLACK_FINANCE_CHANNEL</code> <code>ZENGIN_CLIENT_CODE</code> <code>ZENGIN_SENDER_ACCOUNT_NO</code> <code>ZENGIN_SENDER_BANK_CODE</code> <code>ZENGIN_SENDER_BRANCH_CODE</code> <code>ZENGIN_SENDER_KANA</code> </div>
+</div>
+      </div>
+    </section>
+
+    <section class="block" id="quickstart">
+      <h2>Run a Diagnostic or Validate Templates</h2>
+      <p class="block-lead">Everything runs locally with zero paid API keys. Generate a tailored scorecard + EN/JP outreach drafts for any public domain in seconds.</p>
+      <div class="cli-grid">
+        <div class="cli-card">
+          <h3>Generate a Live Domain Teardown</h3>
+          <p>Runs polite read-only HTTP &amp; DNS checks and outputs an interactive HTML scorecard plus tailored copy-paste fixes.</p>
+          <pre><code>python b2b_teardown_generator.py scan https://linear.app   --out-dir docs   --pitch-dir outreach_samples</code></pre>
+        </div>
+        <div class="cli-card">
+          <h3>Validate All n8n Workflow JSONs</h3>
+          <p>Checks schema version, unique node IDs, graph reachability, official node types, sticky notes, JS syntax, and secret leaks.</p>
+          <pre><code>python validate_n8n_templates.py n8n_templates/</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>MIT Licensed &middot; Zero paid APIs &middot; Built for transparent B2B proof-first automation.</span>
+      <a href="https://github.com/pecopeko/n8n-ai-ops-templates" target="_blank" rel="noopener noreferrer">github.com/pecopeko/n8n-ai-ops-templates</a>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      var tabs = document.querySelectorAll("[data-tpl]");
+      var panes = document.querySelectorAll("[data-tpl-pane]");
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          tabs.forEach(function (t) { t.classList.remove("active"); });
+          tab.classList.add("active");
+          var id = tab.getAttribute("data-tpl");
+          panes.forEach(function (p) {
+            p.classList.toggle("active", p.getAttribute("data-tpl-pane") === id);
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

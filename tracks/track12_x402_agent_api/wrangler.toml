@@ -1,0 +1,32 @@
+# Cloudflare Workers Free Tier ($0.00 / 100,000 req/day) configuration
+# Deploy in 3 minutes:
+#   1. npx wrangler login
+#   2. npx wrangler secret put PAY_TO_ADDRESS   # Your Base USDC 0x... wallet address
+#   3. npx wrangler deploy
+
+name = "x402-intel-worker"
+main = "src/worker.mjs"
+compatibility_date = "2026-01-15"
+workers_dev = true
+
+[vars]
+SERVICE_NAME = "x402 Intel Edge"
+# CAIP-2 Base Mainnet ("eip155:8453") or Base Sepolia testnet ("eip155:84532")
+X402_NETWORK = "eip155:8453"
+# Free no-API-key Base Mainnet + x402 v2/v1 + Bazaar facilitator.
+# Alternatives:
+#   - https://x402.org/facilitator (Base Sepolia testnet)
+#   - https://api.cdp.coinbase.com/platform/v2/x402 (Coinbase CDP; set FACILITATOR_BEARER_TOKEN secret)
+FACILITATOR_URL = "https://facilitator.payai.network"
+# SEC EDGAR Fair Access User-Agent contact email (override with your own email)
+SEC_CONTACT_EMAIL = "contact@x402-intel.dev"
+MAX_TIMEOUT_SECONDS = "60"
+# MUST remain "false" in production so missing PAY_TO_ADDRESS fails closed (HTTP 503).
+X402_DEMO_MODE = "false"
+
+# Optional Free-Tier Cloudflare KV namespace for cross-isolate replay protection:
+#   npx wrangler kv namespace create REPLAY_KV
+# Then uncomment and paste the returned namespace ID:
+# [[kv_namespaces]]
+# binding = "REPLAY_KV"
+# id = "YOUR_KV_NAMESPACE_ID"

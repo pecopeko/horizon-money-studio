@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "llm-rag-prompt-leak-vector-poisoning-auditor",
+  "title": "LLM RAG Knowledge-Base & Vector Poisoning Security Auditor",
+  "description": "Audit LLM Retrieval-Augmented Generation (RAG) documents, HTML chunks, and vector-index configs for indirect prompt injection, Markdown exfiltration beacons, cross-tenant ACL bypasses, leaked keys, oversized chunk_size/top_k DoS, and unverified external ingestion.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

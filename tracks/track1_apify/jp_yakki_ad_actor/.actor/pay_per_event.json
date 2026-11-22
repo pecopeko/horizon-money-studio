@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "ad_copy_audited": {
+        "eventTitle": "Ad Copy Audited",
+        "eventDescription": "Charged per Japanese ad copy item screened for Yakki-ho, Keihyo-ho, and stealth marketing violations.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

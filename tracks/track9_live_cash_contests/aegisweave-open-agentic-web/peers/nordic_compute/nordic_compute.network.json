@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "name": "nordic_compute",
+    "spec_profile": "worldwide-agentic-web-mvp/0.3",
+    "description": "Renewable-powered compute sprint vendor offering sealed quotes and verified SLA guarantees.",
+    "vendor_catalog": {
+      "vendor_id": "nordic_compute",
+      "vendor_name": "Nordic Compute AB",
+      "region": "eu-north-hydro",
+      "offers": [
+        {
+          "sku": "NC-L4-SPRINT",
+          "label": "L4 24GB Eval & Distillation Sprint (48 GPU-hrs)",
+          "price_usd": 340,
+          "sla_pct": 99.8,
+          "delivery_hours": 18,
+          "carbon_intensity_g_kwh": 14,
+          "supports_compliance": true
+        },
+        {
+          "sku": "NC-A100-SPRINT",
+          "label": "A100 80GB Priority Training Sprint (32 GPU-hrs)",
+          "price_usd": 455,
+          "sla_pct": 99.95,
+          "delivery_hours": 12,
+          "carbon_intensity_g_kwh": 14,
+          "supports_compliance": true
+        },
+        {
+          "sku": "NC-H100-BURST",
+          "label": "H100 80GB Ultra-Burst Cluster (24 GPU-hrs)",
+          "price_usd": 690,
+          "sla_pct": 99.99,
+          "delivery_hours": 6,
+          "carbon_intensity_g_kwh": 14,
+          "supports_compliance": true
+        }
+      ]
+    }
+  },
+  "llm_config": {
+    "model_name": "alibaba/qwen3.8-flash"
+  },
+  "max_steps": 6,
+  "tools": [
+    {
+      "name": "quote_desk",
+      "function": {
+        "description": "Generates grounded sealed quotes for GPU compute sprints based on budget tier and SLA requirements.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "request": {
+              "type": "string",
+              "description": "Plain-language quote inquiry with budget and SLA targets."
+            }
+          },
+          "required": ["request"]
+        }
+      },
+      "instructions": "You are the Nordic Compute quote desk. Answer only from metadata.vendor_catalog and delegate SLA verification to sla_verifier. Never request personal emails, passwords, or caller credentials.",
+      "tools": ["sla_verifier"]
+    },
+    {
+      "name": "sla_verifier",
+      "function": {
+        "description": "Verifies uptime SLA tiers, delivery windows, and compliance guarantees for Nordic Compute SKUs.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sku": { "type": "string" }
+          },
+          "required": ["sku"]
+        }
+      },
+      "instructions": "Return exact SLA percentage, delivery window hours, and compliance support strictly from the Nordic Compute catalog.",
+      "tools": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Security.txt & Headers Posture Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "domains": {
+      "title": "Domains or Origins to Audit",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "https://docs.python.org"
+      ],
+      "description": "Domains or Origins to Audit (Audit public domains for RFC 9116 /.well-known/security.txt fields (Contact, Expires, Encryption, Canonical, Policy) and baseline HTTP response hardening headers (HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy))."
+    }
+  },
+  "required": [
+    "domains"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Japan METI Supply Chain Security Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Vendor Checksheets and DNS Records to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Sample Vendor K.K.",
+          "checksheet_text": "全社員にFIDO2多要素認証(MFA)とEDRを導入。3-2-1オフラインバックアップ実施。",
+          "spf_record": "v=spf1 include:_spf.google.com ~all",
+          "dmarc_record": "v=DMARC1; p=none;"
+        }
+      ],
+      "description": "Vendor Checksheets and DNS Records to Audit (Audit vendor security checksheets against Japan METI Star 3/Star 4 controls, PPC 3-5 day breach SLA, Trade Secret requirements, and SPF/DMARC DNS posture)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

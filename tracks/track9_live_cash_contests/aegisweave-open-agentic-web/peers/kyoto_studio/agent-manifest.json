@@ -1,0 +1,29 @@
+{
+  "spec_profile": "worldwide-agentic-web-mvp/0.3",
+  "brand": "Kyoto Studio — AI Evaluation & Localization Peer",
+  "version": "1.0.0",
+  "networks": [
+    {
+      "name": "kyoto_studio",
+      "front_man": "studio_estimator",
+      "hocon": "./kyoto_studio.network.json",
+      "description": "Provides verifiable sealed quotes for bilingual JP/EN AI compliance QA, benchmark evaluation, and rapid sprint delivery.",
+      "tags": ["localization", "ai-qa", "sealed-bid-vendor", "peer-site"]
+    }
+  ],
+  "llm_router": {
+    "base_url": "https://peer-informational-only.kyoto.invalid/v1",
+    "mock": false
+  },
+  "allowed_peers": [],
+  "peer_policy": {
+    "mode": "closed",
+    "deny_origins": [],
+    "note": "Leaf vendor peer network."
+  },
+  "deployment": {
+    "mode": "static",
+    "self_contained_runtime": false,
+    "direct_byok": false
+  }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TOKUSHOGATE（特商門）：特定商取引法11条・12条の6・Stripe決済審査 ブラウザローカル監査</title>
+  <meta name="description" content="100%ブラウザローカル処理でSaaS・EC・デジタル販売サイトの特商法表記（第11条）、最終確認画面定期縛り表記（第12条の6）、決済加盟店審査の必須項目とNG表現を即時点検。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar" data-ui="bar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <span class="brand__seal" aria-hidden="true">商</span>
+        <div>
+          <strong class="brand__name">TOKUSHOGATE 特商門</strong>
+          <span class="brand__sub">100% ブラウザ内処理 / 未公開ストア・特商法原稿の外部送信ゼロ</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主要機能">
+        <a href="#tokusho-audit">特商法・定期監査</a>
+        <a href="#template-export">特商法ひな形出力</a>
+        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
+        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>特定商取引法第11条・定期購入確認画面（12条の6）と決済審査要件を手元だけで検証。</h1>
+      <p class="intro__lead">
+        SaaS・BOOTH・自社EC・サブスクリプションの「特定商取引法に基づく表記」と決済ボタン直前の最終確認文言を端末内のみで点検し、法定記載漏れ、2回目以降価格・支払総額の明示不足、電話限定解約などのNG表現を検知して修正用Markdownを生成します。
+      </p>
+    </section>
+
+    <section id="tokusho-audit" class="panel" data-ui="auditor">
+      <div class="panel__head">
+        <h2>特商法ページ ＆ 最終確認画面 複合監査</h2>
+        <div class="preset-group">
+          <button type="button" id="loadRiskyPresetBtn" class="chip">不備・要注意サンプル</button>
+          <button type="button" id="loadSafePresetBtn" class="chip">審査適合SaaSモデル</button>
+        </div>
+      </div>
+      <div class="grid-2">
+        <label class="field">
+          <span>特定商取引法に基づく表記ページ本文</span>
+          <textarea id="tokushoTextInput" rows="8"></textarea>
+        </label>
+        <label class="field">
+          <span>注文確定直前（最終確認画面）の説明文言</span>
+          <textarea id="checkoutTextInput" rows="8"></textarea>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <label class="check-label"><input type="checkbox" id="isDigitalCheckbox" checked> デジタル商品・SaaS（動作環境表記を必須確認）</label>
+        <label class="check-label"><input type="checkbox" id="isSubCheckbox" checked> 定期課金・サブスクリプション販売（12条の6検査）</label>
+      </div>
+      <div class="actions">
+        <button type="button" id="runAuditBtn" class="btn-primary">特商法と決済審査を点検</button>
+        <button type="button" id="copyReportBtn" class="btn-outline">指摘＆修正対案をコピー</button>
+      </div>
+      <div id="auditSummaryBox" class="status-box"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>深刻度</th>
+              <th>法令・論点</th>
+              <th>検知・不足内容</th>
+              <th>推奨追記・修正文案</th>
+            </tr>
+          </thead>
+          <tbody id="findingsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="template-export" class="panel" data-ui="template">
+      <div class="panel__head">
+        <h2>公開対応 特商法Markdownひな形生成（事業者情報カスタマイズ可）</h2>
+        <button type="button" id="downloadTemplateBtn" class="btn-outline">tokushoho.md を保存</button>
+      </div>
+      <div class="grid-3">
+        <label class="field">
+          <span>販売業者名</span>
+          <input type="text" id="sellerInput" value="合同会社ホライゾンラボ">
+        </label>
+        <label class="field">
+          <span>運営統括責任者</span>
+          <input type="text" id="repInput" value="代表社員 田中 一郎">
+        </label>
+        <label class="field">
+          <span>メール窓口</span>
+          <input type="text" id="emailInput" value="support@example.co.jp">
+        </label>
+      </div>
+      <pre id="templatePreview" class="code-box"></pre>
+    </section>
+
+    <section class="panel ext-box" data-ui="kit">
+      <div>
+        <h2>オフライン配布キット v1.0.0 ＆ 関連B2Bチェックゲート</h2>
+        <p>法務・CS・個人開発者の閉域端末でも開ける静的HTML/ESMパッケージとソースコードを公開しています。</p>
+      </div>
+      <div class="actions">
+        <a class="btn-primary" href="https://github.com/pecopeko/tokushogate/releases/download/v1.0.0/tokushogate-offline-kit-v1.0.0.zip">オフラインZIPを保存</a>
+        <a class="btn-outline" href="https://pecopeko.github.io/keiyakugate/" target="_blank" rel="noopener">KEIYAKUGATE（契約門）</a>
+        <a class="btn-outline" href="https://pecopeko.github.io/yakkigate/" target="_blank" rel="noopener">YAKKIGATE（薬影）</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>TOKUSHOGATE（特商門）：100%ローカル処理・ブラウザ外へのデータ送信なし</span>
+      <span><a href="https://github.com/pecopeko/tokushogate" target="_blank" rel="noopener">GitHub pecopeko/tokushogate</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+{
+  "title": "Production LLM Cost, Token & Security Engineering",
+  "edition_tag": "2026 Field Manual",
+  "full_title": "Production LLM Cost, Token & Security Engineering (2026 Field Manual)",
+  "subtitle": "Practical Benchmarks, Lossless Context Compression, Zero-Trust PII Vaults, and Budget-Safe Agent Architectures",
+  "author": "Horizon Engineering Press",
+  "publisher": "Horizon Engineering Press",
+  "language": "en",
+  "year": "2026",
+  "edition": "First Edition (November 2026)",
+  "identifier": "urn:uuid:7c4f2b8a-91d3-4e65-a8b2-202611200019",
+  "isbn_paperback": "Assigned at KDP Publishing",
+  "isbn_ebook": "ASIN Assigned at KDP Publishing",
+  "description": "A zero-fluff engineering reference manual for building cost-controlled, lossless-compressed, zero-trust LLM and autonomous agent systems in 2026. Covers exact 12-model token economics, Japanese/CJK BPE inflation math, prompt caching break-even formulas, lossless @schema tabular compression, Mod-9/Mod-11 check-digit PII vaults, MCP/agentic security, x402 HTTP 402 agent micropayments, and strictly proper out-of-sample evaluation.",
+  "trim_size_in": {
+    "width": 6.0,
+    "height": 9.0
+  },
+  "paper_thickness_in_per_page": 0.002252,
+  "bleed_in": 0.125,
+  "sample_chapters": [
+    {
+      "id": "frontmatter",
+      "label": "PREFACE",
+      "title": "Preface: Engineering LLM Systems by the Numbers",
+      "file": "sample_manuscript/00_frontmatter.md",
+      "is_chapter": false
+    },
+    {
+      "id": "ch01",
+      "label": "CHAPTER 1",
+      "title": "The Economics of Tokens in 2026",
+      "file": "sample_manuscript/01_economics_of_tokens.md",
+      "is_chapter": true
+    }
+  ],
+  "commercial_chapters": [
+    {
+      "id": "frontmatter",
+      "label": "PREFACE",
+      "title": "Preface: Engineering LLM Systems by the Numbers",
+      "file": "sample_manuscript/00_frontmatter.md",
+      "is_chapter": false
+    },
+    {
+      "id": "ch01",
+      "label": "CHAPTER 1",
+      "title": "The Economics of Tokens in 2026",
+      "file": "sample_manuscript/01_economics_of_tokens.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch02",
+      "label": "CHAPTER 2",
+      "title": "Prompt Caching, Batch APIs & Model Routing Mathematics",
+      "file": "private_commercial_build/manuscript/02_caching_batch_routing.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch03",
+      "label": "CHAPTER 3",
+      "title": "Lossless Context Compression & @schema Tabular Wire Formats",
+      "file": "private_commercial_build/manuscript/03_lossless_schema_compression.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch04",
+      "label": "CHAPTER 4",
+      "title": "Client-Side & Zero-Trust PII / Secret Redaction Vaults",
+      "file": "private_commercial_build/manuscript/04_zero_trust_pii_vaults.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch05",
+      "label": "CHAPTER 5",
+      "title": "Securing Autonomous AI Agents & MCP Servers",
+      "file": "private_commercial_build/manuscript/05_securing_agents_mcp.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch06",
+      "label": "CHAPTER 6",
+      "title": "Machine-to-Machine Agent Monetization (x402 & Pay-Per-Event)",
+      "file": "private_commercial_build/manuscript/06_x402_agent_monetization.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch07",
+      "label": "CHAPTER 7",
+      "title": "Evaluating & Auditing AI Pipelines Without Lying to Yourself",
+      "file": "private_commercial_build/manuscript/07_evaluating_auditing_pipelines.md",
+      "is_chapter": true
+    },
+    {
+      "id": "ch08",
+      "label": "CHAPTER 8",
+      "title": "Production Checklists, Incident Runbooks & Formula Sheets",
+      "file": "private_commercial_build/manuscript/08_runbooks_checklists_formulas.md",
+      "is_chapter": true
+    },
+    {
+      "id": "appA",
+      "label": "APPENDIX A",
+      "title": "Complete 2026 Reference Tables",
+      "file": "private_commercial_build/manuscript/09_appendix_reference_tables.md",
+      "is_chapter": true
+    }
+  ]
+}

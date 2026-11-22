@@ -1,0 +1,50 @@
+{
+  "kind": "bar_race",
+  "lang": "ja",
+  "category_badge": "日本マネー・節税シミュレーション",
+  "highlight_phrase": "非課税 20.315%",
+  "title": "新NISA 20年積立の節税差額",
+  "subtitle": "年利5%想定・毎月積立額別の非課税メリット（万円）",
+  "source_label": "出典: 金融庁 新NISA制度概要（20.315%課税との比較試算）",
+  "cta_text": "無料シミュレーター＆コードは概要欄へ",
+  "unit_prefix": "",
+  "unit_suffix": "万円",
+  "value_decimals": 0,
+  "total_label": "4プラン合計節税",
+  "periods": ["5年目", "10年目", "15年目", "20年目"],
+  "entries": [
+    {
+      "key": "月10万",
+      "label": "満額ペース",
+      "color": "#F59E0B",
+      "values": [16, 71, 177, 347],
+      "badge": "最大効果",
+      "end_period_note": "20年"
+    },
+    {
+      "key": "月5万",
+      "label": "標準積立",
+      "color": "#10B981",
+      "values": [8, 36, 89, 174],
+      "badge": "人気No.1",
+      "end_period_note": "20年"
+    },
+    {
+      "key": "月3万",
+      "label": "コツコツ型",
+      "color": "#38BDF8",
+      "values": [5, 21, 53, 104],
+      "badge": "堅実",
+      "end_period_note": "20年"
+    },
+    {
+      "key": "月1万",
+      "label": "スタート枠",
+      "color": "#A78BFA",
+      "values": [2, 7, 18, 35],
+      "badge": "入門",
+      "end_period_note": "20年"
+    }
+  ],
+  "narration_script": "新NISAの非課税メリットは時間とともに急拡大します。年利5パーセント想定で20年積み立てると、月3万円でも約104万円、月5万円なら約174万円、月10万円ペースなら約347万円もの税金差が生まれます。"
+}

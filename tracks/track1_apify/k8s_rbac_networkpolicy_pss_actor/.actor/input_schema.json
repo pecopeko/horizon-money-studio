@@ -1,0 +1,22 @@
+{
+  "title": "Kubernetes RBAC, NetworkPolicy & PodSecurity Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Kubernetes Manifests or Policy Bundles to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "cluster_name": "prod-cluster",
+          "manifest_text": "roleRef: {name: cluster-admin}\nverbs: [\"*\"]\nautomountServiceAccountToken: true\ncidr: 0.0.0.0/0\npod-security.kubernetes.io/enforce: privileged\nfailurePolicy: Ignore\nlimits: null"
+        }
+      ],
+      "description": "List of Kubernetes policy items containing cluster_name and manifest_text (YAML or JSON)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

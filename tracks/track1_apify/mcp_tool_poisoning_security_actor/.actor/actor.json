@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "mcp-agent-tool-poisoning-security-auditor",
+  "title": "MCP Server Manifest & Agent Tool-Poisoning Security Auditor",
+  "description": "Audit Model Context Protocol (MCP) server manifests, tool JSON schemas, and agent configs for tool poisoning prompt injections, unpinned npx/shell execution, leaked plaintext credentials, unsafe filesystem root mounts, cleartext transports, and unconstrained schema sinks.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

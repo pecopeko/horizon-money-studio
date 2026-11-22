@@ -1,0 +1,22 @@
+{
+  "title": "CI/CD .env & Credential Leak Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Environment Configs, Manifests, or Build Logs to Scan",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "target_name": ".env.example-bad",
+          "config_text": "AWS_SECRET_ACCESS_KEY=demo_placeholder_key\nDATABASE_URL=postgres://admin:demoPass@db.internal:5432/prod\nJWT_SECRET=changeme\nNODE_TLS_REJECT_UNAUTHORIZED=0"
+        }
+      ],
+      "description": "List of configuration objects containing target_name and config_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

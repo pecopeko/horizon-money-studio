@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-shorts-factory"
+version = "1.0.0"
+description = "Zero-cost ($0.00) local 1080x1920 30fps kinetic data-chart YouTube Shorts / Reels video factory powered by live SEC EDGAR XBRL, FRED, Pillow, FFmpeg, and macOS Neural TTS."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [
+    { name = "pecopeko" },
+]
+keywords = ["ffmpeg", "data-visualization", "youtube-shorts", "python", "video-automation", "sec-edgar", "fred"]
+dependencies = [
+    "Pillow>=10.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pecopeko/data-shorts-factory"
+Repository = "https://github.com/pecopeko/data-shorts-factory"
+Releases = "https://github.com/pecopeko/data-shorts-factory/releases"
+Sponsor = "https://github.com/sponsors/pecopeko"
+"Apify Store" = "https://apify.com/pecopeko"

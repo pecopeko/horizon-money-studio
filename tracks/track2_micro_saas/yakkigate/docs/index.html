@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YAKKIGATE（薬影）：薬機法・景品表示法・ステマ規制 ブラウザ完結AI広告監査ゲート</title>
+  <meta name="description" content="100%ブラウザローカル動作・社外送信ゼロでLP・EC・SNS原稿の薬機法、景品表示法（No.1根拠/二重価格）、ステマ規制違反を即座に判定し、監査証跡レポートを出力。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar" data-ui="bar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <span class="brand__seal" aria-hidden="true">薬</span>
+        <div>
+          <strong class="brand__name">YAKKIGATE 薬影</strong>
+          <span class="brand__sub">100% ブラウザ内処理 / 外部API通信ゼロ</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主要ナビゲーション">
+        <a href="#auditor">単発監査</a>
+        <a href="#batch">CSV一括</a>
+        <a href="#extension">拡張機能</a>
+        <a class="btn-outline" href="https://github.com/pecopeko/horizon-money-studio/releases/tag/v1.0.0-pro-kit" target="_blank" rel="noopener">商務Pro版キット</a>
+        <a class="btn-primary" href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener">開発支援 Sponsors</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">薬機法・景表法・ステマ規制の事前リスクを、原稿送信ゼロで可視化。</h1>
+      <p class="intro__lead">
+        LP・商品ページ・PR投稿を下書きのまま手元のブラウザ内だけでスキャン。NG表現の該当箇所、法令別リスクスコア、適法リライト案、証跡Markdownレポートを一瞬で生成します。
+      </p>
+      <div class="preset-bar" data-ui="presets">
+        <span class="preset-bar__label">サンプル原稿を試す：</span>
+        <button type="button" class="chip" data-preset="yakki">薬機法NG（シミ・糖尿病）</button>
+        <button type="button" class="chip" data-preset="keihyo">景表法NG（根拠なしNo.1・二重価格）</button>
+        <button type="button" class="chip" data-preset="stema">ステマ規制NG（PR表記なし提供投稿）</button>
+        <button type="button" class="chip" data-preset="clean">適法表現（化粧品保湿範囲・PR明記）</button>
+      </div>
+    </section>
+
+    <section id="auditor" class="workspace" data-ui="workbench">
+      <div class="pane">
+        <div class="pane__head">
+          <h2>広告・LP・SNS 原稿入力</h2>
+          <span class="badge-local" id="runtimeAuditBadge">外部通信 0 回</span>
+        </div>
+        <textarea id="copyInput" rows="9" placeholder="ここに審査したいLPコピー、商品名・効能文、インフルエンサー下書きを入力してください..."></textarea>
+        <div class="pane__actions">
+          <button type="button" id="runAuditBtn" class="btn-primary">ローカル監査を実行</button>
+          <button type="button" id="downloadReportBtn" class="btn-outline">監査レポート(.md)を保存</button>
+          <button type="button" id="clearInputBtn" class="btn-ghost">クリア</button>
+        </div>
+      </div>
+
+      <div class="pane">
+        <div class="pane__head">
+          <h2>監査結果サマリー</h2>
+          <span class="risk-pill" id="riskLevelPill">LOW (0 / 100)</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-cell" data-ui="metric">
+            <span class="score-cell__label">総合リスク</span>
+            <strong class="score-cell__val" id="scoreTotalVal">0 / 100</strong>
+          </div>
+          <div class="score-cell" data-ui="metric">
+            <span class="score-cell__label">判定クラス</span>
+            <strong class="score-cell__val" id="predictedLabelVal">compliant</strong>
+          </div>
+          <div class="score-cell" data-ui="metric">
+            <span class="score-cell__label">薬機法 / 景表法 / ステマ</span>
+            <strong class="score-cell__val" id="breakdownVal">0 / 0 / 0</strong>
+          </div>
+        </div>
+
+        <div class="highlight-box" data-ui="preview">
+          <h3>ハイライトプレビュー</h3>
+          <div id="highlightedText" class="highlighted-prose"></div>
+        </div>
+
+        <div class="rewrite-box" data-ui="advice">
+          <h3>推奨リライト方針</h3>
+          <p id="rewriteHint">原稿を入力して監査を実行してください。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="findings-section" data-ui="table-section" aria-labelledby="findings-heading">
+      <h2 id="findings-heading">検出箇所と是正根拠一覧</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ルールID</th>
+              <th>対象法令</th>
+              <th>検出表現</th>
+              <th>重み</th>
+              <th>是正アドバイス</th>
+            </tr>
+          </thead>
+          <tbody id="findingsTableBody">
+            <tr><td colspan="5" class="muted-cell">監査結果がここに表示されます。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="batch" class="batch-section" data-ui="batch">
+      <div class="section-head">
+        <h2>複数コピー一括監査（1行＝1原稿）</h2>
+        <button type="button" id="runBatchBtn" class="btn-outline">一括チェックを実行</button>
+      </div>
+      <textarea id="batchInput" rows="4" placeholder="1行ごとに別の見出しやSNS投稿文を貼り付けて一括チェックできます。">保湿成分配合で、肌にうるおいを与えます。
+このクリームでシミが完全に消えます！
+満足度No.1！通常9,800円が永久500円！
+企業様から商品提供いただきました（表記なし）</textarea>
+      <div id="batchSummary" class="batch-summary"></div>
+    </section>
+
+    <section id="extension" class="ext-section" data-ui="extension">
+      <div class="ext-card">
+        <div>
+          <h2>YAKKIGATE Chrome拡張機能 v1.0.0（完全オフライン）</h2>
+          <p>閲覧中のLPや管理画面のテキスト選択・貼付からワンクリックで薬機法/景表法リスクを確認できる軽量Manifest V3拡張を同梱しています。</p>
+        </div>
+        <div class="ext-actions">
+          <a class="btn-primary" href="https://github.com/pecopeko/yakkigate/releases/download/v1.0.0/yakkigate-chrome-extension-v1.0.0.zip">Chrome拡張 ZIPをダウンロード</a>
+          <a class="btn-outline" href="https://github.com/pecopeko/yakkigate" target="_blank" rel="noopener">GitHubソースコード</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>YAKKIGATE（薬影）：医療・法的助言の代替ではなく、制作・法務レビュー前のローカル一次スクリーニング支援ツールです。</span>
+      <span><a href="https://pecopeko.github.io/kurogate/" target="_blank" rel="noopener">姉妹ツール KUROGATE（黒門）</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

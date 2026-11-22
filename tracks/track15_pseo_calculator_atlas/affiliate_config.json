@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "site_base_url": "https://pecopeko.github.io/ai-tax-cost-atlas",
+  "site_name": "AI & Japan Tax Cost Atlas 2026",
+  "disclosure_en": "Affiliate & Partner Disclosure: Links marked Partner / Affiliate may earn a referral commission at no extra cost to you. All calculator math is 100% deterministic, client-side, and independent of partner selection.",
+  "disclosure_ja": "PR・広告表記：当サイトの一部リンクにはアフィリエイト広告（A8.net / もしもアフィリエイト / 紹介プログラム等）が含まれます。計算ロジックは2026–2027年法定税率に基づき独立して算出しています。",
+  "llm_partners": [
+    {
+      "id": "openrouter",
+      "badge": "Multi-Model Routing",
+      "title": "OpenRouter — Route Across 300+ Models with 1 API Key",
+      "description": "Swap between GPT-5, Claude Sonnet 4, Gemini 2.5 Flash, DeepSeek V3, Qwen3, and Llama 4 without rewriting SDKs. Automatic fallback and per-request spend telemetry.",
+      "cta_label": "Compare Live Models on OpenRouter",
+      "url": "https://openrouter.ai/?ref=YOUR_OPENROUTER_REF",
+      "is_affiliate": true,
+      "category": "routing"
+    },
+    {
+      "id": "runpod",
+      "badge": "GPU Break-Even",
+      "title": "RunPod — Serverless & On-Demand GPUs for High-Volume Inference",
+      "description": "Once monthly API spend exceeds $1,500–$3,000 on open-weight models (DeepSeek / Qwen / Llama), serverless vLLM endpoints can cut token unit cost by 40–70%.",
+      "cta_label": "Estimate Serverless GPU Pricing",
+      "url": "https://runpod.io/?ref=YOUR_RUNPOD_REF",
+      "is_affiliate": true,
+      "category": "gpu"
+    },
+    {
+      "id": "apify",
+      "badge": "Data Pipelines",
+      "title": "Apify Store — Clean Markdown & JSON Feeds for RAG Agents",
+      "description": "Feed structured web data into your LLM pipelines without wasting 60% of your context window on raw HTML boilerplate. Pay-per-event pricing with $5/mo free tier.",
+      "cta_label": "Explore Apify RAG Actors",
+      "url": "https://apify.com/?fpr=YOUR_APIFY_REF",
+      "is_affiliate": true,
+      "category": "rag"
+    },
+    {
+      "id": "tokenlens_internal",
+      "badge": "Free Browser Tool",
+      "title": "TOKENLENS — Compress JSON Payloads by 65% Before Sending to LLMs",
+      "description": "100% browser-local multi-script EN/JP token counter and lossless JSON-to-Compact-Tabular optimizer. Zero API calls, zero upload.",
+      "cta_label": "Open TOKENLENS Free Tool",
+      "url": "https://pecopeko.github.io/tokenlens/",
+      "is_affiliate": false,
+      "category": "internal"
+    }
+  ],
+  "jp_tax_partners": [
+    {
+      "id": "freee_accounting",
+      "badge": "PR・クラウド会計",
+      "title": "freee会計 — 青色申告65万円控除＆e-Tax・インボイス自動集計",
+      "description": "銀行・クレカ明細を自動連携し、複式簿記と青色申告特別控除65万円（最大約20〜30万円の節税）をスマホ・ブラウザ完結で作成。",
+      "cta_label": "freee会計の無料プランを確認（PR）",
+      "url": "https://px.a8.net/svt/ejp?a8mat=YOUR_FREEE_A8_CODE",
+      "is_affiliate": true,
+      "category": "accounting"
+    },
+    {
+      "id": "mf_cloud",
+      "badge": "PR・クラウド会計",
+      "title": "マネーフォワード クラウド確定申告 — インボイス2割特例・簡易課税対応",
+      "description": "2026年10月の経過措置50%・2027年からの簡易課税移行を見据えた消費税集計と、法人成り時のクラウド会計移行がスムーズ。",
+      "cta_label": "マネーフォワード クラウド詳細（PR）",
+      "url": "https://px.a8.net/svt/ejp?a8mat=YOUR_MF_A8_CODE",
+      "is_affiliate": true,
+      "category": "accounting"
+    },
+    {
+      "id": "yayoi_blue",
+      "badge": "PR・確定申告ソフト",
+      "title": "やよいの青色申告 オンライン — 初年度無料で始められる定番会計",
+      "description": "個人事業主シェア上位の定番青色申告ソフト。初年度無料キャンペーン対象で、まずはコストゼロで65万円控除の複式簿記へ移行したい方向け。",
+      "cta_label": "やよいの青色申告 オンラインを見る（PR）",
+      "url": "https://px.a8.net/svt/ejp?a8mat=YOUR_YAYOI_A8_CODE",
+      "is_affiliate": true,
+      "category": "accounting"
+    },
+    {
+      "id": "furusato_portal",
+      "badge": "PR・ふるさと納税",
+      "title": "ふるさと納税ポータル — 自己負担2,000円安全上限内で返礼品を比較",
+      "description": "当ページの「95%安全上限目安」を基準に寄付すれば、税率境界またぎによる自己負担増を避けながら実質2,000円で日用品・食品を受け取れます。",
+      "cta_label": "ふるさと納税の返礼品を見る（PR）",
+      "url": "https://px.a8.net/svt/ejp?a8mat=YOUR_FURUSATO_A8_CODE",
+      "is_affiliate": true,
+      "category": "furusato"
+    },
+    {
+      "id": "zeirishi_match",
+      "badge": "PR・税理士紹介",
+      "title": "税理士ドットコム / 法人成り専門税理士の無料比較・見積もり",
+      "description": "利益800万〜1,000万円超の法人成り検討・最適役員報酬設計・マイクロ法人スキームの可否を、複数税理士から無料相談で比較できます。",
+      "cta_label": "法人成り対応の税理士を無料相談（PR）",
+      "url": "https://px.a8.net/svt/ejp?a8mat=YOUR_ZEIRISHI_A8_CODE",
+      "is_affiliate": true,
+      "category": "tax_advisor"
+    },
+    {
+      "id": "booth_offline_kit",
+      "badge": "自社オフライン製品",
+      "title": "BOOTH：経理・バックオフィス自動化5点セット v2.0（買い切り ¥1,980）",
+      "description": "社内PCでも動く外部通信ゼロのオフラインHTML＋Python CLI一式（全銀Shift-JIS変換・電帳法PDF一括リネーム・源泉徴収＆インボイス50%集計）。",
+      "cta_label": "BOOTH オフライン経理キットを見る",
+      "url": "https://booth.pm/ja/search/YOUR_BOOTH_ITEM_ID",
+      "is_affiliate": false,
+      "category": "own_product"
+    },
+    {
+      "id": "zenn_book",
+      "badge": "自社技術書",
+      "title": "Zenn本：個人開発・フリーランスのためのローカル自動化＆税金・APIコスト設計実践ガイド",
+      "description": "全銀固定長バイナリ・電帳法PDF処理・2026–2027年手取り＆インボイス設計・LLMコスト圧縮の実装コードを体系解説。",
+      "cta_label": "Zenn本（GitHub公開ソース）を見る",
+      "url": "https://github.com/pecopeko/zenn-content",
+      "is_affiliate": false,
+      "category": "own_product"
+    },
+    {
+      "id": "tedorigate_internal",
+      "badge": "無料ブラウザツール",
+      "title": "TEDORIGATE（手取り門）2026–2027 — フル機能シミュレーター＆CSV出力",
+      "description": "インボイス4方式・小規模企業共済・iDeCo・役員報酬自動最適化・SVG比較グラフ＆Markdownサマリコピー対応の完全ローカル無料ツール。",
+      "cta_label": "TEDORIGATE フル版を開く（無料）",
+      "url": "https://pecopeko.github.io/tedorigate/",
+      "is_affiliate": false,
+      "category": "internal"
+    }
+  ]
+}

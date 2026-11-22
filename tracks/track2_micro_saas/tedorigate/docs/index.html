@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TEDORIGATE（手取り門）2026–2027 — フリーランス・個人事業主 手取り・ふるさと納税上限・インボイス50%＆法人成り損益分岐点シミュレーター</title>
+  <meta name="description" content="完全ブラウザ完結・外部送信ゼロ。2026–2027年税制対応。個人事業主・フリーランスの手取り、ふるさと納税の安全上限額、インボイス2割特例終了（2026年9月）＆発注側50%控除影響、法人成りの自動損益分岐点を一画面で試算。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar__inner">
+      <div class="brand">
+        <svg class="brand__mark" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="29" height="29" rx="5" fill="#14533c" />
+          <path d="M8 10.5H24M16 10.5V22.5M9.5 16H22.5" stroke="#ffffff" stroke-width="2" stroke-linecap="square" />
+          <circle cx="11.5" cy="20.5" r="1.7" fill="#b8d8c8" />
+          <circle cx="20.5" cy="20.5" r="1.7" fill="#b8d8c8" />
+        </svg>
+        <div class="brand__text">
+          <span class="brand__title">TEDORIGATE <span class="brand__ver">2026–2027</span></span>
+          <span class="brand__sub">個人事業主 手取り・ふるさと納税上限・インボイス50%・法人成り損益分岐点</span>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <div class="preset-group" aria-label="モデルケース読込">
+          <button type="button" class="preset-btn" data-preset="freelance600">売上600万 / 経費150万</button>
+          <button type="button" class="preset-btn" data-preset="it1000">IT独立 1,000万 / 200万</button>
+          <button type="button" class="preset-btn" data-preset="high1800">高収益 1,800万 / 300万</button>
+        </div>
+        <div class="trust-pill" title="入力した売上・経費・控除額はブラウザ内メモリのみで計算され、外部サーバーへ一切送信されません">
+          <span class="trust-pill__dot" aria-hidden="true"></span>
+          <span>完全ローカル計算 · 通信ゼロ</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell workspace">
+    <div class="page-head">
+      <div>
+        <h1>2026–2027 個人事業主 手取り＆法人成りシミュレーター</h1>
+        <p id="headlineFinding" class="page-head__finding">
+          売上・経費を入力すると、手取り・ふるさと納税上限・インボイス2027年増税額・法人成り損益分岐点を即時計算します。
+        </p>
+      </div>
+      <div class="page-head__actions">
+        <button type="button" id="copyReportBtn" class="btn">試算サマリをコピー</button>
+        <button type="button" id="downloadCsvBtn" class="btn btn--primary">比較表CSVを保存</button>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <!-- ==================== LEFT: INPUT CONTROLS ==================== -->
+      <aside class="panel panel--sticky" aria-label="試算条件の入力">
+        <div class="panel__head">
+          <h2 class="panel__title">試算条件（年額・税抜）</h2>
+          <button type="button" id="resetBtn" class="preset-btn">初期値に戻す</button>
+        </div>
+        <div class="panel__body">
+          <div class="form-section">
+            <p class="form-section__label">1. 売上・経費・申告区分</p>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="annualSales">年間売上高（税抜）</label>
+                <span class="field__hint" id="salesManLabel">1,000万円</span>
+              </div>
+              <div class="input-wrap">
+                <input id="annualSales" class="input-num" type="number" min="0" max="500000000" step="100000" value="10000000">
+                <span class="input-unit">円</span>
+              </div>
+              <input id="annualSalesRange" class="range-slider" type="range" min="1000000" max="30000000" step="100000" value="10000000" aria-label="年間売上高スライダー">
+            </div>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="annualExpenses">年間必要経費（税抜）</label>
+                <span class="field__hint" id="profitPreviewLabel">差引利益 800万円</span>
+              </div>
+              <div class="input-wrap">
+                <input id="annualExpenses" class="input-num" type="number" min="0" max="500000000" step="50000" value="2000000">
+                <span class="input-unit">円</span>
+              </div>
+              <input id="annualExpensesRange" class="range-slider" type="range" min="0" max="15000000" step="50000" value="2000000" aria-label="年間必要経費スライダー">
+            </div>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="blueReturnType">青色申告特別控除</label>
+              </div>
+              <select id="blueReturnType" class="input-select">
+                <option value="blue65" selected>青色申告 65万円（e-Tax・複式簿記）</option>
+                <option value="blue55">青色申告 55万円（紙提出・複式簿記）</option>
+                <option value="blue10">青色申告 10万円（簡易簿記）</option>
+                <option value="white">白色申告（0円）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <p class="form-section__label">2. 所得控除・社会保険・個人事業税</p>
+
+            <div class="field-grid-2">
+              <div class="field">
+                <div class="field__row">
+                  <label class="field__label" for="smallEnterpriseMutualAid">小規模企業共済</label>
+                  <span class="field__hint">上限84万</span>
+                </div>
+                <div class="input-wrap">
+                  <input id="smallEnterpriseMutualAid" class="input-num" type="number" min="0" max="840000" step="12000" value="360000">
+                  <span class="input-unit">円</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field__row">
+                  <label class="field__label" for="ideco">iDeCo掛金</label>
+                  <span class="field__hint">第1号81.6万</span>
+                </div>
+                <div class="input-wrap">
+                  <input id="ideco" class="input-num" type="number" min="0" max="816000" step="12000" value="240000">
+                  <span class="input-unit">円</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-grid-2">
+              <div class="field">
+                <div class="field__row">
+                  <label class="field__label" for="otherDeductions">その他所得控除</label>
+                  <span class="field__hint">扶養・生保等</span>
+                </div>
+                <div class="input-wrap">
+                  <input id="otherDeductions" class="input-num" type="number" min="0" max="10000000" step="10000" value="0">
+                  <span class="input-unit">円</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field__row">
+                  <label class="field__label" for="nationalPension">国民年金（年額）</label>
+                </div>
+                <div class="input-wrap">
+                  <input id="nationalPension" class="input-num" type="number" min="0" max="600000" step="1000" value="203760">
+                  <span class="input-unit">円</span>
+                </div>
+              </div>
+            </div>
+
+            <label class="toggle-row">
+              <span>個人事業税（290万円超に5%）を含める</span>
+              <input id="includeBusinessTax" type="checkbox" checked>
+            </label>
+            <label class="toggle-row">
+              <span>40〜64歳（介護保険第2号を含める）</span>
+              <input id="isAge40To64" type="checkbox">
+            </label>
+          </div>
+
+          <div class="form-section">
+            <p class="form-section__label">3. インボイス（2026–2027年）条件</p>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="simplifiedClass">簡易課税の事業区分</label>
+              </div>
+              <select id="simplifiedClass" class="input-select">
+                <option value="1">第1種（卸売業・みなし仕入率90%）</option>
+                <option value="2">第2種（小売業・みなし仕入率80%）</option>
+                <option value="3">第3種（製造・建設等・みなし仕入率70%）</option>
+                <option value="4">第4種（飲食・その他・みなし仕入率60%）</option>
+                <option value="5" selected>第5種（IT・コンサル・サービス・50%）</option>
+                <option value="6">第6種（不動産業・みなし仕入率40%）</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="taxableExpenseRatio">経費のうち課税仕入(10%)割合</label>
+                <span class="field__hint" id="taxableRatioLabel">70%</span>
+              </div>
+              <input id="taxableExpenseRatio" class="range-slider" type="range" min="0" max="100" step="5" value="70">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <p class="form-section__label">4. 法人成り比較パラメータ</p>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="directorSalaryMode">役員報酬の設定方式</label>
+              </div>
+              <select id="directorSalaryMode" class="input-select">
+                <option value="auto" selected>自動最適化（法人＋個人の手残り最大化）</option>
+                <option value="manual">手動指定（生活費ベースで比較）</option>
+              </select>
+            </div>
+
+            <div class="field" id="manualSalaryWrap" hidden>
+              <div class="field__row">
+                <label class="field__label" for="directorSalaryManual">役員報酬（年額）</label>
+                <span class="field__hint" id="manualSalaryMonthly">月40.0万円</span>
+              </div>
+              <div class="input-wrap">
+                <input id="directorSalaryManual" class="input-num" type="number" min="0" max="50000000" step="120000" value="4800000">
+                <span class="input-unit">円</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field__row">
+                <label class="field__label" for="corporateAccountingCost">法人維持・税理士費差額（年額）</label>
+                <span class="field__hint">決算料等</span>
+              </div>
+              <div class="input-wrap">
+                <input id="corporateAccountingCost" class="input-num" type="number" min="0" max="2000000" step="20000" value="240000">
+                <span class="input-unit">円</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==================== RIGHT: LEDGER RESULTS ==================== -->
+      <div class="results-stack">
+        <!-- 4-Cell Unified KPI Strip -->
+        <section class="kpi-strip" aria-label="主要試算サマリ">
+          <div class="kpi-cell kpi-cell--lead">
+            <span class="kpi-cell__label">個人事業主 実質手取り（年額）</span>
+            <strong id="kpiSoleNet" class="kpi-cell__value tabular">¥0</strong>
+            <span id="kpiSoleMeta" class="kpi-cell__note">月換算 ¥0 · 実効負担率 0%</span>
+          </div>
+          <div class="kpi-cell">
+            <span class="kpi-cell__label">ふるさと納税 安全上限目安</span>
+            <strong id="kpiFurusatoSafe" class="kpi-cell__value tabular">¥0</strong>
+            <span id="kpiFurusatoMeta" class="kpi-cell__note">理論上限 ¥0（自己負担 ¥2,000）</span>
+          </div>
+          <div class="kpi-cell">
+            <span class="kpi-cell__label">2027年 インボイス納税（推奨）</span>
+            <strong id="kpiInvoice2027" class="kpi-cell__value tabular">¥0</strong>
+            <span id="kpiInvoiceMeta" class="kpi-cell__note">2割特例終了による増税 +¥0</span>
+          </div>
+          <div class="kpi-cell">
+            <span class="kpi-cell__label">法人成り 損益分岐点（利益）</span>
+            <strong id="kpiBreakEven" class="kpi-cell__value tabular">¥0</strong>
+            <span id="kpiCorpAdvantage" class="kpi-cell__note">現利益での法人差額 ¥0</span>
+          </div>
+        </section>
+
+        <!-- SVG Bar Chart: Sole Prop vs Corporation -->
+        <section class="panel" aria-labelledby="chartHeading">
+          <div class="panel__head">
+            <div>
+              <h2 id="chartHeading" class="panel__title">個人事業主 vs 法人成り 実質手残り比較（損益分岐点チャート）</h2>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-swatch legend-swatch--sole"></span>個人事業主 実質手残り</span>
+              <span class="legend-item"><span class="legend-swatch legend-swatch--corp"></span>法人成り 個人＋法人留保合計</span>
+              <span class="legend-item"><span class="legend-swatch legend-swatch--be"></span>損益分岐点</span>
+            </div>
+          </div>
+          <div class="panel__body">
+            <div id="comparisonChart" class="chart-box" role="img" aria-label="利益水準ごとの個人事業主と法人成りの実質手残り比較グラフ"></div>
+            <p id="chartFootnote" class="chart-footnote"></p>
+          </div>
+        </section>
+
+        <!-- 2026-2027 Invoice Tax Impact & Oct 2026 Buyer Cliff -->
+        <section class="panel" aria-labelledby="invoiceHeading">
+          <div class="panel__head">
+            <h2 id="invoiceHeading" class="panel__title">2026–2027年 インボイス消費税比較 ＆ 発注側50%経過措置インパクト</h2>
+            <span id="invoiceSalesTaxBadge" class="badge badge--muted">預り消費税10%：¥0</span>
+          </div>
+          <div class="panel__body">
+            <div class="table-wrap">
+              <table class="ledger-table">
+                <thead>
+                  <tr>
+                    <th>課税方式</th>
+                    <th class="num">年間消費税 納税額</th>
+                    <th class="num">2割特例との差額</th>
+                    <th>2027年以降の可否・実務ポイント</th>
+                  </tr>
+                </thead>
+                <tbody id="invoiceTableBody"></tbody>
+              </table>
+            </div>
+            <div id="buyerCliffCallout" class="callout-warn"></div>
+          </div>
+        </section>
+
+        <!-- Side-by-Side Detailed Accounting Reconciliation -->
+        <section class="two-col-detail">
+          <div class="panel">
+            <div class="panel__head">
+              <h2 class="panel__title">個人事業主 税金・社保・ふるさと納税 内訳</h2>
+              <span id="soleMarginalBadge" class="badge badge--ok">所得税率 0%</span>
+            </div>
+            <div class="panel__body">
+              <div class="table-wrap">
+                <table class="ledger-table">
+                  <thead>
+                    <tr>
+                      <th>項目</th>
+                      <th class="num">金額（年額）</th>
+                    </tr>
+                  </thead>
+                  <tbody id="soleBreakdownBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__head">
+              <h2 class="panel__title">法人成り（1人社長）個人＋法人 内訳</h2>
+              <span id="corpSalaryBadge" class="badge badge--corp">役員報酬 ¥0</span>
+            </div>
+            <div class="panel__body">
+              <div class="table-wrap">
+                <table class="ledger-table">
+                  <thead>
+                    <tr>
+                      <th>項目</th>
+                      <th class="num">金額（年額）</th>
+                    </tr>
+                  </thead>
+                  <tbody id="corpBreakdownBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Subtle Non-Spammy Ecosystem Footer CTA -->
+        <section class="cta-strip" aria-label="関連オフライン経理ツール">
+          <div class="cta-strip__copy">
+            <h2>確定申告・毎月の振込・請求書整理もすべてブラウザ完結（通信ゼロ）で</h2>
+            <p>
+              Excelマクロが使えないPCでも動作する無料Webツール群、およびオフラインZIP＋CLI＋サンプル同梱の買い切り5点セット（BOOTH ¥1,980）を公開しています。
+            </p>
+          </div>
+          <div class="cta-links">
+            <a class="cta-link" href="https://pecopeko.github.io/zengingate/" target="_blank" rel="noopener">ZENGINGATE（全銀Shift-JIS）</a>
+            <a class="cta-link" href="https://pecopeko.github.io/denchogate/" target="_blank" rel="noopener">DENCHOGATE（電帳法PDF一括）</a>
+            <a class="cta-link" href="https://pecopeko.github.io/gensengate/" target="_blank" rel="noopener">GENSENGATE（源泉・支払調書）</a>
+            <a class="cta-link cta-link--primary" href="https://github.com/pecopeko/horizon-money-studio/blob/main/tracks/track5_direct_sales/booth_pro_pack/BOOTH_LISTING_JA.md" target="_blank" rel="noopener">BOOTH 実用5点セット（¥1,980）</a>
+          </div>
+        </section>
+
+        <p class="disclaimer">
+          ※本シミュレーターは2026–2027年時点の日本の所得税（7段階速算表＋復興特別所得税2.1%）・住民税（所得割10%＋均等割5,000円）・個人事業税（290万円控除後）・東京23区モデル国民健康保険（法定上限適用）・協会けんぽ/厚生年金（法定等級下限・上限適用）・中小法人実効税率（800万円以下約23%／超約33.58%＋均等割7万円）に基づく概算ツールです。小規模企業共済・iDeCoは節税効果と積立残高の両面があるため、「実質手残り」は税・社保・法人維持費控除後（積立資産込み）で個人・法人を同一基準比較しています。実際の申告・法人設立・簡易課税届出期限（課税期間開始前日まで）は必ず税理士・所轄税務署へご確認ください。
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

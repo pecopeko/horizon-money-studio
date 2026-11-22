@@ -1,0 +1,595 @@
+{
+  "id": "horizon-tpl-02-formd-ats-leads",
+  "name": "SEC Form D Funding + ATS Hiring Signal B2B Lead Enricher (Airtable + Notion + Slack)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 02 · SEC Form D + ATS Hiring B2B Lead Enricher\n\nCombines two high-intent public B2B buying signals every morning:\n1. **Fresh SEC EDGAR Form D private capital filings** (`efts.sec.gov/LATEST/search-index`)\n2. **Active Engineering/Ops hiring spikes** from official public ATS boards (Greenhouse, Lever, Ashby)\n\nThen checks each prospect's `/llms.txt` AI-search readiness, computes a 0-100 ICP priority score, and routes hot leads (`score >= 65`) to Airtable, Notion, and Slack.\n\n### Required Environment Variables\n- `SEC_USER_AGENT` (SEC-required contact header, e.g. `YourCompany Ops ops@yourdomain.com`)\n- `ATS_GREENHOUSE_SLUGS` (comma-separated, e.g. `stripe,figma`)\n- `ATS_LEVER_SLUGS` (comma-separated, e.g. `palantir`)\n- `ATS_ASHBY_SLUGS` (comma-separated, e.g. `linear,ramp`)\n- `AIRTABLE_BASE_ID` & `AIRTABLE_TABLE_NAME`\n- `NOTION_DATABASE_ID`\n- `SLACK_LEADS_CHANNEL` (e.g. `#b2b-hot-leads`)",
+        "height": 420,
+        "width": 440,
+        "color": 4
+      },
+      "id": "b2000002-0002-4000-8000-000000000001",
+      "name": "Sticky Note — SEC Compliance & ATS Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lead Scoring Model (0-100)\n\n- **SEC Form D Recent Filing**: +45 pts\n- **Active ATS Open Roles**: up to +35 pts (bonus for RevOps / Growth / AI / Automation roles)\n- **Missing `/llms.txt` Gap**: +20 pts (immediate bespoke teardown outreach hook!)\n\nThreshold `score >= 65` triggers multi-channel CRM insertion.",
+        "height": 220,
+        "width": 380,
+        "color": 5
+      },
+      "id": "b2000002-0002-4000-8000-000000000002",
+      "name": "Sticky Note — ICP Scoring Formula",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## CRM Destination Credentials\n\nReplace placeholder credential IDs after import:\n- `REPLACE_WITH_AIRTABLE_CREDENTIAL_ID`\n- `REPLACE_WITH_NOTION_CREDENTIAL_ID`\n- `REPLACE_WITH_SLACK_CREDENTIAL_ID`",
+        "height": 180,
+        "width": 340,
+        "color": 6
+      },
+      "id": "b2000002-0002-4000-8000-000000000003",
+      "name": "Sticky Note — CRM Credentials",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "b2000002-0002-4000-8000-000000000010",
+      "name": "Schedule Daily 09:00 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ `https://efts.sec.gov/LATEST/search-index?forms=D&dateRange=custom&startdt=${$now.minus({days: 7}).toFormat('yyyy-MM-dd')}&enddt=${$now.toFormat('yyyy-MM-dd')}` }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "={{ $env.SEC_USER_AGENT || 'HorizonResearchBot/1.0 contact@example.com' }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b2000002-0002-4000-8000-000000000011",
+      "name": "Fetch SEC EDGAR Form D Filings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json || {};\nconst hits = (resp.hits && Array.isArray(resp.hits.hits)) ? resp.hits.hits : [];\nconst out = [];\n\nfor (const hit of hits.slice(0, 15)) {\n  const src = hit._source || {};\n  const displayNames = Array.isArray(src.display_names) ? src.display_names : [];\n  const rawName = String(displayNames[0] || src.entity || '').replace(/\\s*\\(CIK[^)]*\\)/i, '').trim();\n  if (!rawName) continue;\n  const slug = rawName.toLowerCase().replace(/\\b(inc|llc|corp|corporation|ltd|lp|fund|partners)\\b/g, '').replace(/[^a-z0-9]+/g, '');\n  if (!slug || slug.length < 3) continue;\n  out.push({\n    json: {\n      companyName: rawName,\n      inferredDomain: `${slug}.com`,\n      signalType: 'SEC_FORM_D',\n      formDDate: String(src.file_date || ''),\n      cik: Array.isArray(src.ciks) ? String(src.ciks[0] || '') : '',\n      openRolesCount: 0,\n      opsRolesCount: 0\n    }\n  });\n}\nreturn out.length ? out : [{ json: { companyName: 'No Recent Form D Hits', inferredDomain: '', signalType: 'SEC_FORM_D_EMPTY', openRolesCount: 0, opsRolesCount: 0 } }];"
+      },
+      "id": "b2000002-0002-4000-8000-000000000012",
+      "name": "Parse Form D Funded Issuers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ats-gh",
+              "name": "greenhouseSlugs",
+              "value": "={{ $env.ATS_GREENHOUSE_SLUGS || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "ats-lv",
+              "name": "leverSlugs",
+              "value": "={{ $env.ATS_LEVER_SLUGS || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "ats-ash",
+              "name": "ashbySlugs",
+              "value": "={{ $env.ATS_ASHBY_SLUGS || 'linear' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2000002-0002-4000-8000-000000000013",
+      "name": "Load Target ATS Watchlist",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $input.first().json || {};\nconst splitSlugs = (v) => String(v || '').split(',').map((s) => s.trim().toLowerCase()).filter((s) => /^[a-z0-9-]+$/.test(s));\nconst jobs = [];\n\nfor (const slug of splitSlugs(cfg.greenhouseSlugs)) {\n  jobs.push({ json: { atsProvider: 'greenhouse', slug, companyName: slug, inferredDomain: `${slug}.com`, apiUrl: `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs` } });\n}\nfor (const slug of splitSlugs(cfg.leverSlugs)) {\n  jobs.push({ json: { atsProvider: 'lever', slug, companyName: slug, inferredDomain: `${slug}.com`, apiUrl: `https://api.lever.co/v0/postings/${slug}?mode=json` } });\n}\nfor (const slug of splitSlugs(cfg.ashbySlugs)) {\n  jobs.push({ json: { atsProvider: 'ashby', slug, companyName: slug, inferredDomain: `${slug}.app`, apiUrl: `https://api.ashbyhq.com/posting-api/job-board/${slug}` } });\n}\nreturn jobs;"
+      },
+      "id": "b2000002-0002-4000-8000-000000000014",
+      "name": "Expand Public ATS Board URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.apiUrl }}",
+        "options": {
+          "timeout": 12000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b2000002-0002-4000-8000-000000000015",
+      "name": "Fetch Public ATS Job Boards",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const respItems = $input.all();\nconst metaItems = $items('Expand Public ATS Board URLs');\nconst rolePattern = /(revops|growth|automation|operations|ai engineer|data engineer|gtm)/i;\nconst out = [];\n\nfor (let i = 0; i < respItems.length; i += 1) {\n  const body = respItems[i].json;\n  const meta = (metaItems[i] && metaItems[i].json) ? metaItems[i].json : {};\n  let list = [];\n  if (Array.isArray(body)) {\n    list = body;\n  } else if (body && Array.isArray(body.jobs)) {\n    list = body.jobs;\n  }\n  const opsCount = list.filter((j) => rolePattern.test(String(j.title || j.text || ''))).length;\n  out.push({\n    json: {\n      companyName: meta.companyName || meta.slug || 'Unknown',\n      inferredDomain: meta.inferredDomain || '',\n      signalType: `ATS_${String(meta.atsProvider || 'board').toUpperCase()}`,\n      formDDate: '',\n      cik: '',\n      openRolesCount: list.length,\n      opsRolesCount: opsCount\n    }\n  });\n}\nreturn out;"
+      },
+      "id": "b2000002-0002-4000-8000-000000000016",
+      "name": "Score Hiring Velocity & Ops Roles",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "b2000002-0002-4000-8000-000000000017",
+      "name": "Merge Funding & Hiring Signals",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1340,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.inferredDomain ? `https://${$json.inferredDomain}/llms.txt` : 'https://example.invalid/llms.txt' }}",
+        "options": {
+          "timeout": 8000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b2000002-0002-4000-8000-000000000018",
+      "name": "Check Prospect llms.txt Readiness",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const probes = $input.all();\nconst leads = $items('Merge Funding & Hiring Signals');\nconst enriched = [];\n\nfor (let i = 0; i < leads.length; i += 1) {\n  const lead = leads[i].json || {};\n  if (!lead.inferredDomain) continue;\n  const probe = (probes[i] && probes[i].json) ? probes[i].json : {};\n  const statusCode = Number(probe.statusCode || 0);\n  const bodyStr = typeof probe.body === 'string' ? probe.body : '';\n  const llmsPresent = statusCode === 200 && bodyStr.length >= 80 && !/<html/i.test(bodyStr.slice(0, 300));\n\n  let score = 0;\n  if (lead.signalType === 'SEC_FORM_D') score += 45;\n  if (lead.openRolesCount >= 10) score += 25;\n  else if (lead.openRolesCount >= 3) score += 15;\n  if (lead.opsRolesCount >= 1) score += 15;\n  if (!llmsPresent) score += 20;\n  score = Math.min(100, score);\n\n  const hook = !llmsPresent\n    ? `Missing /llms.txt (HTTP ${statusCode || 'ERR'}) while actively scaling (${lead.signalType})` \n    : `Active ${lead.signalType} growth signal (${lead.openRolesCount} open roles)`;\n\n  enriched.push({\n    json: {\n      ...lead,\n      llmsStatusCode: statusCode,\n      llmsPresent,\n      icpScore: score,\n      isHotLead: score >= 65,\n      outreachHook: hook,\n      evaluatedAtUtc: new Date().toISOString()\n    }\n  });\n}\nreturn enriched;"
+      },
+      "id": "b2000002-0002-4000-8000-000000000019",
+      "name": "Compute ICP Score & Outreach Hook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-hot-lead",
+              "leftValue": "={{ $json.isHotLead }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b2000002-0002-4000-8000-000000000020",
+      "name": "Is Hot ICP Lead (Score >= 65)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2020,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $env.AIRTABLE_BASE_ID }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $env.AIRTABLE_TABLE_NAME || 'B2B_Leads' }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company": "={{ $json.companyName }}",
+            "Domain": "={{ $json.inferredDomain }}",
+            "Signal": "={{ $json.signalType }}",
+            "ICPScore": "={{ $json.icpScore }}",
+            "OpenRoles": "={{ $json.openRolesCount }}",
+            "LLMsTxtPresent": "={{ $json.llmsPresent }}",
+            "OutreachHook": "={{ $json.outreachHook }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "b2000002-0002-4000-8000-000000000021",
+      "name": "Upsert Hot Lead in Airtable CRM",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2320,
+        160
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "REPLACE_WITH_AIRTABLE_CREDENTIAL_ID",
+          "name": "Airtable Personal Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "={{ $env.NOTION_DATABASE_ID }}",
+          "mode": "id"
+        },
+        "title": "={{ `${$json.companyName} (Score ${$json.icpScore})` }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Domain|url",
+              "urlValue": "={{ `https://${$json.inferredDomain}` }}"
+            },
+            {
+              "key": "Hook|rich_text",
+              "textContent": "={{ $json.outreachHook }}"
+            }
+          ]
+        }
+      },
+      "id": "b2000002-0002-4000-8000-000000000022",
+      "name": "Create Deal Card in Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        340
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "REPLACE_WITH_NOTION_CREDENTIAL_ID",
+          "name": "Notion API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $env.SLACK_LEADS_CHANNEL || '#b2b-hot-leads' }}",
+          "mode": "name"
+        },
+        "text": "={{ `[HOT LEAD ${$json.icpScore}/100] ${$json.companyName} (${$json.inferredDomain}) | Signal: ${$json.signalType} | Hook: ${$json.outreachHook}` }}",
+        "otherOptions": {}
+      },
+      "id": "b2000002-0002-4000-8000-000000000023",
+      "name": "Notify Sales Team on Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        520
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "REPLACE_WITH_SLACK_CREDENTIAL_ID",
+          "name": "Slack OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "warm-status",
+              "name": "routingStatus",
+              "value": "warm_nurture_logged",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2000002-0002-4000-8000-000000000024",
+      "name": "Log Warm Signal for Review",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        680
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Daily 09:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Fetch SEC EDGAR Form D Filings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Load Target ATS Watchlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch SEC EDGAR Form D Filings": {
+      "main": [
+        [
+          {
+            "node": "Parse Form D Funded Issuers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Form D Funded Issuers": {
+      "main": [
+        [
+          {
+            "node": "Merge Funding & Hiring Signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Target ATS Watchlist": {
+      "main": [
+        [
+          {
+            "node": "Expand Public ATS Board URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Public ATS Board URLs": {
+      "main": [
+        [
+          {
+            "node": "Fetch Public ATS Job Boards",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Public ATS Job Boards": {
+      "main": [
+        [
+          {
+            "node": "Score Hiring Velocity & Ops Roles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Hiring Velocity & Ops Roles": {
+      "main": [
+        [
+          {
+            "node": "Merge Funding & Hiring Signals",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Funding & Hiring Signals": {
+      "main": [
+        [
+          {
+            "node": "Check Prospect llms.txt Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Prospect llms.txt Readiness": {
+      "main": [
+        [
+          {
+            "node": "Compute ICP Score & Outreach Hook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute ICP Score & Outreach Hook": {
+      "main": [
+        [
+          {
+            "node": "Is Hot ICP Lead (Score >= 65)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Hot ICP Lead (Score >= 65)?": {
+      "main": [
+        [
+          {
+            "node": "Upsert Hot Lead in Airtable CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Deal Card in Notion",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Sales Team on Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Warm Signal for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "pinData": {
+    "Load Target ATS Watchlist": [
+      {
+        "json": {
+          "greenhouseSlugs": "",
+          "leverSlugs": "",
+          "ashbySlugs": "linear"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "shortTitle": "02 · SEC Form D + ATS Lead Enricher",
+    "description": "Ingests daily SEC EDGAR Form D funding filings and public Greenhouse/Lever/Ashby hiring signals, checks /llms.txt readiness, and routes hot ICP leads to Airtable, Notion, and Slack.",
+    "templateCredsSetupCompleted": false,
+    "instanceId": "horizon-n8n-template-v1"
+  },
+  "tags": [
+    {
+      "name": "b2b-sales"
+    },
+    {
+      "name": "lead-enrichment"
+    },
+    {
+      "name": "sec-edgar"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Japan Economic Security & Security Clearance Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Critical Infrastructure, Cleared Contractor, or Supply Chain Records to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "vendor_name": "Sample Cloud Core Vendor",
+          "sector": "telecom",
+          "is_specified_infrastructure_operator": true,
+          "introduces_critical_equipment": true,
+          "outsources_critical_maintenance": true,
+          "prior_notification_filed": false,
+          "handles_classified_econ_info": true,
+          "all_handlers_cleared": false,
+          "is_critical_commodity": true,
+          "single_country_dependency_pct": 75.0,
+          "policy_text": "特定社会基盤役務の特定重要設備を事前届出せず導入し、適性評価未了のまま重要経済安保情報を共有する。"
+        }
+      ],
+      "description": "List of vendor/project records containing sector, prior notification / clearance flags, dependency percentage, and policy_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

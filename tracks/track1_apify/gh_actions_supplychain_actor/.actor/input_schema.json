@@ -1,0 +1,22 @@
+{
+  "title": "GitHub Actions Workflow Supply-Chain Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "GitHub Actions Workflow YAML Payloads to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "name": "ci.yml",
+          "workflow_yaml": "name: CI\non:\n  pull_request_target:\npermissions: write-all\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n      - uses: thirdparty/setup-tool@v2\n      - run: echo \"${{ github.event.pull_request.title }}\"\n"
+        }
+      ],
+      "description": "GitHub Actions Workflow YAML Payloads to Audit (Audit .github/workflows YAML for unpinned third-party actions (non-40-hex SHA), pull_request_target untrusted PR head checkouts, script injection via github.event.*, write-all or missing permissions, and curl|sh pipes)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

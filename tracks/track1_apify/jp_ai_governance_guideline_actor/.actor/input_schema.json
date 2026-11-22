@@ -1,0 +1,24 @@
+{
+  "title": "Japan METI AI Governance & Copyright Art. 30-4 Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "AI Governance Policies and Use Cases to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Tokyo AI Products K.K.",
+          "use_case": "採用エントリーシート審査",
+          "model_license": "cc-by-nc-4.0",
+          "policy_text": "無料個人アカウント許可。学習オプトアウト不要。"
+        }
+      ],
+      "description": "AI Governance Policies and Use Cases to Audit (Audit corporate generative AI policies against Japan METI AI Business Guidelines v1.1, Copyright Act Art. 30-4, Shadow AI opt-out controls, EU AI Act risk tiers, and model licenses)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

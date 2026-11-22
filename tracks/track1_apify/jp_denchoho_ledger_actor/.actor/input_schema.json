@@ -1,0 +1,24 @@
+{
+  "title": "Japan Dencho-ho Search Filename & Ledger Validator Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Filenames or Transaction Lines to Normalize",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "raw_text": "令和8年11月19日 株式会社サンプル商事 請求書 110,000円 T7000012050002.pdf"
+        },
+        {
+          "raw_text": "R6.4.5 株式会社クラウド保守 ¥55,000.pdf"
+        }
+      ],
+      "description": "Filenames or Transaction Lines to Normalize (Normalize messy Japanese invoices/receipts filenames and transaction records into Art.7 search-compliant YYYYMMDD_Partner_Amount filenames with Wareki conversion and NTA Modulo-9 T-number check)."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

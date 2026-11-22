@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DesignGate — Interactive Figma Plugin Simulator (WCAG 2.2 Auto-Fix &amp; EN/JP Dark-Pattern Linter)</title>
+<meta name="description" content="Test DesignGate right in your browser: WCAG 2.2 AA/AAA + APCA contrast auto-fix solver, EN/JP checkout dark-pattern &amp; Tokushoho Art. 12-6 linter, touch targets, and color-blindness simulator for Figma." />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-canvas: #eef0f3;
+    --bg-subtle: #f7f8fa;
+    --bg-hover: #f0f2f5;
+    --border: #e2e5ea;
+    --border-strong: #cbd2db;
+    --ink: #111827;
+    --ink-muted: #4b5563;
+    --ink-faint: #6b7280;
+    --accent: #0f62fe;
+    --accent-hover: #0043ce;
+    --accent-soft: #edf5ff;
+    --figma-blue: #0d99ff;
+    --err: #dc2626;
+    --err-bg: #fef2f2;
+    --err-border: #fecaca;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+    --warn-border: #fde68a;
+    --ok: #047857;
+    --ok-bg: #ecfdf5;
+    --ok-border: #a7f3d0;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg-canvas);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top Workbench Bar */
+  .shell-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .brand-title {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: var(--ink-faint);
+    border-left: 1px solid var(--border);
+    padding-left: 9px;
+  }
+
+  .bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--bg-subtle);
+  }
+
+  .seg button {
+    border: none;
+    background: transparent;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .seg button.active {
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  .select-pill {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 7px;
+    padding: 5px 9px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: var(--sans);
+    cursor: pointer;
+  }
+
+  .btn-bar {
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--ink);
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+  }
+
+  .btn-bar:hover { background: var(--bg-hover); }
+  .btn-bar:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-bar-accent {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+  }
+  .btn-bar-accent:hover { background: var(--accent-hover); }
+
+  /* Main Split Workbench */
+  .workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    min-height: calc(100vh - 102px);
+  }
+
+  @media (max-width: 960px) {
+    .workbench {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left: Figma Canvas Stage */
+  .canvas-stage {
+    padding: 24px 28px 36px;
+    background-color: var(--bg-canvas);
+    background-image: radial-gradient(#cfd5de 1px, transparent 1px);
+    background-size: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    overflow: auto;
+  }
+
+  .canvas-toolbar {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+
+  .frame-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: #0369a1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cvd-badge {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: #ffffff;
+    border: 1px solid var(--border-strong);
+    color: var(--ink);
+  }
+
+  /* Artboard Wrapper */
+  .artboard-shell {
+    width: 100%;
+    max-width: 560px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 26px 26px 24px;
+    position: relative;
+    transition: filter 120ms ease;
+  }
+
+  .artboard-shell.cvd-protanopia { filter: url(#dg-protanopia); }
+  .artboard-shell.cvd-deuteranopia { filter: url(#dg-deuteranopia); }
+  .artboard-shell.cvd-tritanopia { filter: url(#dg-tritanopia); }
+
+  /* Highlight Ring for Focused / Fixed Node */
+  [data-node-id] {
+    position: relative;
+    transition: outline-color 120ms ease, background-color 150ms ease, color 150ms ease;
+  }
+
+  .node-focused {
+    outline: 2px solid var(--figma-blue) !important;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .node-fixed-flash {
+    outline: 2px solid var(--ok) !important;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Mock Artboard Internal Elements */
+  .ab-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .ab-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .ab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .ab-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .ab-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+  }
+
+  .ab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: default;
+    border: none;
+    text-align: center;
+  }
+
+  .ab-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    font-weight: 700;
+    cursor: default;
+  }
+
+  .ab-check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* Right: Embedded DesignGate Plugin Inspector */
+  .plugin-pane {
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 102px);
+    position: sticky;
+    top: 52px;
+  }
+
+  @media (max-width: 960px) {
+    .plugin-pane {
+      position: static;
+      height: auto;
+      border-left: none;
+      border-top: 1px solid var(--border);
+    }
+  }
+
+  .p-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--ink-muted);
+  }
+
+  .pill-pro {
+    border-color: #bfdbfe;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .pill-local {
+    border-color: var(--ok-border);
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+
+  .score-strip {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .score-box {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    padding-right: 12px;
+    border-right: 1px solid var(--border);
+  }
+
+  .score-num {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .score-grade {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .score-ok { color: var(--ok); }
+  .score-warn { color: var(--warn); }
+  .score-err { color: var(--err); }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .metric { display: flex; flex-direction: column; }
+  .metric-val { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .metric-lbl { font-size: 10px; color: var(--ink-faint); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .tab {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--sans);
+  }
+
+  .tab.active {
+    background: var(--bg-subtle);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+
+  .tab .cnt {
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-left: 3px;
+    color: var(--ink-faint);
+  }
+
+  .pro-banner {
+    margin: 8px 14px 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #bfdbfe;
+    background: var(--accent-soft);
+    color: #1e3a8a;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .pro-banner.hidden { display: none; }
+  .pro-banner button {
+    border: none;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card.sev-error { border-left: 3px solid var(--err); }
+  .card.sev-warning { border-left: 3px solid var(--warn); }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .card-title { font-size: 12px; font-weight: 700; line-height: 1.3; }
+
+  .sev-tag {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .sev-tag.error { background: var(--err-bg); color: var(--err); border: 1px solid var(--err-border); }
+  .sev-tag.warning { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-border); }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 10px;
+  }
+
+  .node-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .reg-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+  }
+
+  .snippet {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    word-break: break-word;
+  }
+
+  .card-msg { font-size: 11px; color: var(--ink-muted); line-height: 1.45; }
+
+  .swatch-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 6px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+  }
+
+  .swatch-cell { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .swatch-chip {
+    width: 28px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .swatch-info { display: flex; flex-direction: column; min-width: 0; }
+  .swatch-hex { font-family: var(--mono); font-size: 10px; font-weight: 700; }
+  .swatch-ratio { font-family: var(--mono); font-size: 9.5px; color: var(--ink-faint); }
+  .swatch-arrow { font-size: 12px; color: var(--ink-faint); font-weight: 700; }
+
+  .fix-actions { display: flex; gap: 6px; margin-top: 2px; }
+  .btn-fix {
+    flex: 1;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .btn-fix:hover { background: var(--accent-hover); }
+
+  .btn-fix-sec {
+    flex: 1;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .btn-fix-sec:hover { background: var(--bg-hover); }
+
+  .empty {
+    text-align: center;
+    padding: 34px 16px;
+    border: 1px dashed var(--ok-border);
+    background: var(--ok-bg);
+    border-radius: 8px;
+    color: var(--ok);
+  }
+  .empty-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+
+  .drawer {
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .drawer.hidden { display: none; }
+  .drawer textarea {
+    width: 100%;
+    height: 92px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .p-footer {
+    border-top: 1px solid var(--border);
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    background: var(--bg);
+  }
+
+  .btn-dark {
+    border: none;
+    background: var(--ink);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .btn-dark:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Bottom Product Strip */
+  .spec-strip {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 10px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+
+  .spec-strip strong { color: var(--ink); }
+  .spec-strip a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .spec-strip a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- Exact Viénot 1999 Linear-sRGB CVD SVG Filters for Live Artboard Simulation -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="dg-protanopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="dg-deuteranopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="dg-tritanopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="1.255528 -0.076749 -0.178779 0 0  -0.078411 0.930809 0.147602 0 0  0.004733 0.691367 0.303900 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>
+</svg>
+
+<header class="shell-bar">
+  <div class="brand">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="#111827"/>
+      <path d="M7 7h5a5 5 0 0 1 0 10H7V7Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="15.5" cy="12" r="2.2" fill="#0F62FE"/>
+    </svg>
+    <span class="brand-title">DesignGate</span>
+    <span class="brand-sub">Live Browser Preview Simulator · Exact Shared Figma Plugin Engine</span>
+  </div>
+
+  <div class="bar-controls">
+    <div class="seg" id="board-switcher" role="tablist" aria-label="Mock Figma Artboards">
+      <button class="active" data-board="saas-broken" type="button">1. SaaS Checkout (Broken)</button>
+      <button data-board="jp-tokushoho" type="button">2. JP EC Order (Art. 12-6)</button>
+      <button data-board="design-system-pass" type="button">3. Accessible System (Pass)</button>
+    </div>
+
+    <select id="cvd-select" class="select-pill" aria-label="Color-Blindness Vision Preview">
+      <option value="normal">Vision: Normal</option>
+      <option value="deuteranopia">Vision: Deuteranopia</option>
+      <option value="protanopia">Vision: Protanopia</option>
+      <option value="tritanopia">Vision: Tritanopia</option>
+    </select>
+
+    <button id="btn-toggle-pro" class="btn-bar" type="button">Tier: FREE (Click to Sim Pro)</button>
+    <button id="btn-undo" class="btn-bar" type="button" disabled>Undo (0)</button>
+    <button id="btn-reset" class="btn-bar" type="button">Reset</button>
+    <a class="btn-bar btn-bar-accent" href="https://github.com/pecopeko/designgate-figma-plugin" target="_blank" rel="noopener">Get Figma Plugin</a>
+  </div>
+</header>
+
+<div class="workbench">
+  <!-- Left: Interactive Figma Artboard Canvas -->
+  <section class="canvas-stage" aria-label="Simulated Figma Canvas">
+    <div class="canvas-toolbar">
+      <span id="frame-caption" class="frame-label">Frame · SaaS Pricing Checkout (Broken)</span>
+      <span id="cvd-indicator" class="cvd-badge">CVD Filter: Off (Normal sRGB)</span>
+    </div>
+
+    <div id="artboard-root" class="artboard-shell" aria-live="polite">
+      <!-- Rendered dynamically from live artboard state -->
+    </div>
+  </section>
+
+  <!-- Right: Exact 380px DesignGate Figma Plugin Panel -->
+  <aside class="plugin-pane" aria-label="DesignGate Figma Plugin Panel">
+    <div class="p-head">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <strong style="font-size:13px;">DesignGate Inspector</strong>
+        <span class="pill pill-local">0-Net Local</span>
+      </div>
+      <span id="p-tier-pill" class="pill">FREE</span>
+    </div>
+
+    <div class="score-strip">
+      <div class="score-box">
+        <span id="p-score" class="score-num">--</span>
+        <span id="p-grade" class="score-grade">--</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric">
+          <span id="p-errors" class="metric-val">0</span>
+          <span class="metric-lbl">Errors</span>
+        </div>
+        <div class="metric">
+          <span id="p-warnings" class="metric-val">0</span>
+          <span class="metric-lbl">Warnings</span>
+        </div>
+        <div class="metric">
+          <span id="p-contrast" class="metric-val">0/0</span>
+          <span class="metric-lbl">WCAG Pass</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="tabs" id="p-tabs">
+      <button class="tab active" data-cat="all" type="button">All <span class="cnt" id="p-cnt-all">0</span></button>
+      <button class="tab" data-cat="contrast" type="button">Contrast <span class="cnt" id="p-cnt-contrast">0</span></button>
+      <button class="tab" data-cat="darkPatterns" type="button">Dark Patterns <span class="cnt" id="p-cnt-darkPatterns">0</span></button>
+      <button class="tab" data-cat="ergonomics" type="button">Ergonomics <span class="cnt" id="p-cnt-ergonomics">0</span></button>
+      <button class="tab" data-cat="colorBlindness" type="button">CVD <span class="cnt" id="p-cnt-colorBlindness">0</span></button>
+    </nav>
+
+    <div id="p-pro-banner" class="pro-banner hidden">
+      <span id="p-pro-text">Auto-Fix All &amp; Certificate Export are DesignGate Pro ($12/mo or $39 one-time via Figma Native Payments).</span>
+      <button id="p-unlock-sim" type="button">Simulate Pro</button>
+    </div>
+
+    <div id="p-list" class="list"></div>
+
+    <div id="p-drawer" class="drawer hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <strong id="p-export-title" style="font-size:11px;">Dev-Handoff Certificate</strong>
+        <div style="display:flex;gap:5px;">
+          <button id="p-copy" class="btn-bar" style="padding:3px 7px;font-size:10.5px;" type="button">Copy</button>
+          <button id="p-close-drawer" class="btn-bar" style="padding:3px 7px;font-size:10.5px;" type="button">Close</button>
+        </div>
+      </div>
+      <textarea id="p-export-text" readonly></textarea>
+    </div>
+
+    <footer class="p-footer">
+      <button id="p-fix-all" class="btn-dark" type="button">Auto-Fix All (0)</button>
+      <div style="display:flex;gap:5px;">
+        <button id="p-md" class="btn-bar" style="padding:5px 8px;" type="button">MD</button>
+        <button id="p-csv" class="btn-bar" style="padding:5px 8px;" type="button">CSV</button>
+      </div>
+    </footer>
+  </aside>
+</div>
+
+<footer class="spec-strip">
+  <div>
+    <strong>Zero-Network Figma Privacy Badge:</strong> <code>networkAccess.allowedDomains: ["none"]</code> · Runs 100% locally inside Figma QuickJS.
+  </div>
+  <div>
+    <strong>Figma Native Payments:</strong> Free single-frame audit &amp; Auto-Fix · Pro <strong>$12/mo</strong> or <strong>$39 one-time</strong> (Batch Page Audit, Auto-Fix All, MD/CSV Certificate) ·
+    <a href="https://github.com/pecopeko/designgate-figma-plugin/blob/main/FIGMA_COMMUNITY_PUBLISH_GUIDE.md" target="_blank" rel="noopener">Install &amp; Publish Guide →</a>
+  </div>
+</footer>
+
+<script src="./audit-engine.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var Engine = window.DesignGateEngine;
+
+  function makeInitialBoards() {
+    return {
+      "saas-broken": {
+        id: "frame-saas-broken",
+        name: "SaaS Pricing Checkout (Broken)",
+        width: 500,
+        height: 540,
+        background: "#FFFFFF",
+        nodes: [
+          {
+            id: "s-title",
+            name: "H1 / Upgrade Title",
+            type: "TEXT",
+            headingLevel: 1,
+            characters: "Upgrade to CloudScale Pro",
+            fontSize: 22,
+            fontWeight: 700,
+            textColor: "#111827",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "s-close-btn",
+            name: "Icon Button / Close Modal",
+            type: "FRAME",
+            role: "ICON_BUTTON",
+            isInteractive: true,
+            width: 18,
+            height: 18,
+            characters: "×",
+            fontSize: 12,
+            textColor: "#9CA3AF",
+            effectiveBackground: "#F3F4F6"
+          },
+          {
+            id: "s-urgency",
+            name: "Banner / Countdown Urgency",
+            type: "TEXT",
+            characters: "Offer expires in 00:04:19 — Act now or lose this offer!",
+            fontSize: 12,
+            fontWeight: 600,
+            textColor: "#F59E0B",
+            effectiveBackground: "#FFFBEB"
+          },
+          {
+            id: "s-status-err",
+            name: "Status Badge / Limit Reached",
+            type: "RECTANGLE",
+            isStatusBadge: true,
+            width: 118,
+            height: 24,
+            characters: "Quota Alert",
+            fills: [{ type: "SOLID", color: Engine.hexToRgb01("#C94A38"), opacity: 1 }],
+            labelColor: "#FFFFFF",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "s-status-ok",
+            name: "Status Badge / Pro Active",
+            type: "RECTANGLE",
+            isStatusBadge: true,
+            width: 118,
+            height: 24,
+            characters: "Pro Active",
+            fills: [{ type: "SOLID", color: Engine.hexToRgb01("#5F8F3D"), opacity: 1 }],
+            labelColor: "#FFFFFF",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "s-subhead",
+            name: "H3 / Plan Summary",
+            type: "TEXT",
+            headingLevel: 3,
+            characters: "Annual Team Workspace · $49/seat/mo",
+            fontSize: 15,
+            fontWeight: 600,
+            textColor: "#8E99A8",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "s-addon",
+            name: "Checkbox / Prechecked Protection",
+            type: "TEXT",
+            checked: true,
+            characters: "☑ Priority Support Protection Plan +$19/mo (automatically added to your order)",
+            fontSize: 12,
+            fontWeight: 500,
+            textColor: "#6B7280",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "s-primary-cta",
+            name: "Primary CTA / Subscribe Now",
+            type: "TEXT",
+            role: "BUTTON",
+            ctaKind: "primary",
+            isInteractive: true,
+            width: 440,
+            height: 44,
+            characters: "Start 7-Day Trial & Subscribe Now",
+            fontSize: 15,
+            fontWeight: 700,
+            textColor: "#93C5FD",
+            effectiveBackground: "#2563EB"
+          },
+          {
+            id: "s-decline",
+            name: "Decline Link / Opt Out",
+            type: "TEXT",
+            role: "LINK",
+            ctaKind: "decline",
+            isInteractive: true,
+            width: 240,
+            height: 22,
+            characters: "No thanks, I prefer paying full price",
+            fontSize: 11,
+            fontWeight: 500,
+            textColor: "#B6C0CC",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "s-fineprint",
+            name: "Legal / Auto-Renew Fine Print",
+            type: "TEXT",
+            characters: "After your 7-day free trial, subscription automatically renews at $588/yr. Call support to cancel.",
+            fontSize: 9.5,
+            fontWeight: 400,
+            textColor: "#A3ACB8",
+            effectiveBackground: "#FFFFFF"
+          }
+        ]
+      },
+
+      "jp-tokushoho": {
+        id: "frame-jp-tokushoho",
+        name: "JP EC Final Order Screen (Art. 12-6 Risks)",
+        width: 500,
+        height: 540,
+        background: "#FFFFFF",
+        nodes: [
+          {
+            id: "j-title",
+            name: "H1 / 定期購入 最終確認",
+            type: "TEXT",
+            headingLevel: 1,
+            characters: "プレミアム定期コース ご注文内容の確認",
+            fontSize: 20,
+            fontWeight: 700,
+            textColor: "#111827",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "j-urgency",
+            name: "Urgency / Countdown",
+            type: "TEXT",
+            characters: "あと04分59秒で終了！本日限定・二度とない特別価格",
+            fontSize: 12,
+            fontWeight: 700,
+            textColor: "#E07B39",
+            effectiveBackground: "#FFF7ED"
+          },
+          {
+            id: "j-plan",
+            name: "Text / 初回価格",
+            type: "TEXT",
+            characters: "初回特別価格 ¥980（月額定期プラン・クレジットカード決済）",
+            fontSize: 15,
+            fontWeight: 700,
+            textColor: "#6B7280",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "j-addon",
+            name: "Checkbox / Prechecked 安心保証",
+            type: "TEXT",
+            checked: true,
+            characters: "☑ 安心保証パック +¥1,480（毎月自動更新）",
+            fontSize: 12,
+            fontWeight: 500,
+            textColor: "#64748B",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "j-cta",
+            name: "Primary CTA / 注文を確定する",
+            type: "TEXT",
+            role: "BUTTON",
+            ctaKind: "primary",
+            isInteractive: true,
+            width: 440,
+            height: 46,
+            characters: "今すぐ注文を確定する",
+            fontSize: 16,
+            fontWeight: 700,
+            textColor: "#FDE68A",
+            effectiveBackground: "#D97706"
+          },
+          {
+            id: "j-skip",
+            name: "Decline Link / スキップ",
+            type: "TEXT",
+            role: "LINK",
+            ctaKind: "decline",
+            isInteractive: true,
+            width: 190,
+            height: 20,
+            characters: "いいえ、損しても構いません",
+            fontSize: 10,
+            fontWeight: 400,
+            textColor: "#B8C0CC",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "j-fineprint",
+            name: "Legal / 定期縛り・電話解約",
+            type: "TEXT",
+            characters: "※無料期間終了後、2回目以降は自動で月額9,800円が課金されます。解約はお電話のみ（平日10時〜16時）承ります。",
+            fontSize: 9,
+            fontWeight: 400,
+            textColor: "#AEB6C2",
+            effectiveBackground: "#FFFFFF"
+          }
+        ]
+      },
+
+      "design-system-pass": {
+        id: "frame-ds-pass",
+        name: "Accessible Design System (Pass)",
+        width: 500,
+        height: 540,
+        background: "#FFFFFF",
+        nodes: [
+          {
+            id: "p-title",
+            name: "H1 / Transparent Checkout",
+            type: "TEXT",
+            headingLevel: 1,
+            characters: "Confirm DesignGate Pro Plan",
+            fontSize: 22,
+            fontWeight: 700,
+            textColor: "#0F172A",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "p-close-btn",
+            name: "Icon Button / Close",
+            type: "FRAME",
+            role: "ICON_BUTTON",
+            isInteractive: true,
+            width: 44,
+            height: 44,
+            characters: "×",
+            fontSize: 18,
+            textColor: "#1E293B",
+            effectiveBackground: "#F1F5F9"
+          },
+          {
+            id: "p-status-ok",
+            name: "Status Badge / WCAG AAA",
+            type: "RECTANGLE",
+            isStatusBadge: true,
+            width: 132,
+            height: 28,
+            characters: "✓ WCAG AAA",
+            fills: [{ type: "SOLID", color: Engine.hexToRgb01("#065F46"), opacity: 1 }],
+            labelColor: "#FFFFFF",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "p-status-info",
+            name: "Status Badge / Local Only",
+            type: "RECTANGLE",
+            isStatusBadge: true,
+            width: 132,
+            height: 28,
+            characters: "● Local 0-Net",
+            fills: [{ type: "SOLID", color: Engine.hexToRgb01("#1D4ED8"), opacity: 1 }],
+            labelColor: "#FFFFFF",
+            effectiveBackground: "#FFFFFF"
+          },
+          {
+            id: "p-subhead",
+            name: "H2 / Billing Breakdown",
+            type: "TEXT",
+            headingLevel: 2,
+            characters: "Total due today: $12.00 USD / month",
+            fontSize: 16,
+            fontWeight: 700,
+            textColor: "#0F172A",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "p-terms",
+            name: "Body / Clear Cancellation Policy",
+            type: "TEXT",
+            characters: "Billed monthly via Figma Native Payments. Cancel anytime in 1 click from Figma billing settings with zero penalty.",
+            fontSize: 14,
+            fontWeight: 400,
+            lineHeightPx: 21,
+            textColor: "#334155",
+            effectiveBackground: "#F8FAFC"
+          },
+          {
+            id: "p-primary-cta",
+            name: "Primary CTA / Complete Order",
+            type: "TEXT",
+            role: "BUTTON",
+            ctaKind: "primary",
+            isInteractive: true,
+            width: 440,
+            height: 46,
+            characters: "Confirm Subscription ($12/mo)",
+            fontSize: 15,
+            fontWeight: 700,
+            textColor: "#FFFFFF",
+            effectiveBackground: "#0F62FE"
+          },
+          {
+            id: "p-decline",
+            name: "Secondary Button / Cancel",
+            type: "TEXT",
+            role: "BUTTON",
+            ctaKind: "decline",
+            isInteractive: true,
+            width: 440,
+            height: 44,
+            characters: "Continue with Free Tier",
+            fontSize: 14,
+            fontWeight: 600,
+            textColor: "#1E293B",
+            effectiveBackground: "#F1F5F9"
+          }
+        ]
+      }
+    };
+  }
+
+  var state = {
+    boards: makeInitialBoards(),
+    activeKey: "saas-broken",
+    filter: "all",
+    cvdMode: "normal",
+    simPro: false,
+    focusedNodeId: null,
+    flashNodeId: null,
+    undoStack: [],
+    lastAudit: null
+  };
+
+  function cloneBoard(board) {
+    return JSON.parse(JSON.stringify(board));
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function getNode(board, id) {
+    return board.nodes.find(function (n) { return n.id === id; });
+  }
+
+  function nodeCls(id) {
+    var cls = "";
+    if (state.focusedNodeId === id) cls += " node-focused";
+    if (state.flashNodeId === id) cls += " node-fixed-flash";
+    return cls;
+  }
+
+  function renderArtboard() {
+    var board = state.boards[state.activeKey];
+    var root = document.getElementById("artboard-root");
+    root.className = "artboard-shell" + (state.cvdMode !== "normal" ? " cvd-" + state.cvdMode : "");
+    document.getElementById("frame-caption").textContent =
+      "Frame · " + board.name + " (" + board.width + "×" + board.height + ")";
+
+    if (state.activeKey === "saas-broken") {
+      var title = getNode(board, "s-title");
+      var closeBtn = getNode(board, "s-close-btn");
+      var urgency = getNode(board, "s-urgency");
+      var stErr = getNode(board, "s-status-err");
+      var stOk = getNode(board, "s-status-ok");
+      var subhead = getNode(board, "s-subhead");
+      var addon = getNode(board, "s-addon");
+      var cta = getNode(board, "s-primary-cta");
+      var decline = getNode(board, "s-decline");
+      var fine = getNode(board, "s-fineprint");
+
+      var stErrBg = Engine.rgb01ToHex(stErr.fills[0].color);
+      var stOkBg = Engine.rgb01ToHex(stOk.fills[0].color);
+
+      root.innerHTML =
+        '<div class="ab-top">' +
+          '<h1 data-node-id="s-title" class="' + nodeCls("s-title") + '" style="font-size:' + title.fontSize + 'px;font-weight:700;color:' + title.textColor + ';">' + escapeHtml(title.characters) + '</h1>' +
+          '<div data-node-id="s-close-btn" class="ab-icon-btn' + nodeCls("s-close-btn") + '" style="width:' + closeBtn.width + 'px;height:' + closeBtn.height + 'px;background:' + closeBtn.effectiveBackground + ';color:' + closeBtn.textColor + ';font-size:' + closeBtn.fontSize + 'px;">' + escapeHtml(closeBtn.characters) + '</div>' +
+        '</div>' +
+        '<div data-node-id="s-urgency" class="' + nodeCls("s-urgency") + '" style="background:' + urgency.effectiveBackground + ';color:' + urgency.textColor + ';padding:8px 11px;border-radius:6px;font-size:' + urgency.fontSize + 'px;font-weight:600;margin-bottom:12px;">' + escapeHtml(urgency.characters) + '</div>' +
+        '<div class="ab-badges">' +
+          '<span data-node-id="s-status-err" class="ab-pill' + nodeCls("s-status-err") + '" style="background:' + stErrBg + ';color:' + stErr.labelColor + ';">' + escapeHtml(stErr.characters) + '</span>' +
+          '<span data-node-id="s-status-ok" class="ab-pill' + nodeCls("s-status-ok") + '" style="background:' + stOkBg + ';color:' + stOk.labelColor + ';">' + escapeHtml(stOk.characters) + '</span>' +
+        '</div>' +
+        '<div class="ab-card" style="background:#F8FAFC;">' +
+          '<div data-node-id="s-subhead" class="' + nodeCls("s-subhead") + '" style="font-size:' + subhead.fontSize + 'px;font-weight:600;color:' + subhead.textColor + ';margin-bottom:10px;">' + escapeHtml(subhead.characters) + '</div>' +
+          '<div data-node-id="s-addon" class="ab-check-row' + nodeCls("s-addon") + '" style="background:#F8FAFC;color:' + addon.textColor + ';font-size:' + addon.fontSize + 'px;">' + escapeHtml(addon.characters) + '</div>' +
+        '</div>' +
+        '<div data-node-id="s-primary-cta" class="ab-btn' + nodeCls("s-primary-cta") + '" style="width:100%;height:' + cta.height + 'px;background:' + cta.effectiveBackground + ';color:' + cta.textColor + ';font-size:' + cta.fontSize + 'px;margin-top:14px;">' + escapeHtml(cta.characters) + '</div>' +
+        '<div style="text-align:center;margin-top:12px;">' +
+          '<span data-node-id="s-decline" class="' + nodeCls("s-decline") + '" style="display:inline-block;font-size:' + decline.fontSize + 'px;color:' + decline.textColor + ';text-decoration:underline;">' + escapeHtml(decline.characters) + '</span>' +
+        '</div>' +
+        '<p data-node-id="s-fineprint" class="' + nodeCls("s-fineprint") + '" style="margin-top:14px;font-size:' + fine.fontSize + 'px;color:' + fine.textColor + ';line-height:1.45;">' + escapeHtml(fine.characters) + '</p>';
+    } else if (state.activeKey === "jp-tokushoho") {
+      var jt = getNode(board, "j-title");
+      var ju = getNode(board, "j-urgency");
+      var jp = getNode(board, "j-plan");
+      var ja = getNode(board, "j-addon");
+      var jc = getNode(board, "j-cta");
+      var js = getNode(board, "j-skip");
+      var jf = getNode(board, "j-fineprint");
+
+      root.innerHTML =
+        '<h1 data-node-id="j-title" class="' + nodeCls("j-title") + '" style="font-size:' + jt.fontSize + 'px;font-weight:700;color:' + jt.textColor + ';margin-bottom:12px;">' + escapeHtml(jt.characters) + '</h1>' +
+        '<div data-node-id="j-urgency" class="' + nodeCls("j-urgency") + '" style="background:' + ju.effectiveBackground + ';color:' + ju.textColor + ';padding:8px 11px;border-radius:6px;font-size:' + ju.fontSize + 'px;font-weight:700;margin-bottom:12px;">' + escapeHtml(ju.characters) + '</div>' +
+        '<div class="ab-card" style="background:#F8FAFC;">' +
+          '<div data-node-id="j-plan" class="' + nodeCls("j-plan") + '" style="font-size:' + jp.fontSize + 'px;font-weight:700;color:' + jp.textColor + ';margin-bottom:10px;">' + escapeHtml(jp.characters) + '</div>' +
+          '<div data-node-id="j-addon" class="ab-check-row' + nodeCls("j-addon") + '" style="background:#F8FAFC;color:' + ja.textColor + ';font-size:' + ja.fontSize + 'px;">' + escapeHtml(ja.characters) + '</div>' +
+        '</div>' +
+        '<div data-node-id="j-cta" class="ab-btn' + nodeCls("j-cta") + '" style="width:100%;height:' + jc.height + 'px;background:' + jc.effectiveBackground + ';color:' + jc.textColor + ';font-size:' + jc.fontSize + 'px;margin-top:14px;">' + escapeHtml(jc.characters) + '</div>' +
+        '<div style="text-align:center;margin-top:11px;">' +
+          '<span data-node-id="j-skip" class="' + nodeCls("j-skip") + '" style="display:inline-block;font-size:' + js.fontSize + 'px;color:' + js.textColor + ';text-decoration:underline;">' + escapeHtml(js.characters) + '</span>' +
+        '</div>' +
+        '<p data-node-id="j-fineprint" class="' + nodeCls("j-fineprint") + '" style="margin-top:14px;font-size:' + jf.fontSize + 'px;color:' + jf.textColor + ';line-height:1.5;">' + escapeHtml(jf.characters) + '</p>';
+    } else {
+      var pt = getNode(board, "p-title");
+      var pcb = getNode(board, "p-close-btn");
+      var ps1 = getNode(board, "p-status-ok");
+      var ps2 = getNode(board, "p-status-info");
+      var psub = getNode(board, "p-subhead");
+      var pterms = getNode(board, "p-terms");
+      var pcta = getNode(board, "p-primary-cta");
+      var pdec = getNode(board, "p-decline");
+
+      root.innerHTML =
+        '<div class="ab-top">' +
+          '<h1 data-node-id="p-title" class="' + nodeCls("p-title") + '" style="font-size:' + pt.fontSize + 'px;font-weight:700;color:' + pt.textColor + ';">' + escapeHtml(pt.characters) + '</h1>' +
+          '<div data-node-id="p-close-btn" class="ab-icon-btn' + nodeCls("p-close-btn") + '" style="width:' + pcb.width + 'px;height:' + pcb.height + 'px;background:' + pcb.effectiveBackground + ';color:' + pcb.textColor + ';font-size:' + pcb.fontSize + 'px;">' + escapeHtml(pcb.characters) + '</div>' +
+        '</div>' +
+        '<div class="ab-badges">' +
+          '<span data-node-id="p-status-ok" class="ab-pill' + nodeCls("p-status-ok") + '" style="background:' + Engine.rgb01ToHex(ps1.fills[0].color) + ';color:' + ps1.labelColor + ';">' + escapeHtml(ps1.characters) + '</span>' +
+          '<span data-node-id="p-status-info" class="ab-pill' + nodeCls("p-status-info") + '" style="background:' + Engine.rgb01ToHex(ps2.fills[0].color) + ';color:' + ps2.labelColor + ';">' + escapeHtml(ps2.characters) + '</span>' +
+        '</div>' +
+        '<div class="ab-card" style="background:#F8FAFC;">' +
+          '<h2 data-node-id="p-subhead" class="' + nodeCls("p-subhead") + '" style="font-size:' + psub.fontSize + 'px;font-weight:700;color:' + psub.textColor + ';margin-bottom:8px;">' + escapeHtml(psub.characters) + '</h2>' +
+          '<p data-node-id="p-terms" class="' + nodeCls("p-terms") + '" style="font-size:' + pterms.fontSize + 'px;color:' + pterms.textColor + ';line-height:1.5;">' + escapeHtml(pterms.characters) + '</p>' +
+        '</div>' +
+        '<div data-node-id="p-primary-cta" class="ab-btn' + nodeCls("p-primary-cta") + '" style="width:100%;height:' + pcta.height + 'px;background:' + pcta.effectiveBackground + ';color:' + pcta.textColor + ';font-size:' + pcta.fontSize + 'px;margin-top:14px;">' + escapeHtml(pcta.characters) + '</div>' +
+        '<div data-node-id="p-decline" class="ab-btn' + nodeCls("p-decline") + '" style="width:100%;height:' + pdec.height + 'px;background:' + pdec.effectiveBackground + ';color:' + pdec.textColor + ';font-size:' + pdec.fontSize + 'px;margin-top:8px;border:1px solid #cbd5e1;">' + escapeHtml(pdec.characters) + '</div>';
+    }
+  }
+
+  function runAuditAndRender() {
+    var board = state.boards[state.activeKey];
+    var mockPayments = { status: { type: state.simPro ? "PAID" : "UNPAID" } };
+    var audit = Engine.auditDocumentFrames([board], mockPayments);
+    state.lastAudit = audit;
+
+    renderArtboard();
+
+    var sum = audit.summary;
+    var scoreEl = document.getElementById("p-score");
+    scoreEl.textContent = String(sum.score);
+    scoreEl.className = "score-num " + (sum.score >= 90 ? "score-ok" : sum.score >= 70 ? "score-warn" : "score-err");
+    document.getElementById("p-grade").textContent = sum.grade;
+    document.getElementById("p-errors").textContent = String(sum.errors);
+    document.getElementById("p-warnings").textContent = String(sum.warnings);
+    document.getElementById("p-contrast").textContent = sum.contrastPassed + "/" + sum.contrastChecked;
+
+    var tierPill = document.getElementById("p-tier-pill");
+    tierPill.textContent = state.simPro ? "PRO" : "FREE";
+    tierPill.className = state.simPro ? "pill pill-pro" : "pill";
+    document.getElementById("btn-toggle-pro").textContent = state.simPro
+      ? "Tier: PRO (Figma Paid)"
+      : "Tier: FREE (Click to Sim Pro)";
+
+    var undoBtn = document.getElementById("btn-undo");
+    undoBtn.textContent = "Undo (" + state.undoStack.length + ")";
+    undoBtn.disabled = state.undoStack.length === 0;
+
+    var findings = audit.findings;
+    document.getElementById("p-cnt-all").textContent = String(findings.length);
+    document.getElementById("p-cnt-contrast").textContent = String(sum.byCategory.contrast);
+    document.getElementById("p-cnt-darkPatterns").textContent = String(sum.byCategory.darkPatterns);
+    document.getElementById("p-cnt-ergonomics").textContent = String(sum.byCategory.ergonomics);
+    document.getElementById("p-cnt-colorBlindness").textContent = String(sum.byCategory.colorBlindness);
+
+    var fixable = findings.filter(function (f) { return f.fixable && f.aaFix; });
+    var fixAllBtn = document.getElementById("p-fix-all");
+    fixAllBtn.textContent = "Auto-Fix All (" + fixable.length + ")" + (state.simPro ? "" : " · Pro");
+    fixAllBtn.disabled = fixable.length === 0;
+
+    var visible = state.filter === "all"
+      ? findings
+      : findings.filter(function (f) { return f.category === state.filter; });
+
+    var listEl = document.getElementById("p-list");
+    if (visible.length === 0) {
+      listEl.innerHTML =
+        '<div class="empty">' +
+          '<div class="empty-title">PASS — 0 Findings in View</div>' +
+          '<div>All audited rules in this category pass WCAG 2.2 AA &amp; checkout compliance checks.</div>' +
+        '</div>';
+      return;
+    }
+
+    listEl.innerHTML = visible.map(function (f) {
+      var swatch = "";
+      if (f.category === "contrast" && f.aaFix) {
+        swatch =
+          '<div class="swatch-row">' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.backgroundHex) + ';color:' + escapeHtml(f.currentHex) + ';">Aa</div>' +
+              '<div class="swatch-info">' +
+                '<span class="swatch-hex">' + escapeHtml(f.currentHex) + '</span>' +
+                '<span class="swatch-ratio">' + f.currentRatio + ':1 · Lc ' + f.apcaLc + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<span class="swatch-arrow">→</span>' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.backgroundHex) + ';color:' + escapeHtml(f.aaFix.hex) + ';">Aa</div>' +
+              '<div class="swatch-info">' +
+                '<span class="swatch-hex">' + escapeHtml(f.aaFix.hex) + '</span>' +
+                '<span class="swatch-ratio">' + f.aaFix.ratio + ':1 AA</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="fix-actions">' +
+            '<button class="btn-fix" data-action="fix" data-node="' + escapeHtml(f.nodeId) + '" data-hex="' + escapeHtml(f.aaFix.hex) + '">Apply Auto-Fix AA (' + escapeHtml(f.aaFix.hex) + ')</button>' +
+            (f.aaaFix
+              ? '<button class="btn-fix-sec" data-action="fix" data-node="' + escapeHtml(f.nodeId) + '" data-hex="' + escapeHtml(f.aaaFix.hex) + '">AAA (' + escapeHtml(f.aaaFix.hex) + ')</button>'
+              : '') +
+          '</div>';
+      } else if (f.pairColors) {
+        swatch =
+          '<div class="swatch-row">' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.a.original) + ';"></div>' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.b.original) + ';"></div>' +
+              '<div class="swatch-info"><span class="swatch-hex">Normal</span></div>' +
+            '</div>' +
+            '<span class="swatch-arrow">→</span>' +
+            '<div class="swatch-cell">' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.a.simulated) + ';"></div>' +
+              '<div class="swatch-chip" style="background:' + escapeHtml(f.pairColors.b.simulated) + ';"></div>' +
+              '<div class="swatch-info"><span class="swatch-hex">CVD</span></div>' +
+            '</div>' +
+          '</div>';
+      }
+
+      return (
+        '<article class="card sev-' + escapeHtml(f.severity) + '">' +
+          '<div class="card-head">' +
+            '<div class="card-title">' + escapeHtml(f.title) + '</div>' +
+            '<span class="sev-tag ' + escapeHtml(f.severity) + '">' + escapeHtml(f.severity) + '</span>' +
+          '</div>' +
+          '<div class="card-meta">' +
+            '<button class="node-link" data-action="focus" data-node="' + escapeHtml(f.nodeId) + '">' + escapeHtml(f.nodeName) + '</button>' +
+            (f.regulation ? '<span class="reg-tag">' + escapeHtml(f.regulation) + '</span>' : '') +
+          '</div>' +
+          (f.snippet ? '<div class="snippet">' + escapeHtml(f.snippet) + '</div>' : '') +
+          '<div class="card-msg">' + escapeHtml(f.message) + '</div>' +
+          swatch +
+        '</article>'
+      );
+    }).join("");
+  }
+
+  function applyColorToActiveBoard(nodeId, hex) {
+    var board = state.boards[state.activeKey];
+    var node = getNode(board, nodeId);
+    if (!node) return;
+    state.undoStack.push({ key: state.activeKey, snapshot: cloneBoard(board) });
+    if (node.textColor) {
+      node.textColor = hex;
+    } else if (Array.isArray(node.fills) && node.fills.length > 0) {
+      node.fills[0].color = Engine.hexToRgb01(hex);
+    }
+    state.flashNodeId = nodeId;
+    state.focusedNodeId = nodeId;
+    runAuditAndRender();
+    setTimeout(function () {
+      state.flashNodeId = null;
+      renderArtboard();
+    }, 900);
+  }
+
+  // Event Handlers
+  document.getElementById("board-switcher").addEventListener("click", function (ev) {
+    var btn = ev.target.closest("button[data-board]");
+    if (!btn) return;
+    state.activeKey = btn.getAttribute("data-board");
+    state.focusedNodeId = null;
+    state.flashNodeId = null;
+    var all = document.querySelectorAll("#board-switcher button");
+    for (var i = 0; i < all.length; i += 1) {
+      all[i].classList.toggle("active", all[i] === btn);
+    }
+    document.getElementById("p-drawer").classList.add("hidden");
+    runAuditAndRender();
+  });
+
+  document.getElementById("cvd-select").addEventListener("change", function () {
+    state.cvdMode = this.value;
+    var labels = {
+      normal: "CVD Filter: Off (Normal sRGB)",
+      deuteranopia: "CVD Filter: Deuteranopia (Viénot 1999)",
+      protanopia: "CVD Filter: Protanopia (Viénot 1999)",
+      tritanopia: "CVD Filter: Tritanopia (Viénot 1999)"
+    };
+    document.getElementById("cvd-indicator").textContent = labels[state.cvdMode] || labels.normal;
+    renderArtboard();
+  });
+
+  document.getElementById("btn-toggle-pro").addEventListener("click", function () {
+    state.simPro = !state.simPro;
+    document.getElementById("p-pro-banner").classList.add("hidden");
+    runAuditAndRender();
+  });
+
+  document.getElementById("p-unlock-sim").addEventListener("click", function () {
+    state.simPro = true;
+    document.getElementById("p-pro-banner").classList.add("hidden");
+    runAuditAndRender();
+  });
+
+  document.getElementById("btn-undo").addEventListener("click", function () {
+    var prev = state.undoStack.pop();
+    if (!prev) return;
+    state.boards[prev.key] = prev.snapshot;
+    state.activeKey = prev.key;
+    runAuditAndRender();
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    state.boards = makeInitialBoards();
+    state.undoStack = [];
+    state.focusedNodeId = null;
+    document.getElementById("p-drawer").classList.add("hidden");
+    runAuditAndRender();
+  });
+
+  document.getElementById("p-tabs").addEventListener("click", function (ev) {
+    var tab = ev.target.closest("button[data-cat]");
+    if (!tab) return;
+    state.filter = tab.getAttribute("data-cat");
+    var all = document.querySelectorAll("#p-tabs .tab");
+    for (var i = 0; i < all.length; i += 1) {
+      all[i].classList.toggle("active", all[i] === tab);
+    }
+    runAuditAndRender();
+  });
+
+  document.getElementById("p-list").addEventListener("click", function (ev) {
+    var btn = ev.target.closest("button[data-action]");
+    if (!btn) return;
+    var action = btn.getAttribute("data-action");
+    var nodeId = btn.getAttribute("data-node");
+    if (action === "focus") {
+      state.focusedNodeId = nodeId;
+      renderArtboard();
+    } else if (action === "fix") {
+      applyColorToActiveBoard(nodeId, btn.getAttribute("data-hex"));
+    }
+  });
+
+  document.getElementById("p-fix-all").addEventListener("click", function () {
+    if (!state.simPro) {
+      document.getElementById("p-pro-banner").classList.remove("hidden");
+      return;
+    }
+    var board = state.boards[state.activeKey];
+    var fixable = (state.lastAudit.findings || []).filter(function (f) { return f.fixable && f.aaFix; });
+    if (fixable.length === 0) return;
+    state.undoStack.push({ key: state.activeKey, snapshot: cloneBoard(board) });
+    for (var i = 0; i < fixable.length; i += 1) {
+      var node = getNode(board, fixable[i].nodeId);
+      if (node && node.textColor) {
+        node.textColor = fixable[i].aaFix.hex;
+      }
+    }
+    runAuditAndRender();
+  });
+
+  function openExport(format) {
+    if (!state.simPro) {
+      document.getElementById("p-pro-banner").classList.remove("hidden");
+      return;
+    }
+    var content = format === "csv"
+      ? Engine.exportCsvReport(state.lastAudit)
+      : Engine.exportMarkdownReport(state.lastAudit);
+    document.getElementById("p-export-title").textContent =
+      format === "csv" ? "CSV Handoff Report" : "Markdown Accessibility Certificate";
+    document.getElementById("p-export-text").value = content;
+    document.getElementById("p-drawer").classList.remove("hidden");
+  }
+
+  document.getElementById("p-md").addEventListener("click", function () { openExport("markdown"); });
+  document.getElementById("p-csv").addEventListener("click", function () { openExport("csv"); });
+  document.getElementById("p-close-drawer").addEventListener("click", function () {
+    document.getElementById("p-drawer").classList.add("hidden");
+  });
+  document.getElementById("p-copy").addEventListener("click", function () {
+    var ta = document.getElementById("p-export-text");
+    ta.select();
+    try { document.execCommand("copy"); } catch (_e) {}
+  });
+
+  runAuditAndRender();
+})();
+</script>
+</body>
+</html>

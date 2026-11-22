@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "lease_contract_audited": {
+        "eventTitle": "ASBJ No. 34 New Lease Contract Audited",
+        "eventDescription": "Charged per lease/SaaS/warehouse contract screened for on-balance capitalization, PV Lease Liability & embedded lease criteria.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

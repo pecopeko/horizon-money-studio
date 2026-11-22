@@ -1,0 +1,29 @@
+{
+  "title": "Japan Revised Construction Act & 2024 Overtime Cap Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "items": {
+      "title": "Construction Subcontracts, Thresholds & Overtime Figures to Audit",
+      "type": "array",
+      "editor": "json",
+      "default": [
+        {
+          "org_name": "Musashi Build Engineering K.K.",
+          "contract_amount_jpy": 18000000,
+          "estimated_labor_welfare_jpy": 19500000,
+          "subcontract_total_jpy": 55000000,
+          "construction_type": "general",
+          "has_tokutei_license": false,
+          "monthly_overtime_hours": 105,
+          "rolling_avg_overtime_hours": 84,
+          "contract_text": "物価変動による増額請求は認めない。一括下請負を許容し、4週8休は努力義務とする。"
+        }
+      ],
+      "description": "List of Japanese construction contracts with contract_amount_jpy, estimated_labor_welfare_jpy, subcontract_total_jpy, construction_type ('general' or 'architectural_general'), has_tokutei_license, monthly_overtime_hours, rolling_avg_overtime_hours, and contract_text."
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

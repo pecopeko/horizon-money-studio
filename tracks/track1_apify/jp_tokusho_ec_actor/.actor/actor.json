@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-tokushoho-darkpattern-ec-auditor",
+  "title": "Japan Tokushoho (Art.11 / Art.12-6), Subscription Dark-Pattern & Stripe Underwriting Auditor",
+  "description": "Audit Japanese SaaS and EC legal notice pages + checkout confirmation copy for Tokushoho Art.11 mandatory disclosures, Art.12-6 recurring teaser traps, phone-only cancellation barriers, and defect-refund omissions.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile"
+}

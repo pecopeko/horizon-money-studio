@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOUEKIGATE 貿易門 | 外為法該非判定・みなし輸出特定類型・米国EAR De Minimis ローカル監査</title>
+  <meta name="description" content="ブラウザ完結・通信ゼロで外為法リスト規制(1〜15項)・16項キャッチオール・外国ユーザーリスト・みなし輸出特定類型①②③・米国EAR 25%/0% De Minimis再輸出をローカル監査し該非判定書Markdownを生成します。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead" data-ui="masthead">
+      <div class="brand-lockup">
+        <span class="hanko-seal" aria-hidden="true">貿易</span>
+        <div>
+          <h1>BOUEKIGATE <span class="title-sub">貿易門</span></h1>
+          <p class="subtitle">外為法リスト/16項キャッチオール・みなし輸出特定類型①②③・米国EAR De Minimis 25%/0% 自己点検＆該非判定書生成</p>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <span class="trust-pill" data-ui="badge">100% ブラウザローカル検査</span>
+        <span class="trust-pill" data-ui="badge">原価・技術情報社外送信ゼロ・該非判定書生成</span>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <section class="panel input-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>1. 対象品目・米国原産比率（EAR）・貿易管理規程入力</h2>
+          <div class="preset-actions">
+            <button type="button" id="btn-sample-bad" class="btn-secondary" data-ui="btn">De Minimis超過・規程不備例</button>
+            <button type="button" id="btn-sample-good" class="btn-secondary" data-ui="btn">外為法/EAR CP準拠例</button>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <label>
+            判定実施法人・輸出者名
+            <input id="in-org" type="text" value="東京精密システムズ株式会社" />
+          </label>
+          <label>
+            対象貨物・プログラム・技術名称
+            <input id="in-product" type="text" value="エッジ暗号化テレメトリモジュール v2.4" />
+          </label>
+        </div>
+
+        <div class="meta-grid-3">
+          <label>
+            組込米国原産規制品価額（JPY）
+            <input id="in-us-val" type="number" min="0" value="420000" />
+          </label>
+          <label>
+            対象製品総原価（JPY）
+            <input id="in-total-val" type="number" min="0" value="1200000" />
+          </label>
+          <label>
+            仕向地グループ（EAR閾値）
+            <select id="in-dest-group">
+              <option value="general">一般仕向地（閾値 25%超）</option>
+              <option value="embargo_e1_d5">懸念/禁輸国 E:1・D:5（閾値 0%超）</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="check-row">
+          <label class="inline-check">
+            <input id="in-oss-enc" type="checkbox" />
+            <span>一般公開OSS暗号・EAR TSU 742.15(b) 該当（De Minimis除外）</span>
+          </label>
+          <label class="inline-check">
+            <input id="in-ear-lic" type="checkbox" />
+            <span>BIS再輸出許可またはEARライセンス例外（TSU/ENC等）取得済</span>
+          </label>
+        </div>
+
+        <label class="field-block">
+          安全保障貿易管理規程（CP）・該非判定・みなし輸出運用文面
+          <textarea id="in-policy" rows="9" placeholder="輸出令別表第1の1〜15項、16項キャッチオール、外国ユーザーリスト、みなし輸出特定類型①②③、EAR De Minimis、7年保存を入力..."></textarea>
+        </label>
+
+        <div class="run-bar">
+          <button type="button" id="btn-audit" class="btn-primary" data-ui="btn">該非・EAR・特定類型監査を実行</button>
+        </div>
+      </section>
+
+      <section class="panel output-panel" data-ui="panel">
+        <div class="panel-head">
+          <h2>2. EAR De Minimis・統制スコア・検出リスク</h2>
+          <div id="status-badge" class="score-pill" data-ui="score-pill">未診断</div>
+        </div>
+
+        <div class="summary-strip" data-ui="summary-strip">
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">貿易統制スコア</span>
+            <strong id="m-score" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">米国原産比率 / EAR</span>
+            <strong id="m-ear" class="metric-val">—</strong>
+          </div>
+          <div class="metric-cell" data-ui="metric">
+            <span class="metric-label">充足要件 / 全8要件</span>
+            <strong id="m-passed" class="metric-val">—</strong>
+          </div>
+        </div>
+
+        <h3>検出された外為法・みなし輸出・米国EAR上の課題</h3>
+        <div id="findings-list" class="findings-list"></div>
+
+        <div class="draft-head">
+          <h3>自動生成『該非判定書・みなし輸出特定類型確認書』Markdown</h3>
+          <div class="draft-actions">
+            <button type="button" id="btn-copy-md" class="btn-secondary" data-ui="btn">Markdownをコピー</button>
+            <button type="button" id="btn-download-md" class="btn-secondary" data-ui="btn">.md 保存</button>
+          </div>
+        </div>
+        <pre id="md-output" class="code-box"><code></code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer" data-ui="footer">
+      <p>BOUEKIGATE 貿易門 — Horizon-Money Studio Track 2（完全クライアントサイド実行・通信ゼロ・外為法/みなし輸出/米国EAR自己点検ツール）</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

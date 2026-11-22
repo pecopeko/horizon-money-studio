@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "toriteki_contract_audited": {
+        "eventTitle": "2026 Toriteki Act Subcontract Audited",
+        "eventDescription": "Charged per B2B outsourcing/consignment contract screened for 300/100 employee coverage, promissory note ban, price-freeze, and unpaid mold custody.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.004
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

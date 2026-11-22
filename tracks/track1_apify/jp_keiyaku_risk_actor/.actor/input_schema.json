@@ -1,0 +1,23 @@
+{
+  "title": "Japan B2B Contract Risk Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "contracts": {
+      "title": "Japanese Contract Draft Texts",
+      "type": "array",
+      "editor": "stringList",
+      "description": "List of Japanese outsourcing, subcontracting, or NDA draft texts to audit.",
+      "default": [
+        "業務委託請負契約書：総額3,500,000円。検収完了後に限り翌々月末日払い（90日以内）とし、乙は一切の損害を賠償する。"
+      ]
+    },
+    "isElectronic": {
+      "title": "Electronic Contract Signing Mode",
+      "type": "boolean",
+      "default": true,
+      "description": "Whether contracts are signed electronically (Stamp Tax = 0 JPY)."
+    }
+  },
+  "required": ["contracts"]
+}
