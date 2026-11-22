@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MCPFIREWALL · Stateless MCP 2026-07-28 &amp; Enterprise Firewall Auditor</title>
+  <meta name="description" content="Browser-local 10-gate auditor and policy exporter for the Linux Foundation AAIF Stateless MCP 2026-07-28 specification and Enterprise MCP Firewalls.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"> <!-- taste-skill-ignore: dealt IBM Plex Sans + IBM Plex Mono -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-frame" data-ui>
+    <aside class="sidebar" id="app-sidebar" data-ui aria-label="Preset manifests and gate filters">
+      <div>
+        <div class="brand-row">
+          <svg class="brand-mark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="2.5" y="3" width="15" height="14" rx="2.5"></rect>
+            <path d="M7 3v14M13 3v14M2.5 10h4.5M13 10h4.5"></path>
+          </svg>
+          <span class="brand-title">MCPFIREWALL</span>
+        </div>
+        <div class="brand-scope">Spec <code>2026-07-28</code> · Edge L7</div>
+
+        <div class="nav-group">
+          <div class="nav-group-label">Reference presets</div>
+          <ul class="nav-list">
+            <li>
+              <button type="button" class="nav-btn" data-preset="legacy-sse" aria-current="true">
+                <span>Legacy /sse + keys</span>
+                <span class="nav-count is-alert" id="badge-legacy-sse">8</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-btn" data-preset="shadow-npx" aria-current="false">
+                <span>Shadow npx + poison</span>
+                <span class="nav-count is-alert" id="badge-shadow-npx">7</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-btn" data-preset="hardened-v2" aria-current="false">
+                <span>Hardened 2026-07-28</span>
+                <span class="nav-count" id="badge-hardened-v2">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-label">Gate filter</div>
+          <ul class="nav-list">
+            <li>
+              <button type="button" class="nav-btn" data-filter="all" aria-current="true">
+                <span>All gates</span>
+                <span class="nav-count" id="filter-count-all">10</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-btn" data-filter="issues" aria-current="false">
+                <span>Needs attention</span>
+                <span class="nav-count" id="filter-count-issues">0</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-btn" data-filter="passed" aria-current="false">
+                <span>Passed gates</span>
+                <span class="nav-count" id="filter-count-passed">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sidebar-meta" data-ui>
+        <div class="sidebar-meta-row">
+          <span>AAIF target</span>
+          <code>2026-07-28</code>
+        </div>
+        <div class="sidebar-meta-row">
+          <span>/sse sunset</span>
+          <code>2027-07-28</code>
+        </div>
+        <div class="sidebar-meta-row">
+          <span>Execution</span>
+          <span>Browser-local</span>
+        </div>
+      </div>
+    </aside>
+
+    <header class="topbar" data-ui>
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-expanded="false" aria-controls="app-sidebar">
+        Presets
+      </button>
+      <div class="search-wrap">
+        <label for="gate-search" class="sr-only">Filter gates by ID, header, server, or finding</label>
+        <input
+          id="gate-search"
+          class="search-input"
+          type="search"
+          placeholder="Filter gates by ID, server, Mcp-Method, DPoP, or npx..."
+          autocomplete="off"
+        >
+      </div>
+      <div class="topbar-right">
+        <label class="file-upload-label" for="manifest-file-input">
+          Open mcp.json
+        </label>
+        <input id="manifest-file-input" class="sr-only" type="file" accept=".json,.jsonc,application/json,text/plain">
+        <span class="privacy-stamp">Local JS engine · 0 network calls</span>
+      </div>
+    </header>
+
+    <main class="sheet" data-ui>
+      <section class="title-row" aria-labelledby="main-heading">
+        <div class="title-heading-group">
+          <div class="title-inline">
+            <h1 id="main-heading" class="page-title">Stateless MCP 2026-07-28 &amp; Firewall Auditor</h1>
+            <span id="posture-pill" class="pill pill-fail">Blocked</span>
+            <span id="toast-feedback" class="toast-status" aria-live="polite"></span>
+          </div>
+          <p id="finding-lead" class="finding-lead">
+            Evaluating MCP configuration against 10 AAIF Stateless 2026-07-28 and Enterprise L7 Firewall gates.
+          </p>
+        </div>
+
+        <div class="action-cluster">
+          <button type="button" class="btn btn-secondary" id="btn-download-patch">
+            Export Stateless v2 Patch
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-download-policy">
+            Export Firewall Policy JSON
+          </button>
+        </div>
+      </section>
+
+      <section class="kpi-strip" data-ui aria-label="Audit summary metrics">
+        <div class="kpi-cell" data-ui>
+          <span class="kpi-label">Readiness score</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value num" id="kpi-score">0</span>
+            <span class="kpi-unit">/ 100</span>
+          </div>
+          <span class="kpi-note" id="kpi-grade-note">Grade F</span>
+        </div>
+
+        <div class="kpi-cell" data-ui>
+          <span class="kpi-label">Gates passed</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value num" id="kpi-gates-passed">0</span>
+            <span class="kpi-unit">/ 10</span>
+          </div>
+          <span class="kpi-note" id="kpi-gates-breakdown">0 failed · 0 warnings</span>
+        </div>
+
+        <div class="kpi-cell" data-ui>
+          <span class="kpi-label">Audit findings</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value num" id="kpi-findings">0</span>
+            <span class="kpi-unit" id="kpi-servers-unit">across 1 server</span>
+          </div>
+          <span class="kpi-note" id="kpi-blocker-note">0 high or critical</span>
+        </div>
+
+        <div class="kpi-cell" data-ui>
+          <span class="kpi-label">Stateful /sse sunset</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value num">2027-07-28</span>
+          </div>
+          <span class="kpi-note">12-month AAIF window</span>
+        </div>
+      </section>
+
+      <div class="workbench-grid">
+        <section class="panel" data-ui aria-labelledby="editor-heading">
+          <div class="panel-header" data-ui>
+            <h2 id="editor-heading" class="panel-title">Manifest editor</h2>
+            <button type="button" class="btn btn-secondary" id="btn-apply-remediation">
+              Apply 2026-07-28 fix in editor
+            </button>
+          </div>
+          <div class="panel-body">
+            <label for="manifest-editor" class="editor-label" id="editor-desc">
+              Paste <code>mcp.json</code>, <code>.cursor/mcp.json</code>, <code>.vscode/mcp.json</code>, or <code>claude_desktop_config.json</code> (JSONC comments supported)
+            </label>
+            <textarea
+              id="manifest-editor"
+              class="code-editor"
+              spellcheck="false"
+              aria-describedby="editor-desc"
+            ></textarea>
+            <div id="parse-error-box" class="inline-error" data-ui hidden></div>
+            <div class="inline-status">
+              <span id="editor-source-label">Source: preset:legacy-sse</span>
+              <span class="num" id="editor-byte-count">0 bytes</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-ui aria-labelledby="inspector-heading">
+          <h2 id="inspector-heading" class="sr-only">Audit gates and generated artifacts</h2>
+          <div class="tab-bar" role="tablist" aria-label="Audit views" data-ui>
+            <button
+              type="button"
+              class="tab-btn"
+              role="tab"
+              id="tab-gates"
+              aria-controls="panel-gates"
+              aria-selected="true"
+              data-tab="gates"
+              data-ui
+            >
+              10-gate audit matrix
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              role="tab"
+              id="tab-policy"
+              aria-controls="panel-policy"
+              aria-selected="false"
+              data-tab="policy"
+              data-ui
+            >
+              Enterprise firewall policy
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              role="tab"
+              id="tab-migrated"
+              aria-controls="panel-migrated"
+              aria-selected="false"
+              data-tab="migrated"
+              data-ui
+            >
+              Stateless 2026-07-28 stub
+            </button>
+          </div>
+
+          <div id="panel-gates" class="tab-panel" role="tabpanel" aria-labelledby="tab-gates">
+            <div class="table-wrap">
+              <table class="gate-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Gate</th>
+                    <th scope="col">Control &amp; findings</th>
+                    <th scope="col" class="num">Hits</th>
+                    <th scope="col" class="num">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="gate-tbody"></tbody>
+              </table>
+            </div>
+            <div id="gate-empty-state" class="empty-frame" data-ui hidden>
+              No gates match the active filter and search query.
+            </div>
+          </div>
+
+          <div id="panel-policy" class="tab-panel" role="tabpanel" aria-labelledby="tab-policy" hidden>
+            <div class="code-toolbar" data-ui>
+              <span class="code-toolbar-desc">
+                Default-deny allowlist for Microsoft Entra MCP Firewall, Cloudflare Workers, and Envoy L7
+              </span>
+              <div class="action-cluster">
+                <button type="button" class="btn btn-secondary" id="btn-copy-policy">Copy policy JSON</button>
+                <button type="button" class="btn btn-primary" id="btn-save-policy-tab">Download policy.json</button>
+              </div>
+            </div>
+            <pre class="code-output"><code id="policy-json-code"></code></pre>
+          </div>
+
+          <div id="panel-migrated" class="tab-panel" role="tabpanel" aria-labelledby="tab-migrated" hidden>
+            <div class="code-toolbar" data-ui>
+              <span class="code-toolbar-desc">
+                Auto-remediated Stateless HTTP POST + <code>server/discover</code> + vaulted env manifest
+              </span>
+              <div class="action-cluster">
+                <button type="button" class="btn btn-secondary" id="btn-copy-migrated">Copy stub JSON</button>
+                <button type="button" class="btn btn-primary" id="btn-save-migrated-tab">Download mcp.v2.json</button>
+              </div>
+            </div>
+            <pre class="code-output"><code id="migrated-json-code"></code></pre>
+          </div>
+        </section>
+      </div>
+
+      <footer class="sheet-footer" data-ui>
+        <span>Crafted by peco · Apache-2.0 · Zero telemetry</span>
+        <nav class="footer-links" aria-label="Developer resources">
+          <a href="https://github.com/pecopeko/mcp-firewall-v2-auditor" target="_blank" rel="noopener noreferrer">GitHub Repo &amp; Python CLI</a>
+          <a href="https://zenn.dev/pecopeko/books/afml-quant-and-local-ai-guard" target="_blank" rel="noopener noreferrer">Zenn Book (Local AI Guard)</a>
+          <a href="https://pecopeko1011.booth.pm/items/9179705" target="_blank" rel="noopener noreferrer">BOOTH Offline Pro Kit</a>
+          <a href="https://github.com/sponsors/pecopeko" target="_blank" rel="noopener noreferrer">GitHub Sponsors</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "manifest_audited": {
+        "eventTitle": "MCP Manifest Audited",
+        "eventDescription": "Charged per MCP configuration or server manifest audited across all 10 Stateless MCP 2026-07-28 & Enterprise Firewall gates ($3.00 per 1,000 manifests). Malformed parse-error records are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.03,
+  "isPPEPlatformUsagePaidByUser": false
+}

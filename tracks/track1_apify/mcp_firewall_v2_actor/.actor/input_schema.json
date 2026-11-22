@@ -1,0 +1,95 @@
+{
+  "title": "Stateless MCP 2026-07-28 & Enterprise Firewall Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "manifests": {
+      "title": "MCP Manifests (JSON Objects or Raw JSON/JSONC Strings)",
+      "type": "array",
+      "editor": "json",
+      "description": "List of MCP configuration items to audit. Each item can be an MCP config dict directly, or {\"id\": \"...\", \"manifest\": {...}} / {\"id\": \"...\", \"manifest_text\": \"...\"}.",
+      "prefill": [
+        {
+          "id": "legacy-corp-sse",
+          "manifest": {
+            "protocolVersion": "2024-11-05",
+            "mcpServers": {
+              "billing-sse": {
+                "transport": "sse",
+                "url": "http://mcp-legacy.kestrel-finops.io/sse",
+                "handshake": "initialize",
+                "stickySession": true,
+                "headers": {
+                  "Authorization": "Bearer staticDemoBearerToken990011",
+                  "Mcp-Session-Id": "sess-01"
+                },
+                "sampling": {
+                  "enabled": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "hardened-stateless-v2",
+          "manifest": {
+            "protocolVersion": "2026-07-28",
+            "gateway": {
+              "protocolVersion": "2026-07-28",
+              "discovery": "server/discover",
+              "enforceHeaders": [
+                "Mcp-Method",
+                "Mcp-Name"
+              ],
+              "rejectBodyHeaderMismatch": true
+            },
+            "mrtr": {
+              "enabled": false
+            },
+            "tasks": {
+              "timeoutMs": 30000,
+              "ttlSeconds": 300,
+              "maxConcurrent": 5,
+              "supportsCancel": true
+            },
+            "firewall": {
+              "defaultAction": "deny",
+              "serverAllowlist": [
+                {
+                  "serverName": "ledger-v2"
+                }
+              ]
+            },
+            "mcpServers": {
+              "ledger-v2": {
+                "protocolVersion": "2026-07-28",
+                "transport": "stateless-http",
+                "url": "https://mcp.northstar-ledger.io/ledger/mcp",
+                "discovery": "server/discover",
+                "edgeRouting": {
+                  "requireMcpHeaders": true,
+                  "rejectBodyHeaderMismatch": true
+                },
+                "auth": {
+                  "type": "oauth2.1",
+                  "codeChallengeMethod": "S256",
+                  "tokenExchange": true,
+                  "dpop": true
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "includeRemediationArtifacts": {
+      "title": "Include Auto-Migrated 2026-07-28 Config & Enterprise Firewall Policy",
+      "type": "boolean",
+      "default": true,
+      "description": "When enabled, attaches migrated_stateless_config and enterprise_firewall_policy JSON artifacts to each audited dataset record."
+    }
+  },
+  "required": [
+    "manifests"
+  ]
+}

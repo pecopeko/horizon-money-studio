@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Stateless MCP 2026-07-28 & Enterprise Firewall Auditor Output",
+  "description": "Structured 10-gate audit scores, findings, migrated 2026-07-28 configs, and Enterprise MCP Firewall JSON policies.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audited MCP Manifest Records",
+      "description": "Structured dataset items produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

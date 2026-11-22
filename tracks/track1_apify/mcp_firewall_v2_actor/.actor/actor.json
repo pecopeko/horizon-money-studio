@@ -1,0 +1,16 @@
+{
+  "actorSpecification": 1,
+  "name": "mcp-stateless-v2-firewall-auditor",
+  "title": "Stateless MCP 2026-07-28 & Enterprise MCP Firewall Auditor",
+  "description": "Fast, browserless 10-gate security and migration auditor for mcp.json, Cursor/Claude MCP manifests, and HTTP gateways against the Linux Foundation AAIF Stateless MCP 2026-07-28 specification and Enterprise MCP Firewalls — $0.003 per manifest audited.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}

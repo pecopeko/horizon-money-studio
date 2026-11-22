@@ -1,0 +1,11 @@
+{
+  "name": "mcp-firewall-v2-auditor",
+  "version": "1.0.0",
+  "description": "Zero-backend 10-gate auditor & policy exporter for the Linux Foundation AAIF Stateless MCP 2026-07-28 specification and Enterprise MCP Firewalls.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "peco <pecopeko@users.noreply.github.com>",
+  "scripts": {
+    "test": "node --test test/engine.test.mjs"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "manifest_id": {
+        "type": "string",
+        "description": "Caller-supplied or indexed manifest identifier"
+      },
+      "status": {
+        "type": "string",
+        "description": "ready, action_required, blocked, or parse_error"
+      },
+      "score": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Readiness score from 0 to 100"
+      },
+      "grade": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Letter grade A through F"
+      },
+      "spec_target": {
+        "type": "string",
+        "description": "Target Stateless MCP specification version (2026-07-28)"
+      },
+      "servers_audited": {
+        "type": "integer",
+        "description": "Number of MCP server definitions inspected"
+      },
+      "gates_passed": {
+        "type": "integer",
+        "description": "Count of passing gates out of 10"
+      },
+      "gates_failed": {
+        "type": "integer",
+        "description": "Count of failing high/critical gates"
+      },
+      "findings_count": {
+        "type": "integer",
+        "description": "Total findings across all 10 gates"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "manifest_id",
+          "status",
+          "score",
+          "grade",
+          "servers_audited",
+          "gates_passed",
+          "gates_failed",
+          "findings_count"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}
