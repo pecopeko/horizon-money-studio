@@ -1,0 +1,108 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "description": "Extraction status (ok or error)"
+      },
+      "store_url": {
+        "type": "string",
+        "description": "Normalized Shopify storefront URL"
+      },
+      "product_id": {
+        "type": [
+          "integer",
+          "string",
+          "null"
+        ],
+        "description": "Shopify product ID"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Product title"
+      },
+      "vendor": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Brand or vendor name"
+      },
+      "product_type": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Product category/type"
+      },
+      "price_min": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Lowest variant price"
+      },
+      "price_max": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Highest variant price"
+      },
+      "max_discount_pct": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Maximum variant discount percentage"
+      },
+      "in_stock": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "description": "Whether at least one variant is available"
+      },
+      "variant_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Total variants"
+      },
+      "product_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Direct product URL"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "store_url",
+          "title",
+          "vendor",
+          "price_min",
+          "max_discount_pct",
+          "in_stock",
+          "variant_count",
+          "product_url"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

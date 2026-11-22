@@ -1,0 +1,63 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "record_type": {
+        "type": "string",
+        "description": "company_filings or efts_search_hit"
+      },
+      "status": {
+        "type": "string",
+        "description": "Extraction status"
+      },
+      "cik": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "10-digit SEC CIK"
+      },
+      "entity_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Registrant legal name"
+      },
+      "sic_description": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "SEC industry classification"
+      },
+      "xbrl_status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "XBRL extraction status"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "record_type",
+          "cik",
+          "entity_name",
+          "sic_description",
+          "xbrl_status",
+          "status"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

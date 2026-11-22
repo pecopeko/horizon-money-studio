@@ -2,7 +2,7 @@
 
 Extract **podcast host/owner contact emails** (`<itunes:owner>`), show categories, Podcasting 2.0 `<podcast:person>` & `<podcast:funding>` tags, **Apple Podcasts customer reviews**, clean HTML-stripped show notes, chapters, and normalized **Podcasting 2.0 transcripts (`.vtt`, `.srt`, `.json`, `.txt`)** directly from RSS XML and official iTunes APIs.
 
-Built for **zero-CAPTCHA, zero-browser** reliability with strict SSRF IP validation on every RSS, transcript, chapter, and redirect URL.
+Built for **lightweight HTTP, zero-browser** reliability with strict SSRF IP validation on every RSS, transcript, chapter, and redirect URL.
 
 ## Key Features
 

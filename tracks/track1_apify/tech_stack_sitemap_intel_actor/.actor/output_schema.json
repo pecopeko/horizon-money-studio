@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Website Tech Stack, Recursive Sitemap & SEO Intelligence Extractor Output",
+  "description": "Structured dataset results produced by Website Tech Stack, Recursive Sitemap & SEO Intelligence Extractor.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Extracted Dataset Items",
+      "description": "Structured JSON records extracted during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

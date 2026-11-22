@@ -1,0 +1,84 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "podcast_title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Podcast show title"
+      },
+      "owner_email": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Host/owner contact email from RSS"
+      },
+      "episode_title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Episode title"
+      },
+      "pub_date_iso": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Publication timestamp (ISO 8601)"
+      },
+      "transcript_status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Transcript extraction status"
+      },
+      "transcript_format": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Transcript format (vtt, srt, json, txt)"
+      },
+      "apple_average_rating": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Average Apple Podcasts rating"
+      },
+      "feed_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Podcast RSS feed URL"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "podcast_title",
+          "owner_email",
+          "episode_title",
+          "pub_date_iso",
+          "transcript_status",
+          "apple_average_rating",
+          "feed_url"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

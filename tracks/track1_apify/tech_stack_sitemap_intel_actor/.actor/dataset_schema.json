@@ -1,0 +1,81 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "description": "Profile status"
+      },
+      "domain": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Normalized domain"
+      },
+      "http_status": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Homepage HTTP status"
+      },
+      "tech_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Number of detected technologies"
+      },
+      "technologies": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "description": "Detected technology names"
+      },
+      "sitemap_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Discovered XML sitemap count"
+      },
+      "discovered_url_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Discovered sitemap URL count"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "HTML page title"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "domain",
+          "http_status",
+          "tech_count",
+          "technologies",
+          "sitemap_count",
+          "discovered_url_count",
+          "title"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

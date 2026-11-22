@@ -1,0 +1,88 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "description": "Extraction status"
+      },
+      "publication": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Substack publication domain or handle"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Newsletter post title"
+      },
+      "post_date": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Publication timestamp"
+      },
+      "paywall_status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "free_public or paid_preview_only"
+      },
+      "reaction_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Total reactions/likes"
+      },
+      "comment_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Total comments"
+      },
+      "word_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Extracted body word count"
+      },
+      "canonical_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Post URL"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "publication",
+          "title",
+          "post_date",
+          "paywall_status",
+          "reaction_count",
+          "word_count",
+          "canonical_url"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

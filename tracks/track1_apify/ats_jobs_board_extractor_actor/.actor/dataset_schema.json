@@ -1,0 +1,96 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "description": "Extraction status"
+      },
+      "provider": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "ATS provider (greenhouse, lever, ashby)"
+      },
+      "company_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Company name or slug"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Job title"
+      },
+      "location": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Job location"
+      },
+      "workplace_type": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "remote, hybrid, onsite, or unspecified"
+      },
+      "seniority": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Normalized seniority level"
+      },
+      "salary_min": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Minimum listed compensation"
+      },
+      "salary_max": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "description": "Maximum listed compensation"
+      },
+      "apply_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Direct job application URL"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "provider",
+          "company_name",
+          "title",
+          "workplace_type",
+          "seniority",
+          "salary_min",
+          "salary_max",
+          "apply_url"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}
