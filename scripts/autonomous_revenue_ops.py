@@ -31,6 +31,9 @@ APIFY_TARGET_ACTORS: tuple[str, ...] = (
     "sec-edgar-8-k-10-k-item-extractor",
     "ats-greenhouse-lever-ashby-jobs-extractor",
     "website-tech-stack-sitemap-extractor",
+    "mcp-stateless-v2-firewall-auditor",
+    "eu-ai-act-art50-c2pa-provenance-auditor",
+    "jp-llm-compliance-pii-guard",
 )
 
 SECURITY_ADVISORIES: tuple[tuple[str, str], ...] = (

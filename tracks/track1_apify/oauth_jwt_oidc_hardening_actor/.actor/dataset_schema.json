@@ -1,0 +1,54 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Audit status"
+      },
+      "score": {
+        "type": [
+          "integer",
+          "number",
+          "null"
+        ],
+        "description": "Security score (0-100)"
+      },
+      "grade": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Security posture grade"
+      },
+      "finding_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Number of security findings"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "status",
+          "score",
+          "grade",
+          "finding_count"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

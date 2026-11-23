@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "JP LLM Compliance & Reversible PII Guard Output",
+  "description": "Structured dataset results produced by JP LLM Compliance & Reversible PII Guard.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audit Results Dataset",
+      "description": "Structured JSON records produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Processing status"
+      },
+      "redacted_text": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "PII-redacted text safe for LLM prompts"
+      },
+      "pii_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Total PII entities redacted"
+      },
+      "prompt_injection_flagged": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "description": "Whether prompt injection pattern was detected"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "status",
+          "pii_count",
+          "prompt_injection_flagged",
+          "redacted_text"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

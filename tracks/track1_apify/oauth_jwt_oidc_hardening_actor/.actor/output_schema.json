@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "OAuth 2.1, JWT & OIDC Security Hardening Auditor Output",
+  "description": "Structured dataset results produced by OAuth 2.1, JWT & OIDC Security Hardening Auditor.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audit Results Dataset",
+      "description": "Structured JSON records produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}
