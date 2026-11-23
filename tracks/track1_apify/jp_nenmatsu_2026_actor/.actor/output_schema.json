@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Japan 2026 (Reiwa 8) Year-End Tax Adjustment Audit Output",
+  "description": "Per-employee Reiwa 8 vs Reiwa 7 statutory tax calculations, overpayment/underpayment amounts, and statutory remediation findings.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audited Employee Payroll Records",
+      "description": "Structured dataset items produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

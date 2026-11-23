@@ -1,0 +1,72 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "employee_id": {
+        "type": "string",
+        "description": "Employee identifier"
+      },
+      "employee_name": {
+        "type": "string",
+        "description": "Employee display name"
+      },
+      "department": {
+        "type": "string",
+        "description": "Department or unit"
+      },
+      "status": {
+        "type": "string",
+        "description": "clean, action_required, critical, or parse_error"
+      },
+      "salary_yen": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Annual employment revenue in JPY"
+      },
+      "statutory_annual_tax_r8_yen": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Exact Reiwa 8 (2026) statutory annual withholding tax in JPY"
+      },
+      "tax_overpayment_yen": {
+        "type": "integer",
+        "description": "Over-collected tax / missed employee refund in JPY"
+      },
+      "tax_underpayment_yen": {
+        "type": "integer",
+        "description": "Under-collected tax shortfall in JPY"
+      },
+      "findings_count": {
+        "type": "integer",
+        "description": "Number of statutory payroll discrepancies detected"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "employee_id",
+          "employee_name",
+          "department",
+          "status",
+          "salary_yen",
+          "statutory_annual_tax_r8_yen",
+          "tax_overpayment_yen",
+          "tax_underpayment_yen",
+          "findings_count"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

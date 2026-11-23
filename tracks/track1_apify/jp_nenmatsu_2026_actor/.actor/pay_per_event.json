@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "employee_audited": {
+        "eventTitle": "Employee Year-End Tax Record Audited",
+        "eventDescription": "Charged per valid employee payroll record statutorily audited against Japan National Tax Agency Reiwa 8 (2026-12-01) Year-End Tax Adjustment tables ($2.00 per 1,000 employees). Malformed or unparseable rows are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.002
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.02,
+  "isPPEPlatformUsagePaidByUser": false
+}

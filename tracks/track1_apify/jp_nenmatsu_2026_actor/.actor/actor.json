@@ -1,0 +1,16 @@
+{
+  "actorSpecification": 1,
+  "name": "jp-nenmatsu-2026-tax-payroll-auditor",
+  "title": "Japan 2026 (Reiwa 8) Year-End Tax Adjustment & Payroll CSV Statutory Auditor",
+  "description": "Statutory batch auditor for Japan Reiwa 8 (2026) Year-End Tax Adjustment (178M/136M/197M yen walls, 104M basic deduction, 74M employment deduction, and 9-step 19-22yo Special Relative Deduction) with UTF-8/Shift-JIS CSV support — $0.002 per employee audited.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}

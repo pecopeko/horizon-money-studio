@@ -1,0 +1,70 @@
+{
+  "title": "Japan 2026 (Reiwa 8) Year-End Tax Adjustment & Payroll CSV Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "employees": {
+      "title": "Employee Payroll Records (JSON Array)",
+      "type": "array",
+      "editor": "json",
+      "description": "Array of employee payroll records using either English snake_case keys (employee_id, salary_yen, dep1_age, dep1_salary_yen, declared_basic_deduction_yen, ...) or Japanese HR CSV headers (社員番号, 給与収入, 子1年齢, 子1給与収入, 申告_基礎控除, ...).",
+      "prefill": [
+        {
+          "employee_id": "EMP-2601",
+          "employee_name": "佐藤 健一",
+          "department": "製造第一部",
+          "salary_yen": 6200000,
+          "social_insurance_yen": 912000,
+          "life_insurance_deduction_yen": 80000,
+          "withheld_tax_yen": 184000,
+          "last_pay_date": "2026-12-25",
+          "has_spouse": true,
+          "spouse_age": 47,
+          "spouse_salary_yen": 1320000,
+          "dep1_name": "佐藤 翔太",
+          "dep1_age": 20,
+          "dep1_salary_yen": 1520000,
+          "declared_basic_deduction_yen": 1040000,
+          "declared_spouse_deduction_yen": 380000,
+          "declared_fuyo_deduction_yen": 0,
+          "declared_tokutei_shinzoku_deduction_yen": 0
+        },
+        {
+          "employee_id": "EMP-2603",
+          "employee_name": "高橋 誠",
+          "department": "営業推進部",
+          "salary_yen": 5100000,
+          "social_insurance_yen": 750000,
+          "life_insurance_deduction_yen": 60000,
+          "withheld_tax_yen": 146000,
+          "last_pay_date": "2026-12-25",
+          "has_spouse": true,
+          "spouse_age": 42,
+          "spouse_salary_yen": 1760000,
+          "declared_basic_deduction_yen": 680000,
+          "declared_spouse_deduction_yen": 310000,
+          "declared_fuyo_deduction_yen": 0,
+          "declared_tokutei_shinzoku_deduction_yen": 0
+        }
+      ]
+    },
+    "csvText": {
+      "title": "Inline Payroll CSV Text (Optional)",
+      "type": "string",
+      "editor": "textarea",
+      "description": "Optional raw CSV string (Japanese HR headers or English headers) to audit alongside or instead of `employees`."
+    },
+    "csvBase64": {
+      "title": "Base64-Encoded UTF-8 or Shift-JIS (cp932) CSV Bytes (Optional)",
+      "type": "string",
+      "editor": "textfield",
+      "description": "Optional Base64-encoded payroll CSV file exported from Yayoi / Bugyo / SmartHR / freee (UTF-8-BOM or Shift-JIS cp932 auto-detected)."
+    },
+    "includeWallSimulation": {
+      "title": "Include 10-Point Wall Simulation (103M-207M Yen) per Employee",
+      "type": "boolean",
+      "default": false,
+      "description": "When true, attaches the 10-checkpoint household take-home & deduction simulation table to each employee output item."
+    }
+  }
+}
