@@ -1,0 +1,16 @@
+{
+  "actorSpecification": 1,
+  "name": "ucp-agentic-commerce-readiness-auditor",
+  "title": "Universal Commerce Protocol (/.well-known/ucp), AP2 & A2A Readiness Auditor",
+  "description": "Fast, browserless 10-gate Universal Commerce Protocol (/.well-known/ucp, 2026-01-23), AP2 payment mandate, Stateless MCP (2026-07-28), A2A (/.well-known/agent.json), and Schema.org Offer auditor plus 1-Click Cloudflare Worker & Nginx manifest builder — $0.002 per store audited.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}

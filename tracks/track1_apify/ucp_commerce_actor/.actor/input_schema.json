@@ -1,0 +1,108 @@
+{
+  "title": "Universal Commerce Protocol (/.well-known/ucp), AP2 & A2A Readiness Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "stores": {
+      "title": "Merchant Domains, HTTPS Store URLs, or Inline UCP Bundles",
+      "type": "array",
+      "editor": "json",
+      "description": "Array of E-Commerce targets to audit. Each item may be a public merchant domain (e.g. 'shopify.com'), an https:// URL, or an inline JSON bundle containing manifest, agent_card, http_headers, and schema_org_offers.",
+      "prefill": [
+        "shopify.com",
+        {
+          "id": "demo-compliant-ucp-store",
+          "domain": "nordic-roast.shop",
+          "status_code": 200,
+          "http_headers": {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=3600"
+          },
+          "manifest": {
+            "ucp": {
+              "version": "2026-01-23",
+              "services": {
+                "dev.ucp.shopping": [
+                  {
+                    "version": "2026-01-23",
+                    "spec": "https://ucp.dev/specification/overview",
+                    "transport": "rest",
+                    "endpoint": "https://nordic-roast.shop/api/ucp/2026-01-23",
+                    "schema": "https://ucp.dev/2026-01-23/services/shopping/openapi.json"
+                  }
+                ]
+              },
+              "capabilities": {
+                "dev.ucp.shopping.checkout": [
+                  {
+                    "version": "2026-01-23",
+                    "spec": "https://ucp.dev/specification/checkout",
+                    "schema": "https://ucp.dev/2026-01-23/schemas/shopping/checkout.json",
+                    "config": {
+                      "supported_currencies": ["USD"],
+                      "seller_of_record": "nordic-roast.shop",
+                      "idempotency_key_required": true,
+                      "ap2_mandate_required": true
+                    }
+                  }
+                ],
+                "dev.ucp.shopping.ap2_mandate": [
+                  {
+                    "version": "2026-01-23",
+                    "spec": "https://ucp.dev/specification/ap2-mandate",
+                    "schema": "https://ucp.dev/2026-01-23/schemas/shopping/ap2_mandate.json",
+                    "extends": "dev.ucp.shopping.checkout"
+                  }
+                ]
+              },
+              "payment_handlers": {
+                "com.google.pay": [
+                  {
+                    "id": "8c9202bd-63cc-4241-8d24-d57ce69ea31c",
+                    "version": "2026-01-23",
+                    "spec": "https://pay.google.com/gp/p/ucp/2026-01-23/",
+                    "schema": "https://pay.google.com/gp/p/ucp/2026-01-23/schemas/config.json"
+                  }
+                ]
+              }
+            }
+          },
+          "schema_org_offers": [
+            {
+              "name": "Nordic Roast Single Origin 250g",
+              "price": "34.00",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            }
+          ]
+        }
+      ]
+    },
+    "includeDeploymentBundle": {
+      "title": "Include 1-Click /.well-known/ucp, A2A, Cloudflare Worker & Nginx Bundle",
+      "type": "boolean",
+      "default": true,
+      "description": "Attaches a production-ready deployment_bundle (manifest, agent_card, Cloudflare Worker ES module, and Nginx TLS snippet) to each audited store record."
+    },
+    "probeTimeoutSeconds": {
+      "title": "HTTPS Probe Timeout (Seconds)",
+      "type": "number",
+      "default": 12,
+      "minimum": 2,
+      "maximum": 30,
+      "description": "Per-request HTTPS timeout when probing /.well-known/ucp, /.well-known/agent.json, /llms.txt, and storefront homepage."
+    },
+    "maxResponseBytes": {
+      "title": "Maximum Response Bytes per Probed Endpoint",
+      "type": "integer",
+      "default": 1048576,
+      "minimum": 32768,
+      "maximum": 4194304,
+      "description": "Upper byte bound read per HTTPS probe response."
+    }
+  },
+  "required": [
+    "stores"
+  ]
+}

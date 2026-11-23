@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Universal Commerce Protocol (/.well-known/ucp), AP2 & A2A Readiness Auditor Output",
+  "description": "Structured 10-gate UCP readiness scores, capability inheritance DAG checks, Schema.org Offer parity findings, and 1-Click Cloudflare Worker / Nginx deployment bundles.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audited E-Commerce Store UCP Records",
+      "description": "Structured dataset items produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

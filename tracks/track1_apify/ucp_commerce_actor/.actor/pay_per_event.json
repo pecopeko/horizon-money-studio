@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "store_audited": {
+        "eventTitle": "E-Commerce Store or UCP Manifest Audited",
+        "eventDescription": "Charged per public merchant domain or inline UCP manifest bundle audited across /.well-known/ucp, /.well-known/agent.json, /llms.txt, Schema.org Offer parity, and all 10 Universal Commerce Protocol + AP2 payment mandate gates ($2.00 per 1,000 stores). Unreachable network errors, SSRF-blocked hosts, and malformed parse errors are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.002
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.02,
+  "isPPEPlatformUsagePaidByUser": false
+}
