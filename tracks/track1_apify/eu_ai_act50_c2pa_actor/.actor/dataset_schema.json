@@ -1,0 +1,71 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "asset_id": {
+        "type": "string",
+        "description": "Caller-supplied or indexed asset identifier"
+      },
+      "asset_name": {
+        "type": "string",
+        "description": "Resolved media filename or asset title"
+      },
+      "status": {
+        "type": "string",
+        "description": "compliant, action_required, non_compliant, blocked_ssrf, fetch_error, or parse_error"
+      },
+      "score": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Compliance readiness score from 0 to 100"
+      },
+      "grade": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "Letter grade A through F"
+      },
+      "eu_art50_sunset": {
+        "type": "string",
+        "description": "EU AI Act Article 50 enforcement target date (2026-12-02)"
+      },
+      "gates_passed": {
+        "type": "integer",
+        "description": "Count of passing gates out of 10"
+      },
+      "gates_failed": {
+        "type": "integer",
+        "description": "Count of failing high/critical gates"
+      },
+      "findings_count": {
+        "type": "integer",
+        "description": "Total compliance findings across all 10 gates"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "asset_id",
+          "asset_name",
+          "status",
+          "score",
+          "grade",
+          "gates_passed",
+          "gates_failed",
+          "findings_count"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

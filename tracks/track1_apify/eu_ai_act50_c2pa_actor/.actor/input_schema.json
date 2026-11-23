@@ -1,0 +1,107 @@
+{
+  "title": "EU AI Act Art. 50 C2PA JUMBF & Japan AI Safety Provenance Auditor Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "assets": {
+      "title": "Public Media/Page URLs or Inline Provenance Bundles",
+      "type": "array",
+      "editor": "json",
+      "description": "Array of items to audit. Each item can be a public HTTPS URL string, or an object with url/media_url/media_base64/http_headers/html_snippet/json_ld/governance.",
+      "prefill": [
+        {
+          "id": "cdn-stripped-campaign-png",
+          "asset": {
+            "name": "autumn-campaign-hero.png",
+            "is_ai_generated": true,
+            "public_url": "https://cdn.velvet-retail.eu/assets/autumn-campaign-hero.png",
+            "publisher": "Velvet Retail GmbH"
+          },
+          "synthetic_media": {
+            "format": "png",
+            "include_c2pa": false
+          },
+          "http_headers": {
+            "Cf-Polished": "origSize=418200"
+          },
+          "html_snippet": "<img src=\"/assets/autumn-campaign-hero.png\" alt=\"Autumn campaign\">"
+        },
+        {
+          "id": "compliant-eu-art50-png",
+          "asset": {
+            "name": "eu-launch-keyvisual.png",
+            "is_ai_generated": true,
+            "public_url": "https://cdn.nordlicht-studio.eu/media/eu-launch-keyvisual.png",
+            "manifest_sidecar_url": "https://cdn.nordlicht-studio.eu/media/eu-launch-keyvisual.png.c2pa",
+            "publisher": "Nordlicht Studio GmbH"
+          },
+          "synthetic_media": {
+            "format": "png",
+            "include_c2pa": true,
+            "digital_source_type": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "include_signature": true
+          },
+          "http_headers": {
+            "Link": "<https://cdn.nordlicht-studio.eu/media/eu-launch-keyvisual.png.c2pa>; rel=\"c2pa-manifest\"",
+            "Content-Digest": "sha-256=:placeholder:",
+            "Access-Control-Expose-Headers": "Link, Content-Digest"
+          },
+          "json_ld": {
+            "@context": "https://schema.org",
+            "@type": "ImageObject",
+            "name": "eu-launch-keyvisual.png",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "sdPublisher": {
+              "@type": "Organization",
+              "name": "Nordlicht Studio GmbH"
+            }
+          },
+          "governance": {
+            "interactive_ai": {
+              "applies": false
+            },
+            "biometric_emotion": {
+              "enabled": false
+            },
+            "deepfake_and_text": {
+              "generates_synthetic_likeness_or_voice": false,
+              "publishes_public_interest_text": false
+            },
+            "cdn_preservation": {
+              "preserve_c2pa_chunks": true,
+              "re_sign_derivatives": true,
+              "soft_binding_sidecar_fallback": true
+            },
+            "jp_ai_safety": {
+              "immutable_audit_log_enabled": true,
+              "retention_days": 365,
+              "incident_reporting_sla_hours": 12,
+              "safety_governance_role": "CAIO & AI Safety Office",
+              "kill_switch_enabled": true,
+              "kill_switch_mechanism": "edge-kv://ai-circuit-breaker/halt",
+              "auto_circuit_breaker": true,
+              "max_halt_latency_seconds": 15
+            }
+          }
+        }
+      ]
+    },
+    "includeComplianceBundle": {
+      "title": "Include Ready-to-Paste HTTP Headers, Schema.org JSON-LD & c2patool Templates",
+      "type": "boolean",
+      "default": true,
+      "description": "Attaches compliance_bundle and remediated_input JSON artifacts to each audited dataset item."
+    },
+    "maxStreamBytes": {
+      "title": "Maximum HTTP Range/Stream Bytes per Remote URL",
+      "type": "integer",
+      "default": 4194304,
+      "minimum": 65536,
+      "maximum": 16777216,
+      "description": "Upper byte bound fetched via HTTP Range stream when inspecting remote PNG/JPEG/WebP/MP4/HTML URLs."
+    }
+  },
+  "required": [
+    "assets"
+  ]
+}

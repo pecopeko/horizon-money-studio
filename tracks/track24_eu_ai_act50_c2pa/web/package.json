@@ -1,0 +1,11 @@
+{
+  "name": "c2pa-ai-act50-auditor",
+  "version": "1.0.0",
+  "description": "100% browser-local Uint8Array C2PA JUMBF binary container inspector and 10-gate EU AI Act Article 50 (2026-12-02) + Japan AI Promotion Act safety auditor.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "peco <pecopeko@users.noreply.github.com>",
+  "scripts": {
+    "test": "node --test ./test/engine.test.mjs"
+  }
+}

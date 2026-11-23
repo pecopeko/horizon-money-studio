@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "EU AI Act Art. 50 C2PA JUMBF & Japan AI Safety Auditor Output",
+  "description": "Structured binary C2PA JUMBF container inspections, 10-gate scores, findings, and exportable HTTP Link / JSON-LD / c2patool compliance bundles.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Audited C2PA & EU AI Act Art. 50 Asset Records",
+      "description": "Structured dataset items produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

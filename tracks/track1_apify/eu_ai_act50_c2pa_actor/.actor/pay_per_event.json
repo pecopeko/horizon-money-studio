@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "asset_audited": {
+        "eventTitle": "AI Media or Page Provenance Asset Audited",
+        "eventDescription": "Charged per media URL, web page, or inline asset bundle audited across binary C2PA JUMBF inspection and all 10 EU AI Act Article 50 (2026-12-02) + Japan AI Promotion Act safety gates ($3.00 per 1,000 assets). Unreachable network errors, SSRF-blocked hosts, and malformed parse errors are not charged.",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.003
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.03,
+  "isPPEPlatformUsagePaidByUser": false
+}

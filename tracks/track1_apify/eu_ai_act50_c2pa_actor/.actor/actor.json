@@ -1,0 +1,16 @@
+{
+  "actorSpecification": 1,
+  "name": "eu-ai-act-art50-c2pa-provenance-auditor",
+  "title": "EU AI Act Art. 50 C2PA JUMBF & Japan AI Safety Provenance Auditor",
+  "description": "Fast, browserless binary C2PA JUMBF container inspector (PNG caBX, JPEG APP11, WebP C2PA, MP4 uuid) and 10-gate compliance auditor for the December 2, 2026 EU AI Act Article 50 transparency deadline and Japan AI Promotion Act safety controls — $0.003 per asset audited.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}
