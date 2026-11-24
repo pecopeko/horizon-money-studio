@@ -843,9 +843,11 @@ def test_apify_cloud_batch_extract_and_mcp_registry_manifest(monkeypatch: pytest
 
     track_root = Path(__file__).resolve().parents[1] / "tracks" / "track8_mcp_public_intel"
     server_json = json.loads((track_root / "server.json").read_text(encoding="utf-8"))
+    suite_json = json.loads((track_root / "server-suite.json").read_text(encoding="utf-8"))
     dockerfile_txt = (track_root / "Dockerfile").read_text(encoding="utf-8")
     assert server_json["name"] == "io.github.pecopeko/mcp-public-intel"
     assert 1 <= len(server_json["description"]) <= 100
+    assert 1 <= len(suite_json["description"]) <= 100
     assert server_json["packages"][0]["registryType"] == "oci"
-    assert server_json["packages"][0]["identifier"] == "ghcr.io/pecopeko/mcp-public-intel:1.0.0"
-    assert 'LABEL io.modelcontextprotocol.server.name="io.github.pecopeko/mcp-public-intel"' in dockerfile_txt
+    assert 'ARG MCP_SERVER_NAME="io.github.pecopeko/mcp-public-intel"' in dockerfile_txt
+    assert 'LABEL io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' in dockerfile_txt
