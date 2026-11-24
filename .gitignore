@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 *.egg-info/
 dist/
+tracks/track27_obs_utawaku_pomodoro/dist/*.zip
 build/
 .taste-skill/
 tracks/track3_bounties/work/

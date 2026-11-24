@@ -1,0 +1,12 @@
+{
+  "name": "peco-obs-utawaku-pomodoro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OBS Studio Utawaku Setlist, YouTube Timestamp & Pomodoro Overlay + Dock",
+  "author": "peco <pecopeko@users.noreply.github.com>",
+  "license": "SEE LICENSE IN LICENSE_利用規約.txt",
+  "scripts": {
+    "test": "node --test tests_js/engine.test.mjs"
+  }
+}
