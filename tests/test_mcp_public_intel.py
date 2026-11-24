@@ -37,6 +37,7 @@ EXPECTED_TOOL_NAMES = {
     "shopify_store_catalog",
     "substack_public_posts",
     "podcast_rss_transcripts",
+    "apify_cloud_batch_extract",
 }
 
 
@@ -118,7 +119,7 @@ def test_mcp_stdio_handshake_and_tools_list_schemas() -> None:
 
     list_resp = json.loads(out_lines[2])
     tools = list_resp["result"]["tools"]
-    assert len(tools) == 6
+    assert len(tools) == len(EXPECTED_TOOL_NAMES)
     assert {t["name"] for t in tools} == EXPECTED_TOOL_NAMES
 
     for tool in tools:
@@ -804,3 +805,47 @@ def test_xxe_dtd_xml_is_rejected() -> None:
     )
     with pytest.raises(ValueError, match="Unsafe XML"):
         parse_xml_safely(evil_xml)
+
+
+def test_apify_cloud_batch_extract_and_mcp_registry_manifest(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("APIFY_TOKEN", raising=False)
+    server_no_tok = MCPServer(sleep_fn=_no_sleep)
+    res_setup, body_setup = _call_tool_via_mcp(
+        server_no_tok,
+        "apify_cloud_batch_extract",
+        {"extractor": "shopify", "actor_input": {"storeUrls": ["https://allbirds.com"]}},
+    )
+    assert res_setup["isError"] is False
+    assert body_setup["status"] == "setup_required"
+    assert body_setup["actor_id"] == "pecopeko~shopify-public-catalog-feed-extractor"
+
+    def apify_mock_handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert "pecopeko~shopify-public-catalog-feed-extractor" in str(request.url)
+        assert request.headers.get("Authorization") == "Bearer apify_api_test123"
+        return httpx.Response(200, json=[{"title": "Wool Runner", "price": "110.00"}])
+
+    with _mock_client(apify_mock_handler) as client:
+        server_ok = MCPServer(client=client, sleep_fn=_no_sleep)
+        res_ok, body_ok = _call_tool_via_mcp(
+            server_ok,
+            "apify_cloud_batch_extract",
+            {
+                "extractor": "shopify",
+                "apify_token": "apify_api_test123",
+                "actor_input": {"storeUrls": ["https://allbirds.com"]},
+            },
+        )
+        assert res_ok["isError"] is False
+        assert body_ok["status"] == "ok"
+        assert body_ok["returned_items"] == 1
+        assert body_ok["items"][0]["title"] == "Wool Runner"
+
+    track_root = Path(__file__).resolve().parents[1] / "tracks" / "track8_mcp_public_intel"
+    server_json = json.loads((track_root / "server.json").read_text(encoding="utf-8"))
+    dockerfile_txt = (track_root / "Dockerfile").read_text(encoding="utf-8")
+    assert server_json["name"] == "io.github.pecopeko/mcp-public-intel"
+    assert 1 <= len(server_json["description"]) <= 100
+    assert server_json["packages"][0]["registryType"] == "oci"
+    assert server_json["packages"][0]["identifier"] == "ghcr.io/pecopeko/mcp-public-intel:1.0.0"
+    assert 'LABEL io.modelcontextprotocol.server.name="io.github.pecopeko/mcp-public-intel"' in dockerfile_txt
