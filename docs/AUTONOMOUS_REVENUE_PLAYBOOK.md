@@ -46,19 +46,27 @@ Execute these steps in order on every 24-hour trigger:
 
 ---
 
-## 2. Loop B — 8-Hour News / AI Trend Discovery & New `$0.00` Venture Execution (`8h_venture`)
+## 2. Loop B — 8-Hour Zero-Template Monetization Exploration (`8h_venture`)
 
-Execute these steps in order on every 8-hour trigger:
+> **ZERO ROUTINE / ZERO TEMPLATE RULE (`定型作業・テンプレ量産・固定メニュー完全禁止`)**:
+> - Do **NOT** follow any fixed recipe, fixed naming convention (no `〇〇GATE`, no `*-auditor` clones), or fixed category checklist/rotation.
+> - Turning this loop into repetitive busywork (e.g., churning out similar static web tools, queuing unread articles, or mechanically cycling through a preset menu) is strictly prohibited.
 
-1. **Read Recent Ventures Memory First (Deduplication)**:
-   - Read `/Users/wakabayashishuntaira/Documents/makemoney/data/revenue_ops_memory.json` (`ventures_shipped` and `actions_log`) so you never duplicate a tool, bounty issue, article, or niche already shipped.
-2. **Scan Live AI Trends, Breaking Tech News & Fresh Cash Opportunities**:
-   - Use `search_web` and lightweight APIs (`Hacker News` top/show stories, GitHub Trending, newly announced AI/LLM/MCP/Agent protocols, regulatory changes, new developer benchmarks/hackathons/contests, and `makemoney.scouts.bounty_scout.scan_bounty_issues()`).
-   - Evaluate candidates strictly on **Expected Value (`EV`) at `$0.00` cost with zero human labor required from the user**:
-     1. **Tier 1 (Fastest Cash)**: Newly opened, genuine, funded GitHub / Algora cash bounty (`$50–$1,000+`, zero competing PRs, non-honeypot, reproducible test suite) OR high-impact verifiable security vulnerability in a major OSS AI/ML repo with active GitHub Private Vulnerability Reporting / Huntr bounty program.
-     2. **Tier 2 (High-Demand Developer / AI Agent Distribution)**: A brand-new Apify Pay-Per-Event (`PPE`) Actor, MCP server, CLI/Action, or zero-backend interactive web calculator/tool riding a **breaking 2026 AI/tech/regulatory trend** discovered in today's news — coupled with live deployment (GitHub Pages / Releases / Apify / Zenn article) and cross-links into existing paid products (`Zenn ¥1,200 Book`, `BOOTH ¥1,980 Kit`, `GitHub Sponsors`, `Apify PPE`).
-     3. **Tier 3 (Live Cash Tournaments / Hackathons)**: Newly announced remote AI/quant/agent cash competitions accepting automated GitHub PR or API submissions at `$0.00`.
-3. **Actually Build, Test (`100% Pass`) & Ship Live**:
-   - Do **not** stop at research notes! Write production-grade code + unit tests, verify `pytest` / `node --test` passes `100%`, push/deploy/submit publicly under `peco` (`pecopeko <pecopeko@users.noreply.github.com>`), and verify `HTTP 200` or live PR URL.
-4. **Log Shipped Venture**:
-   - Run `.venv/bin/python /Users/wakabayashishuntaira/Documents/makemoney/scripts/autonomous_revenue_ops.py record-action --loop 8h_venture --category <bounty_pr|security_ghsa|apify_ppe|trend_tool|contest> --summary "<what trend was spotted & what was shipped>" --url "<live_url>"`.
+Every 8 hours, start from a **blank slate**:
+
+1. **Check `data/revenue_ops_memory.json` to Avoid Repeating Patterns**:
+   - Look at what was tried in recent runs. Do **not** repeat the same product shape, same channel combo, or same routine task.
+2. **Look Outward at the Real World Right Now**:
+   - Search live news, social/search trends, marketplaces, communities, and platforms across completely varied domains (consumer/prosumer digital goods, creator/media formats, live marketplaces with built-in traffic, real buyer pain points, arbitrage/information edges, contests, security/bounties, distribution hacks, etc.).
+3. **Apply the Ruthless "Will Anyone Actually Pay?" Filter**:
+   - Before touching code or text, ask: *Where do the actual human buyers or prize/payout dollars come from at `$0.00` spend? If nobody will ever find this URL, do not build another lonely page — either build where buyers already browse, or build the traffic/distribution bridge itself.*
+4. **Autonomous Account Registration Authorized (`$0.00` Free Tiers Only)**:
+   - Whenever a new marketplace, contest, affiliate/creator platform, or API requires an account, **do NOT stop and ask the user if you can register it yourself**:
+     1. Read the local `0600` operator profile in the conversation scratch directory (`private_operator_profile.json` — **NEVER copy its private fields into any git-tracked file or public profile!**).
+     2. Always set **public username / pen name / shop name = `peco` (`pecopeko`)**; only enter private legal/contact details into strictly private account/payout fields when required.
+     3. Use the built-in `browser` subagent (`Model="flash"`, opening 1 temporary tab and closing it when done; never touching `browser__*`, `browser__popup-*`, `agent-tab-12`, or `agent-tab-14`) to submit the signup form or `"Continue with GitHub"`, and use the `gmail` CLI (`gmail readonly search` / `gmail readonly read`, never piping to `grep`/`awk`) to retrieve verification links or 6-digit OTP codes automatically.
+     4. Record newly created credentials/handles back into `private_operator_profile.json` (`registered_accounts`).
+     5. *Only pause for the user* if a site presents a mandatory anti-bot challenge / CAPTCHA, government photo-ID selfie KYC, or paid billing screen (never bypass those).
+5. **Execute End-to-End & Log Factually**:
+   - Whatever angle you discover, carry it all the way to a live, testable real-world action under `peco` / `pecopeko` (`$0.00` spend, zero personal data exposure, 8 GB Mac RAM safe).
+   - Record what you tried and why in `autonomous_revenue_ops.py record-action --loop 8h_venture --category <free_label> --summary "<what & why>" --url "<live_url>"`.
