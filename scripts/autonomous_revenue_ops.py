@@ -169,13 +169,22 @@ def collect_live_snapshot() -> dict[str, Any]:
     except Exception as exc:
         snapshot["errors"].append(f"zenn:{type(exc).__name__}:{exc}")
 
-    # 3. BOOTH Digital Product (9179705)
+    # 3. BOOTH Digital Products (9179705 B2B Kit & 9213299 OBS Streamer Suite)
     try:
-        booth_data = _fetch_json("https://booth.pm/ja/items/9179705.json")
+        booth_items: dict[str, Any] = {}
+        total_booth_wishlists = 0
+        for bid in (9179705, 9213299):
+            b_d = _fetch_json(f"https://booth.pm/ja/items/{bid}.json")
+            wl = int(b_d.get("wish_lists_count") or 0)
+            total_booth_wishlists += wl
+            booth_items[str(bid)] = {
+                "name": b_d.get("name"),
+                "wish_lists_count": wl,
+                "is_sold_out": bool(b_d.get("is_sold_out")),
+            }
         snapshot["channels"]["booth"] = {
-            "item_id": 9179705,
-            "wish_lists_count": int(booth_data.get("wish_lists_count") or 0),
-            "is_sold_out": bool(booth_data.get("is_sold_out")),
+            "wish_lists_count": total_booth_wishlists,
+            "items": booth_items,
         }
     except Exception as exc:
         snapshot["errors"].append(f"booth:{type(exc).__name__}:{exc}")
