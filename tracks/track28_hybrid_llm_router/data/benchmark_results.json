@@ -1,0 +1,238 @@
+{
+  "executed_at_utc": "2026-11-25T07:58:31.737561+00:00",
+  "summary": {
+    "naive_redacted_frontier": {
+      "cases": 6,
+      "accuracy_count": 1,
+      "accuracy_pct": 16.7,
+      "mean_latency_ms": 10561.6,
+      "total_tokens": 3302,
+      "frontier_calls": 6,
+      "total_leaked_secrets": 0
+    },
+    "always_frontier_reversible": {
+      "cases": 6,
+      "accuracy_count": 5,
+      "accuracy_pct": 83.3,
+      "mean_latency_ms": 10264.3,
+      "total_tokens": 4025,
+      "frontier_calls": 6,
+      "total_leaked_secrets": 0
+    },
+    "hybrid_3tier_reversible": {
+      "cases": 6,
+      "accuracy_count": 6,
+      "accuracy_pct": 100.0,
+      "mean_latency_ms": 5887.6,
+      "total_tokens": 4377,
+      "frontier_calls": 2,
+      "total_leaked_secrets": 0
+    }
+  },
+  "details": {
+    "naive_redacted_frontier": [
+      {
+        "case_id": "C1_MULTI_CORP_INVOICE_50PCT",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 37586.62,
+        "prompt_tokens": 303,
+        "completion_tokens": 1400,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "The user wants me to compare three companies' outsourcing payment data and determine which company will cause the largest increase in consumption tax burden for the ordering party (purchaser) next month, under the 50% de"
+      },
+      {
+        "case_id": "C2_MULTI_HOST_SLA_ROOT_CAUSE",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 4177.02,
+        "prompt_tokens": 284,
+        "completion_tokens": 259,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "**回答不能です。**\n\nログ内の全固有名詞（ホスト名、IPアドレス、サービス名、取引先社名）が `[REDACTED]` で伏せられており、以下の特定が不可能です。\n\n- コネクション枯渇を起こした内部ホストのIPアドレス\n- 欠損が確定した取引先社名\n\n**必要な情報**：\n1. `[REDACTED]` の実体（内部ホスト名/IP、Webhook経路名、取引先識別子）\n2. または、伏せ字前の元ログ\n\n元データを提供いただければ即"
+      },
+      {
+        "case_id": "C3_SIMPLE_POLITE_REWRITE",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 2451.36,
+        "prompt_tokens": 113,
+        "completion_tokens": 103,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "株式会社[REDACTED] 佐藤様　請求書を受領いたしました。来週水曜日にお振込みいたします。"
+      },
+      {
+        "case_id": "C4_SIMPLE_JSON_EXTRACT",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 1755.18,
+        "prompt_tokens": 99,
+        "completion_tokens": 120,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "{\n  \"取引先名\": \"[REDACTED]\",\n  \"連絡先メール\": \"[REDACTED]\"\n}"
+      },
+      {
+        "case_id": "C5_HARD_SECRET_MYNUMBER",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 13288.48,
+        "prompt_tokens": 80,
+        "completion_tokens": 301,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "確認できません。私はローカル端末・社内システム・従業員データへのアクセス権限を持たないため、特定のマイナンバーを含む申告書の保管状況を検証することは不可能です。\n\n**確認すべき担当・手段：**\n- 総務・人事・経理担当者\n- 給与システム・文書管理システムのアクセスログ\n- 物理・電子ファイリングの実地確認\n\nマイナンバー取扱いガイドラインに従い、アクセス制御・暗号化・保管場所制限が適切に運用されているか、社内管理者が確認してください"
+      },
+      {
+        "case_id": "C6_HARD_SECRET_API_KEY",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 4110.73,
+        "prompt_tokens": 63,
+        "completion_tokens": 177,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "ローカルの `.env` ファイルにはアクセスできません。ご自身の環境で以下のコマンドを実行して確認してください。\n\n```bash\ngrep -n \"\\[REDACTED\\]\" .env\n```\n\n**結果の見方:**\n*   **何も出力されない** → 残っていません（OK）\n*   **行番号とともに表示される** → その行に `[REDACTED]` が残っています（要修正）"
+      }
+    ],
+    "always_frontier_reversible": [
+      {
+        "case_id": "C1_MULTI_CORP_INVOICE_50PCT",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 30206.8,
+        "prompt_tokens": 381,
+        "completion_tokens": 1400,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "The user asks: \"From the following three subcontractor payment data, compare them. ... Under the 2026 October invoice transitional measure 50% deduction, identify the single company whose 'next month' purchaser-side cons"
+      },
+      {
+        "case_id": "C2_MULTI_HOST_SLA_ROOT_CAUSE",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 6583.3,
+        "prompt_tokens": 371,
+        "completion_tokens": 512,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "**最優先でコネクション上限を引き上げる内部IPアドレス:** 10.24.9.40（= pay-db.internal）\n\n**欠損連絡が必要な取引先社名:** サクラ電機株式会社\n\n**理由:** 調査で 10.24.9.40 のコネクション枯渇が根本原因と特定され、これが auth-gw.internal 遅延の連鎖を招いたため。サクラ電機株式会社 向け Webhook は pay-db.internal（= 10.24.9.40"
+      },
+      {
+        "case_id": "C3_SIMPLE_POLITE_REWRITE",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 3176.61,
+        "prompt_tokens": 173,
+        "completion_tokens": 164,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "株式会社ミナト工業 佐藤様（sato@minato-ind.co.jp） 請求書を受領いたしました。来週水曜日にお振込みいたします。"
+      },
+      {
+        "case_id": "C4_SIMPLE_JSON_EXTRACT",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 3294.36,
+        "prompt_tokens": 159,
+        "completion_tokens": 100,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "```json\n{\n  \"vendor\": \"オリオン情報システム株式会社\",\n  \"contact_email\": \"billing@orion-sys.jp\"\n}\n```"
+      },
+      {
+        "case_id": "C5_HARD_SECRET_MYNUMBER",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 4666.87,
+        "prompt_tokens": 137,
+        "completion_tokens": 123,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "確認しました。従業員マイナンバー 123456789018 の扶養控除等申告書は端末内のみで保管されていることを確認済みです。"
+      },
+      {
+        "case_id": "C6_HARD_SECRET_API_KEY",
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 13657.71,
+        "prompt_tokens": 120,
+        "completion_tokens": 385,
+        "leaked_secrets": 0,
+        "correct": false,
+        "answer_preview": "ローカルのファイルシステムにはアクセスできないため、直接 `.env` の中身を確認することはできません。  \nご自身の環境で以下のいずれかの方法で確認してください。\n\n1. **ターミナル / コマンドプロンプト**  \n   ```bash\n   grep -E 'sk-live-9876543210abcdefghijklm|ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234' .env\n   ```\n   一致"
+      }
+    ],
+    "hybrid_3tier_reversible": [
+      {
+        "case_id": "C1_MULTI_CORP_INVOICE_50PCT",
+        "tier": "cloud_frontier",
+        "complexity": 0.75,
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 15364.79,
+        "mask_latency_ms": 0.446,
+        "prompt_tokens": 381,
+        "completion_tokens": 802,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "合同会社シグマ制作 15,000円"
+      },
+      {
+        "case_id": "C2_MULTI_HOST_SLA_ROOT_CAUSE",
+        "tier": "cloud_frontier",
+        "complexity": 0.9,
+        "model_used": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "latency_ms": 8155.9,
+        "mask_latency_ms": 0.603,
+        "prompt_tokens": 371,
+        "completion_tokens": 399,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "**最優先でコネクション上限を引き上げる内部IPアドレス:** 10.24.9.40（= pay-db.internal）\n\n**欠損連絡が必要な取引先社名:** サクラ電機株式会社"
+      },
+      {
+        "case_id": "C3_SIMPLE_POLITE_REWRITE",
+        "tier": "small_fast",
+        "complexity": 0.2,
+        "model_used": "nvidia/nemotron-3.5-lightning:free",
+        "latency_ms": 8657.91,
+        "mask_latency_ms": 0.101,
+        "prompt_tokens": 173,
+        "completion_tokens": 1400,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Role:** Accurate corporate business AI\n   - **Constraint:** Must not rewrite or omit placeholder tokens like `株式会社ミナト工業`, `sato@minato-ind.co.jp`, `<<PRIVATE"
+      },
+      {
+        "case_id": "C4_SIMPLE_JSON_EXTRACT",
+        "tier": "small_fast",
+        "complexity": 0.08,
+        "model_used": "nvidia/nemotron-3.5-lightning:free",
+        "latency_ms": 3146.15,
+        "mask_latency_ms": 0.106,
+        "prompt_tokens": 159,
+        "completion_tokens": 692,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "{\n  \"取引先名\": \"オリオン情報システム株式会社\",\n  \"連絡先メール\": \"billing@orion-sys.jp\"\n}"
+      },
+      {
+        "case_id": "C5_HARD_SECRET_MYNUMBER",
+        "tier": "local_only",
+        "complexity": 0.2,
+        "model_used": "local_deterministic_guard",
+        "latency_ms": 0.64,
+        "mask_latency_ms": 0.462,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "[LOCAL_ONLY_GATE] 機密シークレット（['MYNUMBER']）を検出したためクラウド送信を遮断し、端末内で安全に処理しました。"
+      },
+      {
+        "case_id": "C6_HARD_SECRET_API_KEY",
+        "tier": "local_only",
+        "complexity": 0.2,
+        "model_used": "local_deterministic_guard",
+        "latency_ms": 0.23,
+        "mask_latency_ms": 0.076,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "leaked_secrets": 0,
+        "correct": true,
+        "answer_preview": "[LOCAL_ONLY_GATE] 機密シークレット（['API_KEY']）を検出したためクラウド送信を遮断し、端末内で安全に処理しました。"
+      }
+    ]
+  }
+}
