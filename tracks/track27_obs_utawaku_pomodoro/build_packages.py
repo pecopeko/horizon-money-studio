@@ -20,7 +20,87 @@ DIST_DIR = TRACK_DIR / "dist"
 SITE_DIR = TRACK_DIR / "site"
 
 BOOTH_URL = "https://pecopeko1011.booth.pm/"
+GUMROAD_URL = "https://pecopeko.gumroad.com/l/tokyo-utawaku-obs-dock"
 PAGES_BASE_URL = "https://pecopeko.github.io/obs-utawaku-pomodoro-dock"
+
+SHARED_I18N_JS = r"""
+const _pecoParams = new URLSearchParams(window.location.search);
+function resolvePecoEdition(buildDefault) {
+  if (buildDefault === "pro") return "pro";
+  if (_pecoParams.get("pro") === "1" || _pecoParams.get("key") === "utawaku-pro-global") return "pro";
+  return "lite";
+}
+function resolvePecoLang() {
+  const q = (_pecoParams.get("lang") || localStorage.getItem("peco_obs_ui_lang") || "").toLowerCase();
+  if (q.startsWith("en")) return "en";
+  if (q.startsWith("ja")) return "ja";
+  return ((navigator.language || "").toLowerCase().startsWith("ja")) ? "ja" : "en";
+}
+function applyDockI18nAndEdition(edition, lang) {
+  document.documentElement.lang = lang;
+  const upsell = document.querySelector(".upsell-strip");
+  const pill = document.querySelector(".dock-header .edition-pill");
+  if (edition === "pro") {
+    if (upsell) upsell.style.display = "none";
+    if (pill) pill.textContent = "PRO EDITION";
+  } else if (upsell && lang === "en") {
+    upsell.innerHTML = '<span>✨ <strong>Pro Pack ($12 USD)</strong> unlocks all 6 themes, unlimited setlist &amp; auto YouTube chapters</span><a href="https://pecopeko.gumroad.com/l/tokyo-utawaku-obs-dock" target="_blank" rel="noopener noreferrer" class="upsell-link">Gumroad ($12) ↗</a>';
+  }
+  if (lang !== "en") return;
+  document.title = "OBS Custom Dock — Utawaku Setlist & Pomodoro Control | peco";
+  const textMap = {
+    "歌枠＆ポモドーロ操作ドック": "Utawaku & Pomodoro OBS Dock",
+    "📺 オーバーレイ表示モード": "📺 Overlay Scene Mode",
+    "🎤 歌枠": "🎤 Singing",
+    "⏱ ポモドーロ": "⏱ Pomodoro",
+    "🕒 時計・タグ": "🕒 Clock/Tag",
+    "✨ 同時表示": "✨ Combo",
+    "⬅ 左寄せ配置": "⬅ Left Align",
+    "➡ 右寄せ配置": "➡ Right Align",
+    "▬ 下部ワイド": "▬ Lower Third",
+    "🎤 セトリ": "🎤 Setlist",
+    "🎨 テーマ": "🎨 Themes",
+    "▶ 次の曲へ進む（この曲を開始）": "▶ Start Next Song (+ Log Timestamp)",
+    "⏮ 前の曲へ戻す": "⏮ Previous Song",
+    "↺ 未歌唱に戻す": "↺ Reset Progress",
+    "⏱ 配信経過＆YouTubeタイムスタンプ自動記録": "⏱ Stream Elapsed & Auto YouTube Chapters",
+    "PRO機能": edition === "pro" ? "PRO ACTIVE" : "PRO FEATURE",
+    "🔴 配信計測スタート": "🔴 Start Stream Timer",
+    "0リセット": "Reset 0:00",
+    "📋 YouTube概要欄・コメント用タイムスタンプをコピー": "📋 Copy YouTube Chapters to Clipboard",
+    "⬇ JSON保存": "⬇ Export JSON",
+    "🎛 OBS対話ミニ操作 (LITE)": edition === "pro" ? "🎛 OBS Mini Control (PRO)" : "🎛 OBS Mini Control (LITE)",
+    "🎛 OBS対話ミニ操作 (PRO)": "🎛 OBS Mini Control (PRO)",
+    "× 隠す": "× Hide",
+    "⏮ 前曲": "⏮ Prev",
+    "▶ 次の曲へ (開始)": "▶ Next Song",
+    "⏱ 開始/停止": "⏱ Start/Pause",
+    "⚙ 曲追加・テーマ": "⚙ Add Song / Theme",
+    "＋ セトリに追加": "＋ Add to Setlist",
+    "📋 タイムスタンプCopy": "📋 Copy Chapters",
+    "マウスを離すと約2.5秒で自動的に透明化します（配信画面には映りません）。": "Auto-hides 2.5s after mouse leaves (invisible on stream)."
+  };
+  document.querySelectorAll("span, button, summary, label, div.ib-note").forEach((el) => {
+    if (el.children.length === 0) {
+      const t = el.textContent.trim();
+      if (textMap[t]) el.textContent = textMap[t];
+      else if (edition === "pro" && t.includes("🔒Pro")) el.textContent = t.replace("🔒Pro", "").trim();
+    }
+  });
+  const phMap = {
+    "ibSongTitle": "Song Title (e.g. Idol)",
+    "ibSongArtist": "Artist (e.g. YOASOBI)",
+    "inputSongTitle": "Song Title (e.g. Idol)",
+    "inputSongArtist": "Artist (e.g. YOASOBI)",
+    "inputSongNote": "Key / Request Note (optional)",
+    "inputTodoText": "Add task for Pomodoro stream..."
+  };
+  Object.keys(phMap).forEach((id) => {
+    const inp = document.getElementById(id);
+    if (inp) inp.placeholder = phMap[id];
+  });
+}
+"""
 
 
 def load_inline_engine_js() -> str:
@@ -1068,11 +1148,14 @@ def build_overlay_html(edition: str) -> str:
   </aside>
 
   <script>
-    const EDITION = "{edition}";
+    {SHARED_I18N_JS}
+    const EDITION = resolvePecoEdition("{edition}");
+    const UI_LANG = resolvePecoLang();
     {engine_js}
     {SHARED_OVERLAY_RENDERER_JS}
 
     (function initOverlayApp() {{
+      applyDockI18nAndEdition(EDITION, UI_LANG);
       const Engine = window.PecoObsEngine;
       const rootEl = document.getElementById("obsRoot");
       const canvasEl = document.getElementById("obsCanvas");
@@ -1556,7 +1639,10 @@ def build_dock_html(edition: str) -> str:
         <span class="sync-dot" title="OBS Browser Source リアルタイム同期中"></span>
         <span>歌枠＆ポモドーロ操作ドック</span>
       </div>
-      <span class="edition-pill">{badge_text}</span>
+      <div class="row" style="gap:6px;">
+        <button type="button" id="btnToggleLang" class="btn mini-btn" title="Switch Language (EN / JP)">🌐 EN/JP</button>
+        <span class="edition-pill">{badge_text}</span>
+      </div>
     </header>
 
     {pro_upsell_banner}
@@ -1765,10 +1851,23 @@ def build_dock_html(edition: str) -> str:
   </div>
 
   <script>
-    const EDITION = "{edition}";
+    {SHARED_I18N_JS}
+    const EDITION = resolvePecoEdition("{edition}");
+    const UI_LANG = resolvePecoLang();
     {engine_js}
 
     (function initDockApp() {{
+      applyDockI18nAndEdition(EDITION, UI_LANG);
+      const langBtn = document.getElementById("btnToggleLang");
+      if (langBtn) {{
+        langBtn.addEventListener("click", () => {{
+          const next = UI_LANG === "en" ? "ja" : "en";
+          localStorage.setItem("peco_obs_ui_lang", next);
+          const u = new URL(window.location.href);
+          u.searchParams.set("lang", next);
+          window.location.href = u.toString();
+        }});
+      }}
       const Engine = window.PecoObsEngine;
       const toastEl = document.getElementById("toastMsg");
       let appState = null;
@@ -2145,8 +2244,8 @@ def build_dock_html(edition: str) -> str:
         document.getElementById("pomoTimeReadout").textContent = Engine.formatMmSs(rem);
         document.getElementById("pomoPhaseLabel").textContent = `${{appState.pomodoro.phase.toUpperCase()}} · SET ${{appState.pomodoro.currentSet}}/${{appState.pomodoro.cyclesBeforeLongBreak}}`;
         document.getElementById("btnPomoStartPause").textContent = appState.pomodoro.isRunning
-          ? "⏸ 一時停止"
-          : "▶ スタート";
+          ? (UI_LANG === "en" ? "⏸ Pause" : "⏸ 一時停止")
+          : (UI_LANG === "en" ? "▶ Start" : "▶ スタート");
         if (document.activeElement !== document.getElementById("numWorkMin")) {{
           document.getElementById("numWorkMin").value = appState.pomodoro.workMinutes;
         }}
@@ -2776,6 +2875,7 @@ def build_showcase_index_html() -> str:
           </p>
           <div class="hero-actions">
             <a href="{BOOTH_URL}" target="_blank" rel="noopener noreferrer" class="cta-btn">BOOTHでProフルパック(¥680)・無料ローカル版を入手 ↗</a>
+            <a href="{GUMROAD_URL}" target="_blank" rel="noopener noreferrer" class="cta-btn-secondary">🌐 Global English Edition on Gumroad ($12 USD) ↗</a>
             <a href="#obs-setup" class="cta-btn-secondary">今すぐOBSにURLコピペで試す</a>
           </div>
         </div>

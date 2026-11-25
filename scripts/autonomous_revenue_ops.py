@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -214,6 +215,40 @@ def collect_live_snapshot() -> dict[str, Any]:
     except Exception as exc:
         snapshot["errors"].append(f"note:{type(exc).__name__}:{exc}")
 
+    # 3c. Gumroad Global USD Storefront (pecopeko.gumroad.com / public name: peco)
+    try:
+        gr_tok = os.environ.get("GUMROAD_ACCESS_TOKEN", "").strip()
+        if not gr_tok:
+            gr_tok_file = pathlib.Path.home() / ".config" / "gumroad" / "access_token"
+            if gr_tok_file.exists():
+                gr_tok = gr_tok_file.read_text(encoding="utf-8").strip()
+        if gr_tok:
+            gr_raw = _fetch_json(
+                "https://api.gumroad.com/v2/products",
+                {"Authorization": f"Bearer {gr_tok}"},
+            )
+            gr_products = [
+                {
+                    "id": p.get("id"),
+                    "name": p.get("name"),
+                    "formatted_price": p.get("formatted_price"),
+                    "published": bool(p.get("published")),
+                    "sales_count": int(p.get("sales_count") or 0),
+                    "sales_usd_cents": float(p.get("sales_usd_cents") or 0.0),
+                    "short_url": p.get("short_url"),
+                }
+                for p in (gr_raw.get("products") or [])
+            ]
+            snapshot["channels"]["gumroad"] = {
+                "total_products_count": len(gr_products),
+                "published_products_count": sum(1 for p in gr_products if p["published"]),
+                "total_sales_count": sum(p["sales_count"] for p in gr_products),
+                "total_sales_usd_cents": sum(p["sales_usd_cents"] for p in gr_products),
+                "products": gr_products,
+            }
+    except Exception as exc:
+        snapshot["errors"].append(f"gumroad:{type(exc).__name__}:{exc}")
+
     # 4. GitHub Authenticated Checks (Contest PR, GHSAs, External PRs, Metaculus Cron, Zenn Queue)
     try:
         gh_tok = _get_github_token()
@@ -324,6 +359,10 @@ def compute_deltas(prev: dict[str, Any] | None, curr: dict[str, Any]) -> dict[st
         - p_ch.get("zenn", {}).get("total_article_likes", 0),
         "booth_wishlists_delta": c_ch.get("booth", {}).get("wish_lists_count", 0)
         - p_ch.get("booth", {}).get("wish_lists_count", 0),
+        "note_likes_delta": c_ch.get("note", {}).get("total_likes", 0)
+        - p_ch.get("note", {}).get("total_likes", 0),
+        "gumroad_sales_usd_cents_delta": c_ch.get("gumroad", {}).get("total_sales_usd_cents", 0.0)
+        - p_ch.get("gumroad", {}).get("total_sales_usd_cents", 0.0),
     }
 
 
