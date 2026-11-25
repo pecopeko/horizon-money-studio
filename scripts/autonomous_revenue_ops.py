@@ -249,6 +249,39 @@ def collect_live_snapshot() -> dict[str, Any]:
     except Exception as exc:
         snapshot["errors"].append(f"gumroad:{type(exc).__name__}:{exc}")
 
+    # 3d. itch.io Global USD Storefront (pecopeko.itch.io / public name: peco)
+    try:
+        itch_tok = os.environ.get("ITCHIO_API_KEY", "").strip()
+        if not itch_tok:
+            itch_tok_file = pathlib.Path.home() / ".config" / "itchio" / "api_key"
+            if itch_tok_file.exists():
+                itch_tok = itch_tok_file.read_text(encoding="utf-8").strip()
+        if itch_tok:
+            itch_raw = _fetch_json(f"https://itch.io/api/1/{itch_tok}/my-games")
+            itch_games = [
+                {
+                    "id": g.get("id"),
+                    "title": g.get("title"),
+                    "published": bool(g.get("published")),
+                    "min_price_cents": int(g.get("min_price") or 0),
+                    "views_count": int(g.get("views_count") or 0),
+                    "downloads_count": int(g.get("downloads_count") or 0),
+                    "purchases_count": int(g.get("purchases_count") or 0),
+                    "earnings": g.get("earnings") or [],
+                    "url": g.get("url"),
+                }
+                for g in (itch_raw.get("games") or [])
+            ]
+            snapshot["channels"]["itchio"] = {
+                "published_games_count": sum(1 for g in itch_games if g["published"]),
+                "total_views": sum(g["views_count"] for g in itch_games),
+                "total_downloads": sum(g["downloads_count"] for g in itch_games),
+                "total_purchases": sum(g["purchases_count"] for g in itch_games),
+                "games": itch_games,
+            }
+    except Exception as exc:
+        snapshot["errors"].append(f"itchio:{type(exc).__name__}:{exc}")
+
     # 4. GitHub Authenticated Checks (Contest PR, GHSAs, External PRs, Metaculus Cron, Zenn Queue)
     try:
         gh_tok = _get_github_token()

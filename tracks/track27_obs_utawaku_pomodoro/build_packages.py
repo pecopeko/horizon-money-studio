@@ -20,7 +20,7 @@ DIST_DIR = TRACK_DIR / "dist"
 SITE_DIR = TRACK_DIR / "site"
 
 BOOTH_URL = "https://pecopeko1011.booth.pm/"
-GUMROAD_URL = "https://pecopeko.gumroad.com/l/tokyo-utawaku-obs-dock"
+GUMROAD_URL = "https://pecopeko.itch.io/tokyo-utawaku-obs-dock"
 PAGES_BASE_URL = "https://pecopeko.github.io/obs-utawaku-pomodoro-dock"
 
 SHARED_I18N_JS = r"""
@@ -44,7 +44,7 @@ function applyDockI18nAndEdition(edition, lang) {
     if (upsell) upsell.style.display = "none";
     if (pill) pill.textContent = "PRO EDITION";
   } else if (upsell && lang === "en") {
-    upsell.innerHTML = '<span>✨ <strong>Pro Pack ($12 USD)</strong> unlocks all 6 themes, unlimited setlist &amp; auto YouTube chapters</span><a href="https://pecopeko.gumroad.com/l/tokyo-utawaku-obs-dock" target="_blank" rel="noopener noreferrer" class="upsell-link">Gumroad ($12) ↗</a>';
+    upsell.innerHTML = '<span>✨ <strong>Pro Pack ($12 USD)</strong> unlocks all 6 themes, unlimited setlist &amp; auto YouTube chapters</span><a href="https://pecopeko.itch.io/tokyo-utawaku-obs-dock" target="_blank" rel="noopener noreferrer" class="upsell-link">Get on itch.io ($12) ↗</a>';
   }
   if (lang !== "en") return;
   document.title = "OBS Custom Dock — Utawaku Setlist & Pomodoro Control | peco";
@@ -2875,7 +2875,7 @@ def build_showcase_index_html() -> str:
           </p>
           <div class="hero-actions">
             <a href="{BOOTH_URL}" target="_blank" rel="noopener noreferrer" class="cta-btn">BOOTHでProフルパック(¥680)・無料ローカル版を入手 ↗</a>
-            <a href="{GUMROAD_URL}" target="_blank" rel="noopener noreferrer" class="cta-btn-secondary">🌐 Global English Edition on Gumroad ($12 USD) ↗</a>
+            <a href="{GUMROAD_URL}" target="_blank" rel="noopener noreferrer" class="cta-btn-secondary">🌐 Global English Edition on itch.io ($12 USD) ↗</a>
             <a href="#obs-setup" class="cta-btn-secondary">今すぐOBSにURLコピペで試す</a>
           </div>
         </div>
