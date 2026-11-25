@@ -189,6 +189,31 @@ def collect_live_snapshot() -> dict[str, Any]:
     except Exception as exc:
         snapshot["errors"].append(f"booth:{type(exc).__name__}:{exc}")
 
+    # 3b. note.com Paid Creator Storefront (pecopeko1011 / public name: peco)
+    try:
+        note_raw = _fetch_json(
+            "https://note.com/api/v2/creators/pecopeko1011/contents?kind=note&page=1"
+        )
+        note_contents = (note_raw.get("data") or {}).get("contents") or []
+        notes_list = [
+            {
+                "key": n.get("key"),
+                "name": n.get("name"),
+                "price": int(n.get("price") or 0),
+                "like_count": int(n.get("likeCount") or 0),
+                "publish_at": n.get("publishAt"),
+            }
+            for n in note_contents
+        ]
+        snapshot["channels"]["note"] = {
+            "published_notes_count": len(notes_list),
+            "paid_notes_count": sum(1 for n in notes_list if n["price"] > 0),
+            "total_likes": sum(n["like_count"] for n in notes_list),
+            "notes": notes_list,
+        }
+    except Exception as exc:
+        snapshot["errors"].append(f"note:{type(exc).__name__}:{exc}")
+
     # 4. GitHub Authenticated Checks (Contest PR, GHSAs, External PRs, Metaculus Cron, Zenn Queue)
     try:
         gh_tok = _get_github_token()
