@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo VN Audio &amp; Smartphone Messenger UI Kit — Interactive Preview | peco</title>
+<style>
+  :root {
+    --bg: #0f1319;
+    --panel: #151b24;
+    --panel-alt: #1b2330;
+    --panel-hover: #212b3b;
+    --line: #263041;
+    --ink: #edf2f9;
+    --muted: #8e9db4;
+    --dim: #637289;
+    --green: #6bd65a;
+    --bubble-green: #7ad64e;
+    --bubble-npc: #243043;
+    --amber: #e69c3e;
+    --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--panel-alt);
+    color: var(--ink);
+    border-radius: 6px;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+  button:hover { background: var(--panel-hover); border-color: #36455d; }
+  .shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 12px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100vh;
+  }
+  /* Top Header & CTA Bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .brand-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .brand-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pill-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .pill-btn.active {
+    color: var(--ink);
+    border-color: var(--green);
+    background: #1a2a21;
+  }
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    background: var(--green);
+    color: #0d1a0e;
+    font-weight: 700;
+    font-size: 12.5px;
+    border: 1px solid #82e372;
+    font-variant-numeric: tabular-nums;
+  }
+  .cta-link:hover { background: #7de16d; }
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 11px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--panel-alt);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cta-secondary:hover { background: var(--panel-hover); }
+
+  /* Two-Column Studio Workspace */
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.32fr) minmax(350px, 0.92fr);
+    gap: 12px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .workspace { grid-template-columns: 1fr; }
+  }
+
+  /* Left Pane: Soundboard + Oscilloscope */
+  .soundboard-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .scope-strip {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: #121720;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .scope-strip { grid-template-columns: 1fr; }
+  }
+  .scope-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .now-playing-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+  .now-playing-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .meter-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .meter-track {
+    flex: 1;
+    height: 6px;
+    background: #1c2432;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--green);
+    transition: width 0.05s linear;
+  }
+  .spec-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  #scopeCanvas {
+    width: 180px;
+    height: 48px;
+    background: #0d1118;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    display: block;
+  }
+
+  /* Category Filter Tabs */
+  .tabs-bar {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    background: var(--panel);
+  }
+  .tab-btn {
+    padding: 5px 9px;
+    font-size: 12px;
+    white-space: nowrap;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .tab-btn:hover { color: var(--ink); background: var(--panel-alt); }
+  .tab-btn.active {
+    color: var(--ink);
+    background: var(--panel-alt);
+    border-color: var(--line);
+    font-weight: 600;
+  }
+
+  /* Sound Rows Table */
+  .sfx-list {
+    max-height: 540px;
+    overflow-y: auto;
+  }
+  .sfx-row {
+    display: grid;
+    grid-template-columns: 32px 34px minmax(0, 1fr) 68px 52px;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-bottom: 1px solid #1d2533;
+    cursor: pointer;
+    transition: background 0.1s ease;
+  }
+  .sfx-row:hover { background: #19212e; }
+  .sfx-row.playing { background: #192922; }
+  .sfx-idx {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .play-icon-btn {
+    width: 28px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    padding: 0;
+    border-radius: 5px;
+    color: var(--ink);
+  }
+  .sfx-row.playing .play-icon-btn {
+    background: var(--green);
+    color: #0e1c10;
+    border-color: var(--green);
+  }
+  .sfx-name-col {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .sfx-title {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sfx-file {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tier-badge {
+    justify-self: end;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+  .tier-free {
+    color: var(--green);
+    border: 1px solid #2d5930;
+    background: #152619;
+  }
+  .tier-pro {
+    color: var(--muted);
+    border: 1px solid var(--line);
+    background: #171e29;
+  }
+  .sfx-dur {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Right Pane: Smartphone Messenger VN Demo */
+  .phone-shell {
+    background: #11151d;
+    border: 1px solid #2b3648;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 652px;
+  }
+  .phone-statusbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 16px;
+    background: #171d28;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .phone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 14px;
+    background: #1d2533;
+    border-bottom: 1px solid var(--line);
+  }
+  .phone-room-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-room-name {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .phone-room-sub {
+    font-size: 11px;
+    color: var(--green);
+    font-variant-numeric: tabular-nums;
+  }
+  .phone-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .mini-btn {
+    padding: 4px 7px;
+    font-size: 11px;
+    color: var(--muted);
+    border-radius: 4px;
+  }
+  .mini-btn.on {
+    color: var(--green);
+    border-color: #315c35;
+    background: #16261a;
+  }
+  .chat-feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #141923;
+  }
+  .chat-divider {
+    align-self: center;
+    font-size: 11px;
+    color: var(--muted);
+    background: #1f2838;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .msg-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    animation: popIn 0.15s ease-out;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg-row.npc { align-self: flex-start; max-width: 88%; }
+  .msg-row.player { align-self: flex-end; max-width: 88%; justify-content: flex-end; }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #356396;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+  .bubble-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sender-name {
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  .bubble-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  .bubble {
+    padding: 8px 11px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+  .npc .bubble {
+    background: var(--bubble-npc);
+    color: var(--ink);
+    border-top-left-radius: 3px;
+  }
+  .player .bubble {
+    background: var(--bubble-green);
+    color: #101910;
+    font-weight: 500;
+    border-top-right-radius: 3px;
+  }
+  .sticker-card {
+    padding: 10px 16px;
+    text-align: center;
+    border-radius: 12px;
+  }
+  .sticker-glyph {
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .meta-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 10px;
+    line-height: 1.2;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .kidoku-tag {
+    color: #82ca75;
+    font-weight: 600;
+  }
+  ruby rt {
+    font-size: 9.5px;
+    color: #9ab0cc;
+    font-weight: 400;
+  }
+  .player ruby rt { color: #244022; }
+  body.hide-ruby ruby rt { display: none; }
+
+  .typing-dots span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 2px;
+    border-radius: 50%;
+    background: #9bb0cc;
+    animation: dotBounce 0.9s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.16s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.32s; }
+  @keyframes dotBounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+    40% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .choice-drawer {
+    padding: 10px 12px;
+    background: #1a2230;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .choice-prompt-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .choice-btn {
+    text-align: left;
+    padding: 8px 11px;
+    font-size: 12.5px;
+    background: #232f43;
+    border: 1px solid #31415c;
+    color: var(--ink);
+    border-radius: 7px;
+  }
+  .choice-btn:hover {
+    background: #2c3c56;
+    border-color: var(--green);
+  }
+
+  /* Bottom Footer CTA */
+  .footer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="6" fill="#182230" stroke="#2E3D54"/>
+        <path d="M7 9L25 23M25 9L7 23" stroke="#E69C3E" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="10" cy="16" r="2.5" fill="#6BD65A"/>
+        <circle cx="22" cy="16" r="2.5" fill="#6BD65A"/>
+      </svg>
+      <div>
+        <div class="brand-title" id="hdrTitle">Tokyo VN Audio &amp; Smartphone Messenger UI Kit</div>
+        <div class="brand-sub" id="hdrSub">40 Synth WAVs (48kHz / 16-bit) + Ren'Py 8 &amp; Godot 4 Drop-In UI · by peco</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="pill-btn active" id="langEnBtn">EN</button>
+      <button type="button" class="pill-btn" id="langJpBtn">日本語</button>
+      <a class="cta-secondary" href="https://pecopeko.itch.io" target="_blank" rel="noopener noreferrer" id="topFreeBtn">Free 8-WAV Sample ($0)</a>
+      <a class="cta-link" href="https://pecopeko.itch.io" target="_blank" rel="noopener noreferrer" id="topBuyBtn">Full 40-SFX + Engine Kit — $9.00 USD ↗</a>
+    </div>
+  </header>
+
+  <!-- Dual Workspace -->
+  <main class="workspace">
+    <!-- Left: 40-SFX Soundboard -->
+    <section class="soundboard-card" aria-label="Tokyo Soundboard">
+      <div class="scope-strip">
+        <div class="scope-meta">
+          <div class="now-playing-label" id="scopeStatus">READY · CLICK ANY SOUND TO SYNTHESIZE LIVE</div>
+          <div class="now-playing-title" id="nowTitle">01 — High School Courtyard Chime (Kin-Kon-Kan-Kon)</div>
+          <div class="meter-bar-wrap">
+            <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+            <span class="spec-tag">48.0 kHz · 16-bit PCM</span>
+          </div>
+        </div>
+        <canvas id="scopeCanvas" width="180" height="48"></canvas>
+      </div>
+
+      <div class="tabs-bar" id="tabsBar"></div>
+      <div class="sfx-list" id="sfxList"></div>
+    </section>
+
+    <!-- Right: Playable Tokyo Midnight Messenger VN Demo -->
+    <section class="phone-shell" aria-label="Tokyo Midnight Messenger Demo">
+      <div class="phone-statusbar">
+        <span id="phoneClock">17:15</span>
+        <span>5G · TOKYO · 94%</span>
+      </div>
+      <div class="phone-header">
+        <div class="phone-room-info">
+          <div class="phone-room-name" id="roomName">Aoi Minase (水瀬 葵)</div>
+          <div class="phone-room-sub" id="bondStatus">Online · Broadcast Club · Bond ★ 1</div>
+        </div>
+        <div class="phone-controls">
+          <button type="button" class="mini-btn on" id="rubyToggleBtn">ふりがな ON</button>
+          <button type="button" class="mini-btn" id="replayStoryBtn">↺ Replay</button>
+        </div>
+      </div>
+
+      <div class="chat-feed" id="chatFeed"></div>
+
+      <div class="choice-drawer" id="choiceDrawer">
+        <div class="choice-prompt-lbl">
+          <span id="choiceHeaderLbl">Select reply (triggers live Messenger &amp; Tokyo SFX)</span>
+          <span id="turnCounterLbl">Scene 1 / 4</span>
+        </div>
+        <div id="choiceButtons" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Download Strip -->
+  <footer class="footer-bar">
+    <span id="footerCopy">100% Procedural Copyright-Clear Audio · Includes Ren'Py 8 `.rpy` + Godot 4 `.gd` + Commercial License (`peco`)</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <a class="cta-secondary" href="https://github.com/pecopeko" target="_blank" rel="noopener noreferrer">GitHub (@pecopeko)</a>
+      <a class="cta-link" href="https://pecopeko.itch.io" target="_blank" rel="noopener noreferrer" id="bottomBuyBtn">Download Full Commercial Pack ($9.00 USD) on itch.io ↗</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // 40-Preset Catalog matching synth_tokyo_sfx.py exactly
+  const CATALOG = [
+    {id:1, cat:"01", file:"01_school_chime_courtyard_westminster.wav", en:"High School Courtyard Chime (Kin-Kon-Kan-Kon)", jp:"放課後チャイム（校庭スピーカー・4フレーズ）", dur:"7.8s", free:true},
+    {id:2, cat:"01", file:"02_school_chime_classroom_speaker.wav", en:"Classroom Wall Speaker Chime", jp:"教室内放送チャイム（壁掛けスピーカー）", dur:"4.9s", free:false},
+    {id:3, cat:"01", file:"03_homeroom_two_tone_chime.wav", en:"Homeroom 2-Tone Chime (Pin-Pon)", jp:"予鈴2音チャイム（ピンポーン）", dur:"2.7s", free:false},
+    {id:4, cat:"01", file:"04_pa_broadcast_four_note_prefix.wav", en:"School PA 4-Note Broadcast Prefix", jp:"校内放送4音プレフィックス（上りチャイム）", dur:"3.0s", free:false},
+
+    {id:5, cat:"02", file:"05_konbini_door_melody_sunny_a.wav", en:"Konbini Door Melody A (Original Sunny G-Maj)", jp:"コンビニ入店メロディA（オリジナル明快Gメジャー）", dur:"3.2s", free:true},
+    {id:6, cat:"02", file:"06_konbini_door_melody_breeze_b.wav", en:"Konbini Door Melody B (Original Night Eb-Maj)", jp:"コンビニ入店メロディB（オリジナル夜風Ebメジャー）", dur:"3.0s", free:false},
+    {id:7, cat:"02", file:"07_izakaya_sliding_door_chirin.wav", en:"Izakaya Wooden Sliding Door & Brass Bell", jp:"居酒屋・古書店の引き戸と真鍮ドアベル", dur:"2.5s", free:false},
+    {id:8, cat:"02", file:"08_ic_card_transit_pass_pipi.wav", en:"IC Transit Gate Pass Chirp (Pi-Pi!)", jp:"交通系IC改札タッチ通過音（ピピッ！）", dur:"0.6s", free:true},
+    {id:9, cat:"02", file:"09_ic_card_error_triple_beep.wav", en:"IC Transit Gate Error Triple Beep", jp:"自動改札エラー警告音（ピピピッ）", dur:"1.0s", free:false},
+
+    {id:10, cat:"03", file:"10_fumikiri_railroad_crossing_loop.wav", en:"Fumikiri Railroad Crossing (700+748Hz Bells)", jp:"踏切警報機カンカン音（2周波うなりモデル）", dur:"3.9s", free:true},
+    {id:11, cat:"03", file:"11_ekimelo_commuter_platform_sunrise.wav", en:"Tokyo Platform Eki-Melo A (Original Sunrise)", jp:"駅ホーム発車メロディA（オリジナル朝陽）", dur:"5.3s", free:false},
+    {id:12, cat:"03", file:"12_ekimelo_twilight_express_chime.wav", en:"Tokyo Platform Eki-Melo B (Original Twilight)", jp:"駅ホーム発車メロディB（オリジナル夕暮れ）", dur:"5.1s", free:false},
+    {id:13, cat:"03", file:"13_commuter_door_close_and_hiss.wav", en:"Commuter Train Door Chime & Pneumatic Hiss", jp:"電車ドア閉まり予告音＋プシュー閉扉音", dur:"3.5s", free:false},
+    {id:14, cat:"03", file:"14_shinkansen_cabin_chime_original.wav", en:"Bullet Train Cabin Chime (Original)", jp:"特急・新幹線車内チャイム（オリジナル6音）", dur:"4.4s", free:false},
+    {id:15, cat:"03", file:"15_crosswalk_piyo_piyo_bird.wav", en:"Pedestrian Crosswalk Signal (Piyo-Piyo)", jp:"音響式信号機「ピヨピヨ」", dur:"3.3s", free:false},
+    {id:16, cat:"03", file:"16_crosswalk_kakkou_cuckoo.wav", en:"Pedestrian Crosswalk Signal (Kakkou)", jp:"音響式信号機「カッコー」", dur:"3.4s", free:false},
+
+    {id:17, cat:"04", file:"17_edo_furin_glass_wind_chime_a.wav", en:"Edo Furin Glass Wind Chime A", jp:"江戸風鈴A（涼風チリン・高Qガラス共鳴）", dur:"3.3s", free:true},
+    {id:18, cat:"04", file:"18_edo_furin_glass_wind_chime_b.wav", en:"Edo Furin Glass Wind Chime B", jp:"江戸風鈴B（中音ガラス鉢・二重余韻）", dur:"3.4s", free:false},
+    {id:19, cat:"04", file:"19_shishi_odoshi_bamboo_fountain.wav", en:"Shishi-Odoshi Water Trickle & Bamboo Knock", jp:"日本庭園の鹿威し（水滴と竹の「カコーン！」）", dur:"3.6s", free:false},
+    {id:20, cat:"04", file:"20_shrine_suzu_sacred_bell_shake.wav", en:"Shinto Shrine Suzu Sacred Bell Shake", jp:"神社の本坪鈴（参拝の鈴振り音）", dur:"3.3s", free:false},
+    {id:21, cat:"04", file:"21_shrine_kashiwade_two_claps.wav", en:"Shinto Shrine Kashiwade (2 Prayer Claps)", jp:"神社の二拍手（柏手・境内残響）", dur:"2.7s", free:false},
+    {id:22, cat:"04", file:"22_higurashi_twilight_cicada.wav", en:"Evening Higurashi Twilight Cicada", jp:"夕暮れのヒグラシ（カナカナカナ…）", dur:"4.3s", free:true},
+    {id:23, cat:"04", file:"23_minminzemi_summer_cicada.wav", en:"Mid-Summer Minminzemi Cicada", jp:"真夏のミンミンゼミ（ミーンミンミンミー…）", dur:"4.3s", free:false},
+    {id:24, cat:"04", file:"24_jihanki_vending_can_drop.wav", en:"Night Jihanki Vending Machine & Can Drop", jp:"夜の自動販売機（駆動音＋ボタン＋ガコン！）", dur:"2.9s", free:false},
+
+    {id:25, cat:"05", file:"25_messenger_kidoku_pop.wav", en:"Messenger 'Kidoku' Read / Bubble Pop", jp:"スマホチャット受信・既読ポップ音", dur:"0.4s", free:true},
+    {id:26, cat:"05", file:"26_messenger_send_swoosh.wav", en:"Messenger Outgoing Send Swoosh", jp:"スマホチャット送信スウッシュ音", dur:"0.5s", free:false},
+    {id:27, cat:"05", file:"27_messenger_sticker_bounce.wav", en:"Messenger Sticker / Stamp Bounce", jp:"スタンプ送信バウンス音", dur:"0.7s", free:false},
+    {id:28, cat:"05", file:"28_messenger_typing_tick.wav", en:"Messenger Typing '...' Soft Tick", jp:"入力中「…」ソフトタップ音", dur:"0.2s", free:false},
+    {id:29, cat:"05", file:"29_smartphone_desk_vibrate.wav", en:"Smartphone Vibrating on Wooden Desk", jp:"机の上のスマホバイブ着信音", dur:"1.3s", free:false},
+    {id:30, cat:"05", file:"30_vn_blip_female_bright.wav", en:"VN Dialogue Text Blip (Female Bright)", jp:"ノベル文字送り音（ヒロイン・明るい声）", dur:"0.1s", free:true},
+    {id:31, cat:"05", file:"31_vn_blip_female_calm.wav", en:"VN Dialogue Text Blip (Female Calm)", jp:"ノベル文字送り音（先輩・落ち着いた声）", dur:"0.1s", free:false},
+    {id:32, cat:"05", file:"32_vn_blip_male_low.wav", en:"VN Dialogue Text Blip (Male Low)", jp:"ノベル文字送り音（男性・低音）", dur:"0.1s", free:false},
+    {id:33, cat:"05", file:"33_vn_blip_typewriter_mech.wav", en:"VN Dialogue Text Blip (Mechanical Key)", jp:"ノベル文字送り音（タイプライター）", dur:"0.1s", free:false},
+    {id:34, cat:"05", file:"34_ui_choice_hover_soft.wav", en:"UI Choice Hover Crystal Tick", jp:"選択肢ホバー音（クリスタル）", dur:"0.2s", free:false},
+    {id:35, cat:"05", file:"35_ui_confirm_sparkle.wav", en:"UI Confirm Sparkle Arpeggio", jp:"決定・ルート確定スパークル音", dur:"0.9s", free:false},
+    {id:36, cat:"05", file:"36_ui_cancel_back.wav", en:"UI Cancel / Back Two-Step", jp:"キャンセル・戻る音", dur:"0.5s", free:false},
+    {id:37, cat:"05", file:"37_ui_save_slot_chime.wav", en:"VN Save Slot Bookmark Chime", jp:"セーブ完了・しおりチャイム", dur:"1.4s", free:false},
+    {id:38, cat:"05", file:"38_vn_affection_up_chime.wav", en:"VN Affection / Bond Up Chime", jp:"好感度UP・絆きらめきチャイム", dur:"1.6s", free:false},
+    {id:39, cat:"05", file:"39_vn_horror_dread_sting.wav", en:"VN Mystery / Horror Dread Sting", jp:"不穏・サスペンス衝撃スティング音", dur:"2.9s", free:false},
+    {id:40, cat:"05", file:"40_vn_flashback_shimmer.wav", en:"VN Memory / Flashback Shimmer", jp:"回想シーン遷移・記憶のきらめき音", dur:"2.5s", free:false}
+  ];
+
+  const TABS = [
+    {key:"all", en:"All (40)", jp:"すべて (40)"},
+    {key:"free", en:"Free Sample (8)", jp:"無料サンプル (8)"},
+    {key:"01", en:"01 School (4)", jp:"01 チャイム (4)"},
+    {key:"02", en:"02 Konbini (5)", jp:"02 コンビニ・店 (5)"},
+    {key:"03", en:"03 Trains (7)", jp:"03 電車・踏切 (7)"},
+    {key:"04", en:"04 Shrine (8)", jp:"04 神社・季節 (8)"},
+    {key:"05", en:"05 VN & UI (16)", jp:"05 スマホ・UI (16)"}
+  ];
+
+  let lang = "en";
+  let activeTab = "all";
+  let activeSoundId = null;
+  let showRuby = true;
+  let bondScore = 1;
+
+  // WebAudio Engine with Convolution Courtyard Impulse
+  let audioCtx = null;
+  let masterGain = null;
+  let reverbBus = null;
+  let analyser = null;
+  let noiseBuf = null;
+
+  function ensureAudio() {
+    if (audioCtx) {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      return;
+    }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.82;
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    masterGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    // Algorithmic stereo impulse response (1.5s courtyard tail)
+    const irLen = Math.floor(audioCtx.sampleRate * 1.45);
+    const ir = audioCtx.createBuffer(2, irLen, audioCtx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = ir.getChannelData(ch);
+      for (let i = 0; i < irLen; i++) {
+        const t = i / audioCtx.sampleRate;
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-t * 3.8) * 0.35;
+      }
+    }
+    const conv = audioCtx.createConvolver();
+    conv.buffer = ir;
+    reverbBus = audioCtx.createGain();
+    reverbBus.gain.value = 0.28;
+    reverbBus.connect(conv);
+    conv.connect(masterGain);
+
+    // Shared 3s white-noise buffer
+    const nLen = audioCtx.sampleRate * 3;
+    noiseBuf = audioCtx.createBuffer(1, nLen, audioCtx.sampleRate);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nLen; i++) nd[i] = Math.random() * 2 - 1;
+  }
+
+  const m2f = (m) => 440 * Math.pow(2, (m - 69) / 12);
+
+  function fmNote(t0, dur, freq, amp = 0.28, ratio = 3, modIdx = 2.0, wet = 0.25, filterHz = 0) {
+    const c = audioCtx;
+    const osc = c.createOscillator();
+    const mod = c.createOscillator();
+    const modGain = c.createGain();
+    const env = c.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, t0);
+    mod.type = "sine";
+    mod.frequency.setValueAtTime(freq * ratio, t0);
+
+    modGain.gain.setValueAtTime(freq * modIdx, t0);
+    modGain.gain.exponentialRampToValueAtTime(Math.max(1, freq * 0.08), t0 + dur * 0.75);
+
+    env.gain.setValueAtTime(0.0001, t0);
+    env.gain.linearRampToValueAtTime(amp, t0 + 0.006);
+    env.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+
+    mod.connect(modGain);
+    modGain.connect(osc.frequency);
+
+    let outNode = env;
+    osc.connect(env);
+    if (filterHz > 0) {
+      const bp = c.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = filterHz;
+      bp.Q.value = 1.1;
+      env.connect(bp);
+      outNode = bp;
+    }
+    outNode.connect(masterGain);
+    if (wet > 0) {
+      const wg = c.createGain();
+      wg.gain.value = wet;
+      outNode.connect(wg);
+      wg.connect(reverbBus);
+    }
+    osc.start(t0);
+    mod.start(t0);
+    osc.stop(t0 + dur + 0.03);
+    mod.stop(t0 + dur + 0.03);
+  }
+
+  function modalHit(t0, dur, modes, amp = 0.25, wet = 0.25) {
+    const c = audioCtx;
+    modes.forEach(([f, relA, dec]) => {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(f, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(amp * relA, t0 + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0005, t0 + Math.min(dur, 4.5 / dec + 0.08));
+      o.connect(g);
+      g.connect(masterGain);
+      if (wet > 0) {
+        const wg = c.createGain();
+        wg.gain.value = wet;
+        g.connect(wg);
+        wg.connect(reverbBus);
+      }
+      o.start(t0);
+      o.stop(t0 + dur + 0.04);
+    });
+  }
+
+  function filteredNoise(t0, dur, freq, q = 2.0, amp = 0.2, wet = 0.15, sweepTo = 0) {
+    const c = audioCtx;
+    const src = c.createBufferSource();
+    src.buffer = noiseBuf;
+    const bp = c.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.setValueAtTime(freq, t0);
+    if (sweepTo > 0) bp.frequency.exponentialRampToValueAtTime(sweepTo, t0 + dur);
+    bp.Q.value = q;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.linearRampToValueAtTime(amp, t0 + Math.min(0.03, dur * 0.25));
+    g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    src.connect(bp);
+    bp.connect(g);
+    g.connect(masterGain);
+    if (wet > 0) {
+      const wg = c.createGain();
+      wg.gain.value = wet;
+      g.connect(wg);
+      wg.connect(reverbBus);
+    }
+    src.start(t0);
+    src.stop(t0 + dur + 0.02);
+  }
+
+  function playPreset(id, highlightUI = true) {
+    ensureAudio();
+    const now = audioCtx.currentTime + 0.01;
+    const spec = CATALOG.find((x) => x.id === id);
+    if (highlightUI && spec) {
+      activeSoundId = id;
+      document.getElementById("nowTitle").textContent =
+        String(id).padStart(2, "0") + " — " + (lang === "jp" ? spec.jp : spec.en);
+      document.getElementById("scopeStatus").textContent =
+        lang === "jp" ? "LIVE WEBAUDIO 物理モデル再生中" : "PLAYING LIVE WEBAUDIO PHYSICAL MODEL";
+      renderList();
+    }
+
+    switch (id) {
+      case 1: { // Courtyard Westminster
+        const seq = [65,69,67,60, 65,67,69,65];
+        let t = now;
+        seq.forEach((n, i) => {
+          const hold = (i % 4 === 3);
+          fmNote(t, hold ? 1.3 : 0.75, m2f(n), 0.24, 3, 2.2, 0.55);
+          t += hold ? 0.72 : 0.38;
+        });
+        break;
+      }
+      case 2: { // Classroom PA Speaker
+        const seq = [65,69,67,60, 65,67,69,65];
+        let t = now + 0.06;
+        filteredNoise(now, 0.03, 1800, 3, 0.12, 0.05);
+        seq.forEach((n, i) => {
+          const hold = (i % 4 === 3);
+          fmNote(t, hold ? 0.95 : 0.55, m2f(n), 0.28, 3, 2.5, 0.15, 1250);
+          t += hold ? 0.62 : 0.34;
+        });
+        break;
+      }
+      case 3:
+        fmNote(now, 1.1, m2f(69), 0.28, 2, 1.8, 0.3);
+        fmNote(now + 0.55, 1.5, m2f(65), 0.30, 2, 1.7, 0.3);
+        break;
+      case 4:
+        [60,64,67,72].forEach((n, i) => fmNote(now + i * 0.30, i === 3 ? 1.3 : 0.65, m2f(n), 0.26, 4, 1.5, 0.25));
+        break;
+      case 5: { // Konbini Sunny G-Maj
+        filteredNoise(now, 0.7, 650, 2.5, 0.06, 0.1);
+        const m = [74,71,67,69,71,74,79], h = [67,62,59,60,62,66,71];
+        m.forEach((n, i) => {
+          fmNote(now + i * 0.22, i === 6 ? 1.1 : 0.45, m2f(n), 0.24, 2, 2.2, 0.2);
+          fmNote(now + i * 0.22, i === 6 ? 1.0 : 0.40, m2f(h[i]), 0.12, 2, 1.1, 0.2);
+        });
+        break;
+      }
+      case 6: { // Konbini Night Eb-Maj
+        [[70,63],[67,58],[72,63],[70,62],[75,67]].forEach(([a,b], i) => {
+          fmNote(now + i * 0.27, i === 4 ? 1.2 : 0.5, m2f(a), 0.24, 3, 1.6, 0.22);
+          fmNote(now + i * 0.27, i === 4 ? 1.1 : 0.45, m2f(b), 0.13, 1, 0.9, 0.22);
+        });
+        break;
+      }
+      case 7: // Izakaya door + chirin
+        filteredNoise(now, 0.75, 320, 2.8, 0.26, 0.15);
+        modalHit(now + 0.76, 0.25, [[145,0.9,28],[310,0.5,40]], 0.26, 0.15);
+        [0.18, 0.33, 0.74].forEach((dt) => modalHit(now + dt, 1.1, [[2680,0.9,5],[4135,0.65,7],[5890,0.45,9]], 0.22, 0.25));
+        break;
+      case 8: // IC Pi-Pi!
+        fmNote(now + 0.02, 0.065, 2000, 0.30, 3, 0.4, 0.08);
+        fmNote(now + 0.105, 0.09, 2480, 0.34, 3, 0.4, 0.08);
+        break;
+      case 9: // IC Error
+        [0, 0.15, 0.30].forEach((dt) => {
+          fmNote(now + dt, 0.11, 960, 0.25, 3, 1.6, 0.1);
+          fmNote(now + dt, 0.11, 1420, 0.18, 2, 1.2, 0.1);
+        });
+        break;
+      case 10: { // Fumikiri 700+748Hz
+        for (let k = 0; k < 6; k++) {
+          const t = now + k * 0.44;
+          modalHit(t, 0.75, [[700,1,5.5],[1498,0.55,8],[2387,0.35,12],[3410,0.2,16]], 0.22, 0.25);
+          modalHit(t + 0.018, 0.75, [[748,0.94,5.8],[1602,0.5,8.5],[2550,0.32,12]], 0.20, 0.25);
+        }
+        break;
+      }
+      case 11: { // Eki-Melo Sunrise
+        const ev = [[0,76],[0.2,79],[0.4,83],[0.75,81],[0.95,77],[1.15,72],[1.5,74],[1.7,77],[1.9,81],[2.25,79],[2.45,74],[2.75,84]];
+        ev.forEach(([dt, n], i) => fmNote(now + dt, i === ev.length - 1 ? 1.4 : 0.45, m2f(n), 0.22, 2, 1.8, 0.4));
+        fmNote(now + 2.75, 1.4, m2f(60), 0.16, 2, 1.0, 0.4);
+        fmNote(now + 2.75, 1.4, m2f(67), 0.14, 2, 1.0, 0.4);
+        break;
+      }
+      case 12: { // Eki-Melo Twilight
+        const ev = [[0,75],[0.22,79],[0.44,80],[0.82,74],[1.04,77],[1.26,79],[1.65,72],[1.88,75],[2.12,77],[2.45,79]];
+        ev.forEach(([dt, n], i) => fmNote(now + dt, i === ev.length - 1 ? 1.4 : 0.45, m2f(n), 0.22, 3, 1.4, 0.42));
+        fmNote(now + 2.45, 1.4, m2f(63), 0.16, 2, 0.9, 0.42);
+        break;
+      }
+      case 13: // Door close + hiss
+        [0, 0.52, 1.04].forEach((dt) => {
+          fmNote(now + dt, 0.24, 659.25, 0.24, 2, 1.3, 0.18);
+          fmNote(now + dt + 0.20, 0.28, 523.25, 0.25, 2, 1.2, 0.18);
+        });
+        filteredNoise(now + 1.55, 0.85, 2900, 1.6, 0.22, 0.15);
+        modalHit(now + 2.35, 0.35, [[85,1,18],[175,0.7,26],[420,0.35,45]], 0.32, 0.15);
+        break;
+      case 14: // Shinkansen cabin chime
+        [[0,62],[0.25,69],[0.50,71],[0.75,78],[1.05,76],[1.35,81]].forEach(([dt, n], i) =>
+          fmNote(now + dt, i === 5 ? 1.8 : 0.55, m2f(n), 0.24, 4, 1.2, 0.25));
+        break;
+      case 15: { // Piyo-Piyo
+        const piyo = (t0) => {
+          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+          o.frequency.setValueAtTime(2800, t0);
+          o.frequency.exponentialRampToValueAtTime(1450, t0 + 0.13);
+          g.gain.setValueAtTime(0.001, t0);
+          g.gain.linearRampToValueAtTime(0.26, t0 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.14);
+          o.connect(g); g.connect(masterGain); g.connect(reverbBus);
+          o.start(t0); o.stop(t0 + 0.15);
+        };
+        piyo(now); piyo(now + 0.40); piyo(now + 0.57);
+        break;
+      }
+      case 16: // Kakkou
+        [0, 1.25].forEach((b) => {
+          fmNote(now + b, 0.17, 698.46, 0.26, 3, 0.35, 0.3);
+          fmNote(now + b + 0.24, 0.42, 554.37, 0.28, 3, 0.35, 0.3);
+        });
+        break;
+      case 17: // Edo Furin A
+        filteredNoise(now, 1.8, 1400, 1.2, 0.03, 0.2);
+        [0.08, 0.30, 0.92].forEach((dt, i) =>
+          modalHit(now + dt, 1.6, [[3124,1,2.3],[3130,0.7,2.5],[5485,0.55,4],[7910,0.3,6]], 0.22 - i * 0.03, 0.38));
+        break;
+      case 18: // Edo Furin B
+        [0.06, 0.68, 0.85].forEach((dt) =>
+          modalHit(now + dt, 1.8, [[2538,1,2.0],[2542,0.75,2.2],[4492,0.6,3.5],[6818,0.35,5]], 0.22, 0.40));
+        break;
+      case 19: // Shishi-Odoshi
+        for (let i = 0; i < 6; i++) modalHit(now + i * 0.13, 0.07, [[1200 + i * 110, 0.8, 55]], 0.07, 0.2);
+        filteredNoise(now + 0.78, 0.32, 1850, 1.2, 0.12, 0.25);
+        modalHit(now + 1.05, 0.85, [[368,1,16],[746,0.78,22],[1198,0.5,30],[1845,0.3,42]], 0.38, 0.42);
+        modalHit(now + 1.26, 0.55, [[374,0.8,20],[758,0.55,28]], 0.18, 0.38);
+        break;
+      case 20: // Shrine Suzu
+        [0.05, 0.68].forEach((b) => {
+          filteredNoise(now + b, 0.25, 480, 1.6, 0.10, 0.15);
+          for (let h = 0; h < 8; h++) {
+            const rf = 1780 + (h % 4) * 210;
+            modalHit(now + b + h * 0.028, 0.9, [[rf,0.8,8],[rf*1.72,0.6,10],[rf*2.6,0.4,14]], 0.11, 0.35);
+          }
+        });
+        break;
+      case 21: // Shrine Kashiwade 2 claps
+        [0.06, 0.82].forEach((dt) => {
+          filteredNoise(now + dt, 0.038, 980, 2.5, 0.42, 0.55);
+          filteredNoise(now + dt + 0.004, 0.032, 2400, 1.8, 0.32, 0.55);
+        });
+        break;
+      case 22: { // Higurashi Kana-kana
+        let t = now + 0.04;
+        for (let k = 0; k < 12; k++) {
+          const u = k / 11;
+          const gain = Math.sin(Math.PI * Math.min(1, (k + 1) / 12.5)) * 0.18;
+          const pm = 1 + 0.04 * Math.sin(Math.PI * u);
+          modalHit(t, 0.16, [[3940 * pm, 0.8, 12], [4710 * pm, 0.5, 14]], gain, 0.45);
+          t += 0.24 - 0.10 * u;
+        }
+        break;
+      }
+      case 23: // Minminzemi
+        [[0,0.65],[0.72,0.32],[1.10,0.32],[1.48,0.32],[1.86,0.95]].forEach(([dt, d]) => {
+          filteredNoise(now + dt, d, 1620, 4.5, 0.22, 0.25, 2450);
+          fmNote(now + dt, d, 185, 0.12, 8, 3.2, 0.2, 1850);
+        });
+        break;
+      case 24: // Jihanki can drop
+        fmNote(now + 0.08, 0.09, 2080, 0.22, 2, 0.6, 0.1);
+        filteredNoise(now + 0.35, 0.28, 420, 2.2, 0.14, 0.12);
+        modalHit(now + 0.65, 0.75, [[148,1,14],[318,0.8,19],[685,0.6,26],[2740,0.28,45]], 0.38, 0.25);
+        modalHit(now + 0.82, 0.55, [[162,0.8,18],[355,0.65,24],[2680,0.25,50]], 0.24, 0.25);
+        break;
+      case 25: { // Kidoku Pop
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.frequency.setValueAtTime(520, now);
+        o.frequency.exponentialRampToValueAtTime(1420, now + 0.068);
+        g.gain.setValueAtTime(0.001, now);
+        g.gain.linearRampToValueAtTime(0.30, now + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+        o.connect(g); g.connect(masterGain);
+        o.start(now); o.stop(now + 0.12);
+        break;
+      }
+      case 26: // Send Swoosh
+        filteredNoise(now, 0.15, 680, 2.2, 0.24, 0.08, 3200);
+        fmNote(now + 0.06, 0.14, 880, 0.16, 2, 0.7, 0.08);
+        fmNote(now + 0.11, 0.20, 1318.5, 0.20, 2, 0.6, 0.08);
+        break;
+      case 27: // Sticker Bounce
+        [[0, 380, 840], [0.15, 560, 1080]].forEach(([dt, f0, f1]) => {
+          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+          o.frequency.setValueAtTime(f0, now + dt);
+          o.frequency.exponentialRampToValueAtTime(f1, now + dt + 0.12);
+          g.gain.setValueAtTime(0.001, now + dt);
+          g.gain.linearRampToValueAtTime(0.28, now + dt + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, now + dt + 0.18);
+          o.connect(g); g.connect(masterGain);
+          o.start(now + dt); o.stop(now + dt + 0.19);
+        });
+        fmNote(now + 0.20, 0.28, 1567.98, 0.16, 2, 0.9, 0.15);
+        break;
+      case 28: // Typing Tick
+        modalHit(now, 0.06, [[1680,0.9,130],[3420,0.5,190]], 0.20, 0.02);
+        break;
+      case 29: // Desk Vibrate
+        [0, 0.50].forEach((dt) => fmNote(now + dt, 0.36, 154, 0.28, 2, 1.8, 0.1));
+        break;
+      case 30: fmNote(now, 0.065, 685, 0.24, 2, 0.8, 0.02); break;
+      case 31: fmNote(now, 0.070, 490, 0.24, 2, 0.5, 0.02); break;
+      case 32: fmNote(now, 0.075, 244, 0.26, 2, 1.1, 0.02); break;
+      case 33: modalHit(now, 0.06, [[430,0.85,95],[1380,0.65,165],[3150,0.5,240]], 0.24, 0.02); break;
+      case 34: fmNote(now, 0.14, 1567.98, 0.18, 2, 0.6, 0.05); break;
+      case 35: [74,78,81,86].forEach((n, i) => fmNote(now + i * 0.055, i === 3 ? 0.55 : 0.25, m2f(n), 0.22, 3, 1.3, 0.25)); break;
+      case 36:
+        fmNote(now, 0.16, 659.25, 0.22, 2, 0.8, 0.1);
+        fmNote(now + 0.09, 0.28, 440, 0.24, 2, 0.7, 0.1);
+        break;
+      case 37: [65,69,72,76,79,84].forEach((n, i) => fmNote(now + i * 0.048, 0.95, m2f(n), 0.16, 2, 1.1, 0.35)); break;
+      case 38: [72,74,76,79,81,84,88].forEach((n, i) => fmNote(now + i * 0.06, i === 6 ? 0.95 : 0.4, m2f(n), 0.20, 3, 1.4, 0.35)); break;
+      case 39:
+        fmNote(now, 2.1, 52, 0.34, 1.5, 2.5, 0.5);
+        [233.08, 246.94, 622.25].forEach((f) => fmNote(now + 0.02, 2.0, f, 0.15, 3.17, 2.8, 0.55));
+        break;
+      case 40:
+        [72,74,78,80,82,84,86,90].forEach((n, i) => fmNote(now + i * 0.11, 1.1, m2f(n), 0.14, 2, 0.8, 0.5));
+        break;
+    }
+  }
+
+  // Live Canvas Oscilloscope + Peak Meter
+  const canvas = document.getElementById("scopeCanvas");
+  const ctx2d = canvas.getContext("2d");
+  const meterFill = document.getElementById("meterFill");
+  const waveBuf = new Uint8Array(256);
+
+  function drawScope() {
+    requestAnimationFrame(drawScope);
+    ctx2d.fillStyle = "#0d1118";
+    ctx2d.fillRect(0, 0, canvas.width, canvas.height);
+    ctx2d.strokeStyle = "#1d2636";
+    ctx2d.beginPath();
+    ctx2d.moveTo(0, canvas.height / 2);
+    ctx2d.lineTo(canvas.width, canvas.height / 2);
+    ctx2d.stroke();
+
+    if (!analyser) return;
+    analyser.getByteTimeDomainData(waveBuf);
+    let peak = 0;
+    ctx2d.strokeStyle = "#6bd65a";
+    ctx2d.lineWidth = 1.5;
+    ctx2d.beginPath();
+    for (let i = 0; i < waveBuf.length; i++) {
+      const v = (waveBuf[i] - 128) / 128;
+      if (Math.abs(v) > peak) peak = Math.abs(v);
+      const x = (i / (waveBuf.length - 1)) * canvas.width;
+      const y = (0.5 - v * 0.42) * canvas.height;
+      if (i === 0) ctx2d.moveTo(x, y);
+      else ctx2d.lineTo(x, y);
+    }
+    ctx2d.stroke();
+    meterFill.style.width = Math.min(100, Math.round(peak * 145)) + "%";
+  }
+  drawScope();
+
+  // Render Soundboard Tabs & Rows
+  function renderTabs() {
+    const bar = document.getElementById("tabsBar");
+    bar.innerHTML = "";
+    TABS.forEach((t) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "tab-btn" + (activeTab === t.key ? " active" : "");
+      b.textContent = lang === "jp" ? t.jp : t.en;
+      b.onclick = () => { activeTab = t.key; renderTabs(); renderList(); };
+      bar.appendChild(b);
+    });
+  }
+
+  function renderList() {
+    const list = document.getElementById("sfxList");
+    list.innerHTML = "";
+    const items = CATALOG.filter((s) =>
+      activeTab === "all" ? true : activeTab === "free" ? s.free : s.cat === activeTab
+    );
+    items.forEach((s) => {
+      const row = document.createElement("div");
+      row.className = "sfx-row" + (activeSoundId === s.id ? " playing" : "");
+      row.onclick = () => playPreset(s.id, true);
+
+      const idx = document.createElement("span");
+      idx.className = "sfx-idx";
+      idx.textContent = String(s.id).padStart(2, "0");
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "play-icon-btn";
+      btn.textContent = "▶";
+      btn.setAttribute("aria-label", "Play " + s.en);
+
+      const col = document.createElement("div");
+      col.className = "sfx-name-col";
+      const title = document.createElement("div");
+      title.className = "sfx-title";
+      title.textContent = lang === "jp" ? s.jp : s.en;
+      const file = document.createElement("div");
+      file.className = "sfx-file";
+      file.textContent = s.file;
+      col.appendChild(title);
+      col.appendChild(file);
+
+      const badge = document.createElement("span");
+      badge.className = "tier-badge " + (s.free ? "tier-free" : "tier-pro");
+      badge.textContent = s.free ? "FREE" : "PRO";
+
+      const dur = document.createElement("span");
+      dur.className = "sfx-dur";
+      dur.textContent = s.dur;
+
+      row.appendChild(idx);
+      row.appendChild(btn);
+      row.appendChild(col);
+      row.appendChild(badge);
+      row.appendChild(dur);
+      list.appendChild(row);
+    });
+  }
+
+  // Playable "Tokyo Midnight Messenger (既読)" 4-Turn Visual Novel Mini-Demo
+  const STORY = [
+    {
+      clock: "17:15",
+      dividerEn: "17:15 · Sunset School Courtyard",
+      dividerJp: "17:15 · 放課後の校庭",
+      ambientSfx: 1,
+      npcHtmlEn: "There goes the <ruby>放課後<rt>houkago</rt></ruby> chime! Still up for browsing used artbooks in <ruby>神保町<rt>Jinbocho</rt></ruby>?",
+      npcHtmlJp: "<ruby>放課後<rt>ほうかご</rt></ruby>のチャイム鳴ったね！<ruby>神保町<rt>じんぼうちょう</rt></ruby>の古本屋、まだ寄れる？",
+      choices: [
+        {
+          en: "Heading to the school gate right now!",
+          jp: "今すぐ校門に向かうよ！",
+          replyEn: "Yay! Meet me right before the railroad crossing!",
+          replyJp: "やった！じゃあ踏切の手前で待ってるね。",
+          bonus: 1, sfx: 38
+        },
+        {
+          en: "Grab a warm nikuman at the konbini while waiting!",
+          jp: "駅前のコンビニで肉まん買って待ってて！",
+          replyEn: "Good call! Just stepped through the konbini door.",
+          replyJp: "賛成！ちょうどコンビニ入ったところだよ。",
+          bonus: 1, sfx: 5
+        }
+      ]
+    },
+    {
+      clock: "18:12",
+      dividerEn: "18:12 · Station Ticket Gate",
+      dividerJp: "18:12 · 駅の自動改札",
+      ambientSfx: 8,
+      npcHtmlEn: "Tapped my IC card through the gate! Want something from the street <ruby>自販機<rt>jihanki</rt></ruby> before the train?",
+      npcHtmlJp: "<ruby>改札<rt>かいさつ</rt></ruby>ピピッて通ったよ！ホーム行く前に<ruby>自販機<rt>じはんき</rt></ruby>で何か買う？",
+      choices: [
+        {
+          en: "Cold melon soda ('Gakon!') please!",
+          jp: "冷たいメロンソーダ（ガコン！）で！",
+          replyEn: "Got two cans! That 'Gakon!' drop is always so loud haha.",
+          replyJp: "2本買ったよ！夜の「ガコン！」って音、響くねｗ",
+          bonus: 1, sfx: 24
+        },
+        {
+          en: "Hot canned corn soup for the platform breeze.",
+          jp: "夜風冷えるし、あったかいコーンスープ！",
+          replyEn: "Warm cans acquired! Oh—hear the twilight platform melody?",
+          replyJp: "あたたかいの確保！あ、ホームの発車メロディ鳴ってる！",
+          bonus: 1, sfx: 12
+        }
+      ]
+    },
+    {
+      clock: "21:48",
+      dividerEn: "21:48 · Twilight Crossing & Shrine Lane",
+      dividerJp: "21:48 · 踏切と神社通り",
+      ambientSfx: 10,
+      npcHtmlEn: "Waiting for the <ruby>踏切<rt>fumikiri</rt></ruby> bells... Thanks for walking me back past the <ruby>神社<rt>jinja</rt></ruby> tonight.",
+      npcHtmlJp: "<ruby>踏切<rt>ふみきり</rt></ruby>待ち中……。<ruby>神社<rt>じんじゃ</rt></ruby>の通りまで送ってくれてありがとう。",
+      choices: [
+        {
+          en: "Anytime! Let's make a quick shrine wish together.",
+          jp: "いつでも！神社の鈴鳴らして帰ろう。",
+          replyEn: "Hehe, Deal! Next week let's check out the summer furin chimes too.",
+          replyJp: "ふふ、約束！次は江戸風鈴の音も聴きに行こうね。",
+          bonus: 2, sfx: 20
+        },
+        {
+          en: "I wanted to keep talking a little longer anyway.",
+          jp: "もう少し話しながら歩きたかったからね。",
+          replyEn: "...! Same here. Text me as soon as you get home, okay?",
+          replyJp: "……っ！わたしも。家着いたらすぐ既読つけてね？",
+          bonus: 2, sfx: 38
+        }
+      ]
+    },
+    {
+      clock: "23:42",
+      dividerEn: "23:42 · Midnight Study Desk",
+      dividerJp: "23:42 · 深夜の勉強机",
+      ambientSfx: 17,
+      npcHtmlEn: "Made it to my desk! Hearing the glass <ruby>風鈴<rt>furin</rt></ruby> outside my window. Send me a goodnight stamp!",
+      npcHtmlJp: "机についたよ！窓辺の<ruby>風鈴<rt>ふうりん</rt></ruby>が涼しい音してる。おやすみスタンプ送って！",
+      choices: [
+        {
+          en: "[Sticker] ★彡 Goodnight! See you at homeroom!",
+          jp: "【スタンプ】★彡 おやすみ！また明日の予鈴で！",
+          isSticker: true, glyph: "★彡",
+          replyEn: "Goodnight!! (Story Complete — Try all 40 WAVs on the left!)",
+          replyJp: "おやすみー！！（デモ読了・左の40音もぜひ試聴してね！）",
+          bonus: 1, sfx: 37
+        }
+      ]
+    }
+  ];
+
+  let turnIdx = 0;
+  let storyBusy = false;
+  let storyRunToken = 0;
+  const chatFeed = document.getElementById("chatFeed");
+  const choiceButtons = document.getElementById("choiceButtons");
+
+  const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  function updateBondHeader() {
+    document.getElementById("bondStatus").textContent =
+      lang === "jp"
+        ? `オンライン · 放送部 · 好感度 ★ ${bondScore}`
+        : `Online · Broadcast Club · Bond ★ ${bondScore}`;
+    document.getElementById("roomName").textContent =
+      lang === "jp" ? "水瀬 葵 (Aoi Minase)" : "Aoi Minase (水瀬 葵)";
+  }
+
+  function appendDivider(txt) {
+    const d = document.createElement("div");
+    d.className = "chat-divider";
+    d.textContent = txt;
+    chatFeed.appendChild(d);
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+  }
+
+  async function appendNpcBubble(html, clockStr, token, playSound) {
+    // Animated '...' typing indicator
+    const typingRow = document.createElement("div");
+    typingRow.className = "msg-row npc";
+    typingRow.innerHTML = `<div class="avatar">葵</div><div class="bubble"><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
+    chatFeed.appendChild(typingRow);
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+    if (playSound) playPreset(28, false);
+    await wait(520);
+    if (token !== storyRunToken) return;
+    typingRow.remove();
+
+    const row = document.createElement("div");
+    row.className = "msg-row npc";
+    const sender = lang === "jp" ? "水瀬 葵" : "Aoi";
+    row.innerHTML = `
+      <div class="avatar">葵</div>
+      <div class="bubble-col">
+        <span class="sender-name">${sender}</span>
+        <div class="bubble-wrap">
+          <div class="bubble">${html}</div>
+          <div class="meta-stack"><span>${clockStr}</span></div>
+        </div>
+      </div>`;
+    chatFeed.appendChild(row);
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+    if (playSound) playPreset(25, false);
+  }
+
+  async function appendPlayerBubble(text, clockStr, isSticker, glyph, token) {
+    const row = document.createElement("div");
+    row.className = "msg-row player";
+    const readWord = lang === "jp" ? "既読" : "既読 Read";
+    const inner = isSticker
+      ? `<div class="bubble sticker-card"><div class="sticker-glyph">${glyph}</div><div>${text}</div></div>`
+      : `<div class="bubble">${text}</div>`;
+    row.innerHTML = `
+      <div class="meta-stack">
+        <span class="kidoku-tag" style="visibility:hidden;">${readWord}</span>
+        <span>${clockStr}</span>
+      </div>
+      ${inner}`;
+    chatFeed.appendChild(row);
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+    playPreset(isSticker ? 27 : 26, false);
+
+    await wait(420);
+    if (token !== storyRunToken) return;
+    const kTag = row.querySelector(".kidoku-tag");
+    if (kTag) kTag.style.visibility = "visible";
+    playPreset(25, false);
+  }
+
+  async function runTurn(idx, playAmbient) {
+    const token = storyRunToken;
+    storyBusy = true;
+    choiceButtons.innerHTML = "";
+    if (idx >= STORY.length) {
+      document.getElementById("turnCounterLbl").textContent = lang === "jp" ? "読了 · 4 / 4" : "Complete · 4 / 4";
+      const replayBtn = document.createElement("button");
+      replayBtn.type = "button";
+      replayBtn.className = "choice-btn";
+      replayBtn.textContent = lang === "jp" ? "↺ もう一度最初からプレイする" : "↺ Play Midnight Messenger Demo Again";
+      replayBtn.onclick = () => startStory(true);
+      choiceButtons.appendChild(replayBtn);
+      storyBusy = false;
+      return;
+    }
+
+    const step = STORY[idx];
+    document.getElementById("phoneClock").textContent = step.clock;
+    document.getElementById("turnCounterLbl").textContent =
+      (lang === "jp" ? "シーン " : "Scene ") + (idx + 1) + " / " + STORY.length;
+
+    appendDivider(lang === "jp" ? step.dividerJp : step.dividerEn);
+    if (playAmbient) playPreset(step.ambientSfx, true);
+
+    await appendNpcBubble(lang === "jp" ? step.npcHtmlJp : step.npcHtmlEn, step.clock, token, playAmbient);
+    if (token !== storyRunToken) return;
+
+    step.choices.forEach((ch) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "choice-btn";
+      b.textContent = lang === "jp" ? ch.jp : ch.en;
+      b.onmouseenter = () => { if (audioCtx) playPreset(34, false); };
+      b.onclick = async () => {
+        if (storyBusy) return;
+        storyBusy = true;
+        choiceButtons.innerHTML = "";
+        ensureAudio();
+        await appendPlayerBubble(
+          lang === "jp" ? ch.jp : ch.en,
+          step.clock,
+          Boolean(ch.isSticker),
+          ch.glyph || "",
+          token
+        );
+        if (token !== storyRunToken) return;
+        bondScore += ch.bonus;
+        updateBondHeader();
+        if (ch.sfx) playPreset(ch.sfx, true);
+        await wait(360);
+        await appendNpcBubble(lang === "jp" ? ch.replyJp : ch.replyEn, step.clock, token, true);
+        if (token !== storyRunToken) return;
+        await wait(450);
+        turnIdx = idx + 1;
+        runTurn(turnIdx, true);
+      };
+      choiceButtons.appendChild(b);
+    });
+    storyBusy = false;
+  }
+
+  function startStory(withAudio) {
+    storyRunToken++;
+    turnIdx = 0;
+    bondScore = 1;
+    chatFeed.innerHTML = "";
+    updateBondHeader();
+    runTurn(0, Boolean(withAudio));
+  }
+
+  // Language & Furigana Toggles
+  function applyLang() {
+    document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+    document.getElementById("langJpBtn").classList.toggle("active", lang === "jp");
+    document.getElementById("hdrTitle").textContent =
+      lang === "jp" ? "東京ノベルゲーム効果音40種＆スマホ既読UIキット" : "Tokyo VN Audio & Smartphone Messenger UI Kit";
+    document.getElementById("hdrSub").textContent =
+      lang === "jp" ? "48kHz/16-bit 物理モデル合成WAV 40音 + Ren'Py 8 / Godot 4 スクリプト · by peco" : "40 Synth WAVs (48kHz / 16-bit) + Ren'Py 8 & Godot 4 Drop-In UI · by peco";
+    document.getElementById("topFreeBtn").textContent =
+      lang === "jp" ? "無料サンプル8音 ($0)" : "Free 8-WAV Sample ($0)";
+    document.getElementById("topBuyBtn").textContent =
+      lang === "jp" ? "完全版40音＋UIキットを入手 — $9.00 USD ↗" : "Full 40-SFX + Engine Kit — $9.00 USD ↗";
+    document.getElementById("bottomBuyBtn").textContent =
+      lang === "jp" ? "itch.io で商用ライセンス付フルパック ($9.00 USD) を入手 ↗" : "Download Full Commercial Pack ($9.00 USD) on itch.io ↗";
+    document.getElementById("choiceHeaderLbl").textContent =
+      lang === "jp" ? "返信を選択（効果音＆既読演出が連動します）" : "Select reply (triggers live Messenger & Tokyo SFX)";
+    renderTabs();
+    renderList();
+    startStory(false);
+  }
+
+  document.getElementById("langEnBtn").onclick = () => { lang = "en"; applyLang(); };
+  document.getElementById("langJpBtn").onclick = () => { lang = "jp"; applyLang(); };
+  document.getElementById("rubyToggleBtn").onclick = (ev) => {
+    showRuby = !showRuby;
+    document.body.classList.toggle("hide-ruby", !showRuby);
+    ev.currentTarget.classList.toggle("on", showRuby);
+    ev.currentTarget.textContent = showRuby ? "ふりがな ON" : "ふりがな OFF";
+  };
+  document.getElementById("replayStoryBtn").onclick = () => { ensureAudio(); startStory(true); };
+
+  renderTabs();
+  renderList();
+  startStory(false);
+})();
+</script>
+</body>
+</html>

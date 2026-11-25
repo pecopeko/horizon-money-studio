@@ -6,6 +6,8 @@ __pycache__/
 .DS_Store
 *.egg-info/
 dist/
+tracks/*/dist/
+tracks/track30_tokyo_vn_sfx_renpy_kit/wav_out/
 tracks/track27_obs_utawaku_pomodoro/dist/*.zip
 build/
 .taste-skill/
