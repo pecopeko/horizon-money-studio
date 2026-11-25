@@ -1,0 +1,60 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "record_type": {
+        "type": "string",
+        "description": "TDNET_CORPORATE_DISCLOSURE, TSE_EQUITY_MICROSTRUCTURE_SNAPSHOT, or MACRO_EXCHANGE_NEWS"
+      },
+      "published_at_jst": {
+        "type": ["string", "null"],
+        "description": "Publication timestamp in Asia/Tokyo (JST) or RFC date"
+      },
+      "ticker": {
+        "type": ["string", "null"],
+        "description": "Normalized 4-character JPX stock code (including alphanumeric codes)"
+      },
+      "market_section": {
+        "type": ["string", "null"],
+        "description": "TSE Prime, TSE Standard, TSE Growth, JPX, or BOJ"
+      },
+      "event_category": {
+        "type": "string",
+        "description": "Institutional English catalyst category"
+      },
+      "english_catalyst_label": {
+        "type": "string",
+        "description": "Readable English event classification"
+      },
+      "english_title_summary": {
+        "type": "string",
+        "description": "Translated / normalized English disclosure headline"
+      },
+      "pdf_url": {
+        "type": ["string", "null"],
+        "description": "Direct official TDnet PDF or JPX/BOJ announcement URL"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "record_type",
+          "published_at_jst",
+          "ticker",
+          "market_section",
+          "event_category",
+          "english_title_summary",
+          "pdf_url"
+        ]
+      },
+      "display": {
+        "component": "table"
+      }
+    }
+  }
+}

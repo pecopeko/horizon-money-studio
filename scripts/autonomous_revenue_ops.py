@@ -33,7 +33,7 @@ APIFY_TARGET_ACTORS: tuple[str, ...] = (
     "ats-greenhouse-lever-ashby-jobs-extractor",
     "website-tech-stack-sitemap-extractor",
     "mcp-stateless-v2-firewall-auditor",
-    "eu-ai-act-art50-c2pa-provenance-auditor",
+    "tokyo-stock-exchange-jpx-tdnet-english-extractor",
     "jp-llm-compliance-pii-guard",
 )
 

@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Tokyo Stock Exchange (JPX / TDnet) & BOJ Structured English Records",
+  "description": "Real-time TDnet corporate disclosures classified in English, live .T JPY quotes with TSE Arrowhead tick & S-taka/S-yasu limit bands, and JPX/BOJ English macro releases.",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Extracted JPX / TDnet / BOJ English Records",
+      "description": "Structured dataset items produced during this Actor run.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "pricingModel": "PAY_PER_EVENT",
+  "pricingPerEvent": {
+    "actorChargeEvents": {
+      "record_extracted": {
+        "eventTitle": "JPX / TDnet / BOJ English Record Extracted",
+        "eventDescription": "Charged per structured Tokyo Stock Exchange (TDnet) corporate disclosure, live TSE equity microstructure snapshot, or official JPX/BOJ English release delivered ($5.00 per 1,000 records).",
+        "isOneTimeEvent": false,
+        "isPrimaryEvent": true,
+        "eventPriceUsd": 0.005
+      }
+    }
+  },
+  "minimalMaxTotalChargeUsd": 0.05,
+  "isPPEPlatformUsagePaidByUser": false
+}

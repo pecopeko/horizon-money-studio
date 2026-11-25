@@ -1,0 +1,41 @@
+{
+  "title": "Tokyo Stock Exchange (JPX / TDnet) English Intelligence Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "tickers": {
+      "title": "TSE Stock Codes (Optional — empty fetches market-wide real-time TDnet)",
+      "type": "array",
+      "description": "4-character JPX stock codes (e.g. ['7203', '9984', '8035', '6758'] or post-2024 alphanumeric ['130A']). Leave empty to stream the latest market-wide TDnet disclosures across all TSE Prime, Standard, and Growth companies.",
+      "editor": "stringList",
+      "default": ["7203", "9984", "8035"]
+    },
+    "maxDisclosures": {
+      "title": "Maximum TDnet Disclosures",
+      "type": "integer",
+      "description": "Maximum number of real-time TDnet corporate disclosures to extract (1 to 200).",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 20
+    },
+    "includeMarketQuotesAndMicrostructure": {
+      "title": "Enrich with Live .T JPY Quotes & Arrowhead Tick / S-taka S-yasu Price Limits",
+      "type": "boolean",
+      "description": "Attach live JPY market quote plus exact TOPIX500/Standard tick size, 34-tier daily stop-high (S-taka) & stop-low (S-yasu) bands, and JST session phase (including post-Nov-2024 15:30 Closing Itayose).",
+      "default": true
+    },
+    "includeJpxAndBojMacroNews": {
+      "title": "Include Official JPX & Bank of Japan (BOJ) English Announcements",
+      "type": "boolean",
+      "description": "Append latest official English releases from Japan Exchange Group (JPX) and Bank of Japan (BOJ).",
+      "default": true
+    },
+    "eventCategoryFilter": {
+      "title": "Catalyst Category Filter (Optional)",
+      "type": "array",
+      "description": "Optional filter: EARNINGS_SUMMARY, GUIDANCE_REVISION, SHARE_BUYBACK, DIVIDEND_REVISION, TENDER_OFFER_MA, GOVERNANCE_CAPITAL_EFFICIENCY, MONTHLY_KPI, STOCK_SPLIT_OFFERING, OTHER_MATERIAL.",
+      "editor": "stringList",
+      "default": []
+    }
+  }
+}

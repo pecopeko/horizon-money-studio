@@ -1,0 +1,16 @@
+{
+  "actorSpecification": 1,
+  "name": "tokyo-stock-exchange-jpx-tdnet-english-extractor",
+  "title": "Tokyo Stock Exchange (JPX / TDnet) English Filings & Quotes",
+  "description": "Extract real-time Tokyo Stock Exchange (TDnet) corporate disclosures translated into English catalyst categories, live .T JPY quotes with exact Arrowhead TOPIX500 tick sizes & 34-tier S-taka/S-yasu daily price limits, and official JPX & Bank of Japan English releases.",
+  "version": "1.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./input_schema.json",
+  "dockerfile": "../Dockerfile",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}
