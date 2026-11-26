@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Godot 4 Japanese Tategaki (縦書き・ルビ・禁則) &amp; Showa VHS / PS1 Shader Playground — peco</title>
+<style>
+  :root {
+    --bg: #080c14;
+    --panel: #101726;
+    --panel-2: #162033;
+    --border: #263552;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #ef4444;
+    --cyan: #38bdf8;
+    --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Hiragino Kaku Gothic ProN", "BIZ UDGothic", "Yu Gothic", -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+  .shell {
+    display: grid;
+    grid-template-columns: 580px 1fr;
+    grid-template-rows: 46px 1fr;
+    width: 100%;
+    max-width: 960px;
+    height: 100%;
+    max-height: 640px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    background: var(--bg);
+  }
+  header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    background: #0b111e;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .seal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+  }
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .pill {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--cyan);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 600;
+  }
+  .cta {
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .stage-wrap {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    gap: 8px;
+    background: #060910;
+    border-right: 1px solid var(--border);
+  }
+  .canvas-frame {
+    position: relative;
+    width: 556px;
+    height: 417px;
+    border: 1px solid #2b3c5e;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #05070c;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+  }
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+  }
+  .shader-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .btn {
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .btn:hover { background: var(--panel-2); border-color: #3f5884; }
+  .btn.active {
+    background: #1a2d4d;
+    border-color: var(--cyan);
+    color: #fff;
+  }
+  .btn.accent {
+    background: #3b1219;
+    border-color: var(--accent);
+    color: #fecaca;
+  }
+  .btn.accent:hover { background: #541822; }
+  .status-strip {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .inspector {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    gap: 9px;
+    background: var(--panel);
+    overflow-y: auto;
+  }
+  .sec-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .preset-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .preset-btn {
+    text-align: left;
+    padding: 6px 9px;
+    font-size: 11.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  textarea {
+    width: 100%;
+    height: 116px;
+    resize: none;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: #090e18;
+    color: #f8fafc;
+    font-size: 12.5px;
+    line-height: 1.5;
+    font-family: "Hiragino Kaku Gothic ProN", "BIZ UDGothic", monospace;
+    user-select: text;
+  }
+  textarea:focus { outline: 1px solid var(--cyan); }
+  .toggles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  label.chk {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    padding: 5px 7px;
+    border-radius: 4px;
+    background: #0c1322;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .transport {
+    display: flex;
+    gap: 6px;
+  }
+  .transport .btn { flex: 1; text-align: center; }
+  .metrics-box {
+    padding: 7px 9px;
+    border-radius: 4px;
+    background: #0b111e;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  .metrics-box code {
+    color: var(--amber);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; grid-template-rows: 44px auto 1fr; overflow-y: auto; max-height: none; }
+    .canvas-frame { width: 100%; height: auto; aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <span class="seal">縦</span>
+      <span>Godot 4 Tategaki (縦書き・ルビ・JIS禁則) &amp; Showa Horror Shaders</span>
+    </div>
+    <div class="badge-row">
+      <span class="pill">Godot 4.x @tool</span>
+      <a class="cta" href="https://pecopeko.itch.io" target="_blank" rel="noopener">Pro Suite $11.00 • pecopeko.itch.io</a>
+    </div>
+  </header>
+
+  <section class="stage-wrap">
+    <div class="canvas-frame">
+      <canvas id="viewCanvas" width="560" height="420"></canvas>
+    </div>
+    <div>
+      <div class="sec-title">Live Godot 4 Post-Processing Shader Simulation (Real-Time Pixel Pipeline)</div>
+      <div class="shader-bar" id="shaderBar">
+        <button class="btn" data-shader="clean">0. Clean (原画)</button>
+        <button class="btn active" data-shader="vhs">1. Showa VHS 1998</button>
+        <button class="btn" data-shader="psx">2. PS1 15-Bit Bayer</button>
+        <button class="btn" data-shader="manga">3. Manga Screentone (網点)</button>
+        <button class="btn" data-shader="subway">4. Subway 50Hz Flicker</button>
+      </div>
+    </div>
+    <div class="status-strip">
+      <span id="statLayout">Columns: -- | Units: -- | Kinsoku: ON</span>
+      <span id="statShader">Shader: showa_vhs_camcorder.gdshader</span>
+    </div>
+  </section>
+
+  <aside class="inspector">
+    <div>
+      <div class="sec-title">1. Scene &amp; Typography Preset</div>
+      <div class="preset-grid" id="presetGrid">
+        <button class="btn preset-btn active" data-preset="nvl">
+          <span>昭和ホラーサウンドノベル NVL</span>
+          <span class="pill">TategakiNovelBox</span>
+        </button>
+        <button class="btn preset-btn" data-preset="subway">
+          <span>8番地下通路 異変案内板</span>
+          <span class="pill">縦中横 + 50Hz</span>
+        </button>
+        <button class="btn preset-btn" data-preset="manga">
+          <span>漫画フキダシ (丸 + ウニフラッシュ)</span>
+          <span class="pill">MangaFukidashi</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">2. Live Vertical Text &amp; Ruby Markup (`｜漢字《ルビ》` / `[ruby]` / `[tcy]`)</div>
+      <textarea id="novelInput" spellcheck="false"></textarea>
+    </div>
+
+    <div>
+      <div class="sec-title">3. JIS X 4051 Layout &amp; Audio Rules</div>
+      <div class="toggles">
+        <label class="chk"><input type="checkbox" id="chkKinsoku" checked> <span>禁則処理 (JIS Kinsoku)</span></label>
+        <label class="chk"><input type="checkbox" id="chkTcy" checked> <span>縦中横 (24 / !? / 8番)</span></label>
+        <label class="chk"><input type="checkbox" id="chkRuby" checked> <span>右ルビ描画 (Furigana)</span></label>
+        <label class="chk"><input type="checkbox" id="chkAudio" checked> <span>効果音 Blip (WebAudio)</span></label>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="btn accent" id="btnReplay">▶ Typewriter 再生</button>
+      <button class="btn" id="btnSkip">⏭ 全文表示 (Skip)</button>
+    </div>
+
+    <div class="metrics-box">
+      <div><strong>Syntax:</strong> <code>｜東京《とうきょう》</code>, <code>異変《いへん》</code>, <code>[ruby=こえ]声[/ruby]</code>, <code>[tcy]8番[/tcy]</code></div>
+      <div><strong>Included:</strong> MIT <code>TategakiNovelBox.gd</code> + Pro <code>MangaFukidashiBalloon.gd</code> &amp; 4 Godot 4 <code>.gdshader</code> files.</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const KINSOKU_HEAD = new Set(
+    "。\u3001，．・：；？！ー～」』）］｝〉》】〕〗〙〛ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶ々ゝゞー〜…‥！？!?,.:;)]}".split("")
+  );
+  const KINSOKU_TAIL = new Set("「『（［｛〈《【〔〖〘〚([“‘".split(""));
+  const ROTATE_90_CW = new Set("ー−―—–〜～…‥＝：；「」『』（）()［］[]｛｝{}〈〉《》【】〔〕→←".split(""));
+  const SHIFT_TOP_RIGHT = new Set("。\u3001，．".split(""));
+  const SHIFT_SMALL_KANA = new Set("ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶ".split(""));
+
+  const BAYER_4X4 = [
+     0,  8,  2, 10,
+    12,  4, 14,  6,
+     3, 11,  1,  9,
+    15,  7, 13,  5
+  ];
+
+  const PRESETS = {
+    nvl: {
+      shader: "vhs",
+      text: "｜昭和《しょうわ》63｜年《ねん》8｜月《がつ》14｜日《にち》、｜深夜《しんや》24｜時《じ》。\n「あの｜神社《じんじゃ》の｜鳥居《とりい》をくぐったら……｜決《けっ》して｜後《うし》ろを｜振《ふ》り｜返《かえ》ってはならない。」\n｜雨音《あまおと》の｜向《む》こうで、｜誰《だれ》かが｜私《わたし》の｜名前《なまえ》を｜呼《よ》んだ！？"
+    },
+    subway: {
+      shader: "subway",
+      text: "【ご｜案内《あんない》】[tcy]8番[/tcy]｜地下通路《ちかつうろ》\n・｜異変《いへん》を｜見《み》つけたら、すぐに｜引《ひ》き｜返《かえ》すこと。\n・｜異変《いへん》がなければ、そのまま24｜時間《じかん》｜直進《ちょくしん》すること。\n「……あれっ、[ruby=あんないばん]案内板[/ruby]の｜文字《もじ》が｜増《ふ》えている！？」"
+    },
+    manga: {
+      shader: "manga",
+      text: "「まさか……この｜古井戸《ふるいど》の｜底《そこ》から｜声《こえ》が聞こえるのか！？」\n\n「｜逃《に》げろっ！！[tcy]08[/tcy]｜号室《ごうしつ》の｜封印《ふういん》が｜解《と》けたぞーーっ！！」"
+    }
+  };
+
+  const SHADER_LABELS = {
+    clean: "Clean (No Post-Process)",
+    vhs: "showa_vhs_camcorder.gdshader",
+    psx: "psx_retro_horror_dither.gdshader",
+    manga: "anime_cel_halftone_rim.gdshader",
+    subway: "subway_anomaly_fluorescent_flicker.gdshader"
+  };
+
+  const viewCanvas = document.getElementById("viewCanvas");
+  const viewCtx = viewCanvas.getContext("2d", { willReadFrequently: true });
+  const W = 560;
+  const H = 420;
+
+  const sceneCanvas = document.createElement("canvas");
+  sceneCanvas.width = W;
+  sceneCanvas.height = H;
+  const ctx = sceneCanvas.getContext("2d", { willReadFrequently: true });
+
+  const novelInput = document.getElementById("novelInput");
+  const chkKinsoku = document.getElementById("chkKinsoku");
+  const chkTcy = document.getElementById("chkTcy");
+  const chkRuby = document.getElementById("chkRuby");
+  const chkAudio = document.getElementById("chkAudio");
+  const statLayout = document.getElementById("statLayout");
+  const statShader = document.getElementById("statShader");
+
+  let activePreset = "nvl";
+  let activeShader = "vhs";
+  let visibleChars = -1;
+  let totalBaseChars = 0;
+  let revealAccum = 0;
+  let isRevealing = false;
+  let audioCtx = null;
+
+  function playTypewriterBlip(ch) {
+    if (!chkAudio.checked || !ch || ch === "\n" || ch === " " || ch === "　") return;
+    try {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        audioCtx = new AC();
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const isPunct = "。、！？!?…".includes(ch);
+      osc.type = activePreset === "subway" ? "sine" : "triangle";
+      const baseFreq = activePreset === "manga" ? 660 : (activePreset === "subway" ? 520 : 410);
+      osc.frequency.setValueAtTime(isPunct ? baseFreq * 0.78 : baseFreq + ((ch.charCodeAt(0) % 7) * 18), now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.038, now + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.036);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } catch (_) {}
+  }
+
+  function isKanjiCode(cp) {
+    return (cp >= 0x4E00 && cp <= 0x9FFF) || (cp >= 0x3400 && cp <= 0x4DBF) ||
+      cp === 0x3005 || cp === 0x30F6 || cp === 0x30F5 || cp === 0x3006 || cp === 0x3007;
+  }
+
+  function isAsciiDigit(ch) {
+    return ch >= "0" && ch <= "9";
+  }
+
+  function makeUnit(kind, text, ruby, span) {
+    let isHead = false;
+    let isTail = false;
+    if (kind !== "newline" && text.length > 0) {
+      if (kind === "tcy" && (text === "!?" || text === "?!" || text === "!!" || text === "??")) {
+        isHead = true;
+      } else if (KINSOKU_HEAD.has(text[0])) {
+        isHead = true;
+      }
+      if (KINSOKU_TAIL.has(text[text.length - 1])) {
+        isTail = true;
+      }
+    }
+    return { kind, text, ruby: ruby || "", span, isHead, isTail };
+  }
+
+  function parseUnits(raw, allowTcy) {
+    const src = raw.replace(/\r\n?/g, "\n");
+    const n = src.length;
+    const units = [];
+    let i = 0;
+
+    while (i < n) {
+      const ch = src[i];
+      if (ch === "\n") {
+        units.push(makeUnit("newline", "\n", "", 0));
+        i++;
+        continue;
+      }
+      if (src.startsWith("[ruby=", i)) {
+        const closeB = src.indexOf("]", i + 6);
+        const endT = closeB !== -1 ? src.indexOf("[/ruby]", closeB + 1) : -1;
+        if (closeB !== -1 && endT !== -1) {
+          const reading = src.slice(i + 6, closeB).replace(/^"|"$/g, "");
+          const baseTxt = src.slice(closeB + 1, endT);
+          if (baseTxt.length > 0) {
+            units.push(makeUnit("ruby", baseTxt, reading, Math.max(1, baseTxt.length)));
+          }
+          i = endT + 7;
+          continue;
+        }
+      }
+      if (src.startsWith("[tcy]", i)) {
+        const endTcy = src.indexOf("[/tcy]", i + 5);
+        if (endTcy !== -1) {
+          const tcyTxt = src.slice(i + 5, endTcy);
+          if (tcyTxt.length > 0) {
+            units.push(makeUnit("tcy", tcyTxt, "", 1));
+          }
+          i = endTcy + 6;
+          continue;
+        }
+      }
+      if (ch === "｜" || ch === "|") {
+        const openR = src.indexOf("《", i + 1);
+        const nextNl = src.indexOf("\n", i + 1);
+        if (openR !== -1 && (nextNl === -1 || openR < nextNl)) {
+          const closeR = src.indexOf("》", openR + 1);
+          if (closeR !== -1 && (nextNl === -1 || closeR < nextNl)) {
+            const pBase = src.slice(i + 1, openR);
+            const pRuby = src.slice(openR + 1, closeR);
+            if (pBase.length > 0) {
+              units.push(makeUnit("ruby", pBase, pRuby, Math.max(1, pBase.length)));
+              i = closeR + 1;
+              continue;
+            }
+          }
+        }
+      }
+      if (ch === "《" && units.length > 0) {
+        const closeImp = src.indexOf("》", i + 1);
+        const nextNl2 = src.indexOf("\n", i + 1);
+        if (closeImp !== -1 && (nextNl2 === -1 || closeImp < nextNl2)) {
+          let kanjiBuf = "";
+          while (units.length > 0) {
+            const last = units[units.length - 1];
+            if (last.kind === "char" && isKanjiCode(last.text.codePointAt(0))) {
+              kanjiBuf = last.text + kanjiBuf;
+              units.pop();
+            } else {
+              break;
+            }
+          }
+          if (kanjiBuf.length > 0) {
+            units.push(makeUnit("ruby", kanjiBuf, src.slice(i + 1, closeImp), kanjiBuf.length));
+            i = closeImp + 1;
+            continue;
+          }
+        }
+      }
+      if (allowTcy) {
+        if (isAsciiDigit(ch)) {
+          let dEnd = i;
+          while (dEnd < n && isAsciiDigit(src[dEnd])) dEnd++;
+          const dLen = dEnd - i;
+          if (dLen <= 2) {
+            units.push(makeUnit("tcy", src.slice(i, dEnd), "", 1));
+            i = dEnd;
+            continue;
+          } else {
+            while (i < dEnd) {
+              units.push(makeUnit("char", src[i], "", 1));
+              i++;
+            }
+            continue;
+          }
+        }
+        if (i + 1 < n) {
+          const pair = src.slice(i, i + 2);
+          if (pair === "!?" || pair === "?!" || pair === "!!" || pair === "??") {
+            units.push(makeUnit("tcy", pair, "", 1));
+            i += 2;
+            continue;
+          }
+        }
+      }
+      units.push(makeUnit("char", ch, "", 1));
+      i++;
+    }
+    return units;
+  }
+
+  function colCells(col) {
+    let s = 0;
+    for (let i = 0; i < col.length; i++) s += col[i].span;
+    return s;
+  }
+
+  function layoutColumns(units, maxCells, useKinsoku) {
+    const safeMax = Math.max(1, maxCells);
+    const cols = [];
+    let cur = [];
+
+    for (const u of units) {
+      if (u.kind === "newline") {
+        cols.push(cur);
+        cur = [];
+        continue;
+      }
+      if (colCells(cur) + u.span <= safeMax) {
+        cur.push(u);
+        continue;
+      }
+      if (!useKinsoku || cur.length === 0) {
+        cols.push(cur);
+        cur = [u];
+        continue;
+      }
+      const buf = cur.concat([u]);
+      let splitIdx = -1;
+      for (let k = buf.length - 1; k >= 1; k--) {
+        if (colCells(buf.slice(0, k)) > safeMax) continue;
+        if (buf[k - 1].isTail) continue;
+        if (buf[k].isHead) continue;
+        splitIdx = k;
+        break;
+      }
+      if (splitIdx !== -1) {
+        cols.push(buf.slice(0, splitIdx));
+        cur = buf.slice(splitIdx);
+      } else if (u.isHead) {
+        cur.push(u);
+      } else {
+        cols.push(cur);
+        cur = [u];
+      }
+    }
+    if (cur.length > 0 || cols.length === 0) cols.push(cur);
+    return cols;
+  }
+
+  function countTotalChars(units) {
+    let c = 0;
+    for (const u of units) {
+      if (u.kind !== "newline") c += Math.max(1, u.text.length);
+    }
+    return c;
+  }
+
+  function getCharAtIndex(units, idx) {
+    let cur = 0;
+    for (const u of units) {
+      if (u.kind === "newline") continue;
+      const len = Math.max(1, u.text.length);
+      if (idx < cur + len) return u.text[Math.min(u.text.length - 1, idx - cur)];
+      cur += len;
+    }
+    return "";
+  }
+
+  function drawVerticalChar(c, ch, cx, cy, sz, fontFamily, color, shadow) {
+    c.save();
+    c.font = `600 ${sz}px ${fontFamily}`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+
+    if (ROTATE_90_CW.has(ch)) {
+      c.translate(cx, cy);
+      c.rotate(Math.PI * 0.5);
+      if (shadow) {
+        c.fillStyle = shadow;
+        c.fillText(ch, 1.5, -1.5);
+      }
+      c.fillStyle = color;
+      c.fillText(ch, 0, 0);
+      c.restore();
+      return;
+    }
+    let dx = 0;
+    let dy = 0;
+    if (SHIFT_TOP_RIGHT.has(ch)) {
+      dx = sz * 0.30;
+      dy = -sz * 0.28;
+    } else if (SHIFT_SMALL_KANA.has(ch)) {
+      dx = sz * 0.11;
+      dy = -sz * 0.09;
+    }
+    if (shadow) {
+      c.fillStyle = shadow;
+      c.fillText(ch, cx + dx + 1.5, cy + dy + 1.5);
+    }
+    c.fillStyle = color;
+    c.fillText(ch, cx + dx, cy + dy);
+    c.restore();
+  }
+
+  function drawTcyCell(c, txt, cx, cy, sz, fontFamily, color, shadow) {
+    c.save();
+    c.translate(cx, cy);
+    if (txt.length >= 2) c.scale(0.76, 0.88);
+    c.font = `700 ${sz}px ${fontFamily}`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    if (shadow) {
+      c.fillStyle = shadow;
+      c.fillText(txt, 1.5, 1.5);
+    }
+    c.fillStyle = color;
+    c.fillText(txt, 0, 0);
+    c.restore();
+  }
+
+  function drawTategakiBlock(c, cols, rect, opts, budgetRef, timeSec) {
+    const fsize = opts.fontSize;
+    const rsize = Math.max(9, Math.round(fsize * 0.45));
+    const cellStep = fsize * opts.lineHeight;
+    const colStep = fsize * opts.colSpacing;
+    const rightCx = rect.x + rect.w - opts.padX - fsize * 0.80;
+    let lastPos = { x: rightCx, y: rect.y + opts.padY };
+
+    for (let ci = 0; ci < cols.length; ci++) {
+      const col = cols[ci];
+      const cx = rightCx - ci * colStep;
+      if (cx < rect.x + opts.padX * 0.4) break;
+      let row = 0;
+      for (const u of col) {
+        if (budgetRef.rem <= 0) break;
+        const yTop = rect.y + opts.padY + row * cellStep;
+        if (u.kind === "tcy") {
+          drawTcyCell(c, u.text, cx, yTop + cellStep * 0.5, fsize, opts.font, opts.ink, opts.shadow);
+          budgetRef.rem -= Math.max(1, u.text.length);
+          lastPos = { x: cx, y: yTop + cellStep };
+        } else if (u.kind === "ruby") {
+          const visLen = Math.min(u.text.length, budgetRef.rem);
+          for (let bi = 0; bi < visLen; bi++) {
+            drawVerticalChar(c, u.text[bi], cx, yTop + (bi + 0.5) * cellStep, fsize, opts.font, opts.ink, opts.shadow);
+            lastPos = { x: cx, y: yTop + (bi + 1) * cellStep };
+          }
+          if (chkRuby.checked && u.ruby && visLen > 0) {
+            const ratio = visLen / Math.max(1, u.text.length);
+            const rVis = Math.max(1, Math.ceil(u.ruby.length * ratio));
+            const spanH = u.span * cellStep;
+            let rStep = rsize * 1.04;
+            let natH = u.ruby.length * rStep;
+            let startY = yTop + (spanH - natH) * 0.5;
+            if (u.ruby.length > 1 && natH < spanH * 0.72) {
+              rStep = (spanH * 0.80) / u.ruby.length;
+              startY = yTop + (spanH - rStep * u.ruby.length) * 0.5;
+            }
+            const rCx = cx + fsize * 0.54 + rsize * 0.50;
+            for (let ri = 0; ri < rVis; ri++) {
+              drawVerticalChar(c, u.ruby[ri], rCx, startY + (ri + 0.5) * rStep, rsize, opts.font, opts.rubyInk, opts.shadow);
+            }
+          }
+          budgetRef.rem -= visLen;
+        } else {
+          drawVerticalChar(c, u.text, cx, yTop + cellStep * 0.5, fsize, opts.font, opts.ink, opts.shadow);
+          budgetRef.rem -= 1;
+          lastPos = { x: cx, y: yTop + cellStep };
+        }
+        row += u.span;
+      }
+      if (budgetRef.rem <= 0) break;
+    }
+
+    if (opts.cursor && !isRevealing && totalBaseChars > 0) {
+      const pulse = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(timeSec * 5.4));
+      c.fillStyle = `rgba(239, 68, 68, ${pulse.toFixed(2)})`;
+      c.beginPath();
+      c.moveTo(lastPos.x - 6, lastPos.y + 6);
+      c.lineTo(lastPos.x + 6, lastPos.y + 6);
+      c.lineTo(lastPos.x, lastPos.y + 15);
+      c.closePath();
+      c.fill();
+    }
+  }
+
+  function drawShrineNvlBackdrop(c, t) {
+    const grad = c.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, "#090d1a");
+    grad.addColorStop(0.6, "#141829");
+    grad.addColorStop(1, "#080910");
+    c.fillStyle = grad;
+    c.fillRect(0, 0, W, H);
+
+    // Distant crimson moon & cedar silhouettes
+    c.fillStyle = "rgba(220, 48, 60, 0.16)";
+    c.beginPath();
+    c.arc(136, 98, 54, 0, Math.PI * 2);
+    c.fill();
+
+    // Showa Shrine Torii silhouette
+    c.fillStyle = "#241118";
+    c.fillRect(70, 118, 134, 11);
+    c.fillRect(82, 138, 110, 8);
+    c.fillRect(96, 126, 12, 190);
+    c.fillRect(166, 126, 12, 190);
+
+    // Diagonal midnight rain streaks
+    c.strokeStyle = "rgba(148, 185, 225, 0.16)";
+    c.lineWidth = 1;
+    c.beginPath();
+    for (let i = 0; i < 48; i++) {
+      const rx = ((i * 73 + Math.floor(t * 190)) % (W + 80)) - 40;
+      const ry = ((i * 59 + Math.floor(t * 420)) % (H + 60)) - 30;
+      c.moveTo(rx, ry);
+      c.lineTo(rx - 9, ry + 26);
+    }
+    c.stroke();
+
+    // NVL Sound Novel frame
+    c.fillStyle = "rgba(7, 10, 18, 0.80)";
+    c.fillRect(24, 22, W - 48, H - 44);
+    c.strokeStyle = "rgba(239, 68, 68, 0.52)";
+    c.lineWidth = 1.5;
+    c.strokeRect(24.5, 22.5, W - 49, H - 45);
+  }
+
+  function drawSubwayBackdrop(c) {
+    c.fillStyle = "#d9e0dc";
+    c.fillRect(0, 0, W, H);
+
+    // Tokyo underground passage white ceramic tile grid
+    c.strokeStyle = "#b5c0bb";
+    c.lineWidth = 1;
+    for (let x = 0; x <= W; x += 40) {
+      c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke();
+    }
+    for (let y = 0; y <= H; y += 22) {
+      c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
+    }
+
+    // Iconic Japanese Exit 8 yellow ceiling directional sign
+    c.fillStyle = "#facc15";
+    c.fillRect(36, 18, W - 72, 48);
+    c.strokeStyle = "#111827";
+    c.lineWidth = 2.5;
+    c.strokeRect(36, 18, W - 72, 48);
+    c.fillStyle = "#111827";
+    c.font = "900 22px 'Hiragino Kaku Gothic ProN', sans-serif";
+    c.textBaseline = "middle";
+    c.textAlign = "left";
+    c.fillText("↑ 出口  Exit 8", 56, 43);
+    c.font = "700 13px monospace";
+    c.textAlign = "right";
+    c.fillText("TOKYO UNDERGROUND PASSAGE", W - 54, 43);
+
+    // Vertical cautionary sign plaque on tile wall
+    c.fillStyle = "#fcfcfa";
+    c.fillRect(46, 82, W - 92, H - 104);
+    c.strokeStyle = "#0f172a";
+    c.lineWidth = 3;
+    c.strokeRect(46, 82, W - 92, H - 104);
+    c.fillStyle = "#0284c7";
+    c.fillRect(46, 82, 10, H - 104);
+  }
+
+  function drawMangaBalloonShape(c, style, cx, cy, rx, ry) {
+    c.save();
+    c.fillStyle = "#fbfaf6";
+    c.strokeStyle = "#0f172a";
+    c.lineWidth = 3;
+
+    if (style === "round") {
+      c.beginPath();
+      c.moveTo(cx - rx * 0.45, cy + ry * 0.80);
+      c.lineTo(cx - rx * 0.78, cy + ry * 1.12);
+      c.lineTo(cx - rx * 0.18, cy + ry * 0.92);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      c.beginPath();
+      c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+    } else {
+      const spikes = 30;
+      c.beginPath();
+      for (let i = 0; i < spikes * 2; i++) {
+        const ang = (Math.PI * 2 * i) / (spikes * 2);
+        const m = (i % 2 === 0) ? 1.04 : 0.82;
+        const px = cx + Math.cos(ang) * rx * m;
+        const py = cy + Math.sin(ang) * ry * m;
+        if (i === 0) c.moveTo(px, py);
+        else c.lineTo(px, py);
+      }
+      c.closePath();
+      c.fill();
+      c.stroke();
+    }
+    c.restore();
+  }
+
+  function renderScene(t) {
+    const raw = novelInput.value;
+    const units = parseUnits(raw, chkTcy.checked);
+    totalBaseChars = countTotalChars(units);
+    const budget = { rem: visibleChars < 0 ? totalBaseChars : visibleChars };
+
+    const mincho = "'Hiragino Mincho ProN', 'Yu Mincho', 'BIZ UDPMincho', serif";
+    const gothic = "'Hiragino Kaku Gothic ProN', 'BIZ UDGothic', 'Yu Gothic', sans-serif";
+
+    let totalCols = 0;
+
+    if (activePreset === "nvl") {
+      drawShrineNvlBackdrop(ctx, t);
+      const rect = { x: 28, y: 26, w: W - 56, h: H - 52 };
+      const fsize = 22;
+      const maxCells = Math.max(3, Math.floor((rect.h - 44) / (fsize * 1.15)));
+      const cols = layoutColumns(units, maxCells, chkKinsoku.checked);
+      totalCols = cols.length;
+      drawTategakiBlock(ctx, cols, rect, {
+        fontSize: fsize,
+        lineHeight: 1.15,
+        colSpacing: 1.92,
+        padX: 24,
+        padY: 22,
+        font: mincho,
+        ink: "#f4f1ea",
+        rubyInk: "#7dd3fc",
+        shadow: "rgba(0,0,0,0.78)",
+        cursor: true
+      }, budget, t);
+    } else if (activePreset === "subway") {
+      drawSubwayBackdrop(ctx);
+      const rect = { x: 58, y: 86, w: W - 110, h: H - 112 };
+      const fsize = 20;
+      const maxCells = Math.max(3, Math.floor((rect.h - 32) / (fsize * 1.14)));
+      const cols = layoutColumns(units, maxCells, chkKinsoku.checked);
+      totalCols = cols.length;
+      drawTategakiBlock(ctx, cols, rect, {
+        fontSize: fsize,
+        lineHeight: 1.14,
+        colSpacing: 1.90,
+        padX: 20,
+        padY: 16,
+        font: gothic,
+        ink: "#0f172a",
+        rubyInk: "#dc2626",
+        shadow: "",
+        cursor: false
+      }, budget, t);
+    } else {
+      // Manga split panel with speedlines + Round Fukidashi (Right) + Shout Burst (Left)
+      ctx.fillStyle = "#ebe6da";
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(12, 12, W - 24, H - 24);
+
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.16)";
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < 64; i++) {
+        const ang = (Math.PI * 2 * i) / 64;
+        ctx.beginPath();
+        ctx.moveTo(155 + Math.cos(ang) * 95, 215 + Math.sin(ang) * 115);
+        ctx.lineTo(155 + Math.cos(ang) * 420, 215 + Math.sin(ang) * 420);
+        ctx.stroke();
+      }
+
+      const paragraphs = raw.split(/\n\s*\n/);
+      const pRight = paragraphs[0] || raw;
+      const pLeft = paragraphs.slice(1).join("\n") || "「うわあああっ！！」";
+
+      drawMangaBalloonShape(ctx, "round", 408, 200, 118, 162);
+      drawMangaBalloonShape(ctx, "burst", 156, 214, 128, 168);
+
+      const u1 = parseUnits(pRight, chkTcy.checked);
+      const c1 = layoutColumns(u1, 11, chkKinsoku.checked);
+      drawTategakiBlock(ctx, c1, { x: 316, y: 66, w: 184, h: 268 }, {
+        fontSize: 19,
+        lineHeight: 1.14,
+        colSpacing: 1.82,
+        padX: 16,
+        padY: 12,
+        font: mincho,
+        ink: "#0f172a",
+        rubyInk: "#b91c1c",
+        shadow: "",
+        cursor: false
+      }, budget, t);
+
+      const u2 = parseUnits(pLeft, chkTcy.checked);
+      const c2 = layoutColumns(u2, 10, chkKinsoku.checked);
+      drawTategakiBlock(ctx, c2, { x: 68, y: 88, w: 176, h: 252 }, {
+        fontSize: 20,
+        lineHeight: 1.14,
+        colSpacing: 1.85,
+        padX: 16,
+        padY: 12,
+        font: gothic,
+        ink: "#0f172a",
+        rubyInk: "#dc2626",
+        shadow: "",
+        cursor: false
+      }, budget, t);
+      totalCols = c1.length + c2.length;
+    }
+
+    statLayout.textContent = `Columns: ${totalCols} | Units: ${units.length} | Kinsoku: ${chkKinsoku.checked ? "JIS ON" : "OFF"}`;
+  }
+
+  function applyPostShader(t) {
+    if (activeShader === "clean") {
+      viewCtx.drawImage(sceneCanvas, 0, 0);
+      return;
+    }
+
+    const srcImg = ctx.getImageData(0, 0, W, H);
+    const s = srcImg.data;
+    const outImg = viewCtx.createImageData(W, H);
+    const d = outImg.data;
+
+    if (activeShader === "vhs") {
+      const frameTick = Math.floor(t * 29.97);
+      const creaseY = Math.floor(((t * 0.19) % 1) * H);
+      for (let y = 0; y < H; y++) {
+        const isHeadSwitch = y > H * 0.942;
+        const jitterHash = Math.sin(y * 12.9898 + frameTick * 78.233) * 43758.5453;
+        const jFrac = jitterHash - Math.floor(jitterHash);
+        let shiftX = Math.round((jFrac - 0.5) * 3.2);
+        if (isHeadSwitch) shiftX += Math.round((jFrac - 0.3) * 26);
+
+        const scanMul = (y % 2 === 0) ? 0.90 : 1.0;
+        const inCrease = Math.abs(y - creaseY) <= 2;
+
+        for (let x = 0; x < W; x++) {
+          const sx = Math.min(W - 1, Math.max(0, x + shiftX));
+          const sxR = Math.min(W - 1, sx + 4);
+          const sxB = Math.max(0, sx - 4);
+          const idx = (y * W + sx) * 4;
+          const idxR = (y * W + sxR) * 4;
+          const idxB = (y * W + sxB) * 4;
+          const outIdx = (y * W + x) * 4;
+
+          let r = s[idx] * 0.45 + s[idxR] * 0.55;
+          let g = s[idx + 1];
+          let b = s[idx + 2] * 0.45 + s[idxB + 2] * 0.55;
+
+          if ((inCrease || isHeadSwitch) && ((x * 17 + y * 31 + frameTick * 13) % 97 < (isHeadSwitch ? 26 : 14))) {
+            r = 235; g = 240; b = 245;
+          }
+
+          d[outIdx]     = Math.min(255, r * scanMul + 7);
+          d[outIdx + 1] = Math.min(255, g * scanMul + 5);
+          d[outIdx + 2] = Math.min(255, b * scanMul + 10);
+          d[outIdx + 3] = 255;
+        }
+      }
+      viewCtx.putImageData(outImg, 0, 0);
+      viewCtx.fillStyle = "rgba(240, 248, 255, 0.82)";
+      viewCtx.font = "700 13px monospace";
+      viewCtx.fillText("PLAY ▶  SP", 18, 24);
+      viewCtx.fillText("1998.08.14  23:59", W - 148, H - 30);
+      return;
+    }
+
+    if (activeShader === "psx") {
+      for (let y = 0; y < H; y++) {
+        const py = y >> 1;
+        const sy = Math.min(H - 1, py * 2);
+        const by = py & 3;
+        for (let x = 0; x < W; x++) {
+          const px = x >> 1;
+          const sx = Math.min(W - 1, px * 2);
+          const bayer = (BAYER_4X4[(by << 2) | (px & 3)] / 16.0 - 0.5) * 9.5;
+          const idx = (sy * W + sx) * 4;
+          const outIdx = (y * W + x) * 4;
+
+          // Cold survival-horror shadow fog + 5-bit RGB555 quantization (step 8)
+          const r0 = s[idx] * 0.94 + 6 + bayer;
+          const g0 = s[idx + 1] * 0.96 + 10 + bayer;
+          const b0 = s[idx + 2] * 0.98 + 16 + bayer;
+
+          d[outIdx]     = Math.min(255, Math.max(0, Math.round(r0 / 8) * 8));
+          d[outIdx + 1] = Math.min(255, Math.max(0, Math.round(g0 / 8) * 8));
+          d[outIdx + 2] = Math.min(255, Math.max(0, Math.round(b0 / 8) * 8));
+          d[outIdx + 3] = 255;
+        }
+      }
+      viewCtx.putImageData(outImg, 0, 0);
+      return;
+    }
+
+    if (activeShader === "manga") {
+      const cosA = 0.92388;
+      const sinA = 0.38268;
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const idx = (y * W + x) * 4;
+          const luma = (s[idx] * 0.299 + s[idx + 1] * 0.587 + s[idx + 2] * 0.114) / 255.0;
+          let ink = 246;
+          if (luma < 0.24) {
+            ink = 18;
+          } else if (luma < 0.72) {
+            const rx = (x * cosA - y * sinA) / 5.5;
+            const ry = (x * sinA + y * cosA) / 5.5;
+            const gx = rx - Math.floor(rx) - 0.5;
+            const gy = ry - Math.floor(ry) - 0.5;
+            const dist = Math.sqrt(gx * gx + gy * gy) * 1.414;
+            const thresh = (0.74 - luma) * 1.15;
+            ink = dist < thresh ? 28 : 242;
+          }
+          // Preserve crimson ruby/seal accents like jump two-color print!
+          const isRed = (s[idx] - s[idx + 1] > 75) && (s[idx] > 140);
+          d[idx]     = isRed ? 215 : ink;
+          d[idx + 1] = isRed ? 38  : Math.round(ink * 0.98);
+          d[idx + 2] = isRed ? 45  : Math.round(ink * 0.94);
+          d[idx + 3] = 255;
+        }
+      }
+      viewCtx.putImageData(outImg, 0, 0);
+      return;
+    }
+
+    if (activeShader === "subway") {
+      const ripple = 1.0 - 0.03 * (0.5 + 0.5 * Math.sin(t * 62.8));
+      const slot = Math.floor(t * 16);
+      const rng = Math.abs(Math.sin(slot * 127.1 + 311.7) * 43758.5453) % 1;
+      const dip = rng > 0.86 ? 0.68 : 1.0;
+      const gain = ripple * dip;
+
+      for (let y = 0; y < H; y++) {
+        const ny = (y / H) * 2 - 1;
+        for (let x = 0; x < W; x++) {
+          const nx = (x / W) * 2 - 1;
+          const rad = nx * nx + ny * ny;
+          const ca = Math.round(rad * 3.0);
+          const idx = (y * W + x) * 4;
+          const idxR = (y * W + Math.min(W - 1, x + ca)) * 4;
+          const idxB = (y * W + Math.max(0, x - ca)) * 4;
+          const vig = Math.max(0.35, 1.0 - rad * 0.22) * gain;
+
+          d[idx]     = Math.min(255, s[idxR] * 0.91 * vig);
+          d[idx + 1] = Math.min(255, s[idx + 1] * 1.01 * vig);
+          d[idx + 2] = Math.min(255, s[idxB + 2] * 0.97 * vig);
+          d[idx + 3] = 255;
+        }
+      }
+      viewCtx.putImageData(outImg, 0, 0);
+    }
+  }
+
+  function startTypewriter() {
+    visibleChars = 0;
+    revealAccum = 0;
+    isRevealing = true;
+  }
+
+  function setPreset(name) {
+    activePreset = name;
+    const p = PRESETS[name];
+    novelInput.value = p.text;
+    setShader(p.shader);
+    document.querySelectorAll(".preset-btn").forEach((b) => {
+      b.classList.toggle("active", b.dataset.preset === name);
+    });
+    startTypewriter();
+  }
+
+  function setShader(sh) {
+    activeShader = sh;
+    statShader.textContent = `Shader: ${SHADER_LABELS[sh]}`;
+    document.querySelectorAll("#shaderBar .btn").forEach((b) => {
+      b.classList.toggle("active", b.dataset.shader === sh);
+    });
+  }
+
+  document.getElementById("presetGrid").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-preset]");
+    if (btn) setPreset(btn.dataset.preset);
+  });
+
+  document.getElementById("shaderBar").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-shader]");
+    if (btn) setShader(btn.dataset.shader);
+  });
+
+  document.getElementById("btnReplay").addEventListener("click", startTypewriter);
+  document.getElementById("btnSkip").addEventListener("click", () => {
+    isRevealing = false;
+    visibleChars = -1;
+  });
+
+  novelInput.addEventListener("input", () => {
+    isRevealing = false;
+    visibleChars = -1;
+  });
+
+  let lastTs = performance.now();
+  function tick(now) {
+    const dt = Math.min(0.05, (now - lastTs) / 1000);
+    lastTs = now;
+    const timeSec = now / 1000;
+
+    if (isRevealing) {
+      const units = parseUnits(novelInput.value, chkTcy.checked);
+      const tot = countTotalChars(units);
+      revealAccum += dt * 24.0;
+      while (revealAccum >= 1.0 && isRevealing) {
+        const ch = getCharAtIndex(units, visibleChars);
+        visibleChars++;
+        playTypewriterBlip(ch);
+        const pause = "。！？!?…".includes(ch) ? 4.2 : ("、」』—".includes(ch) ? 2.1 : 1.0);
+        revealAccum -= pause;
+        if (visibleChars >= tot) {
+          isRevealing = false;
+          visibleChars = -1;
+          break;
+        }
+      }
+    }
+
+    renderScene(timeSec);
+    applyPostShader(timeSec);
+    requestAnimationFrame(tick);
+  }
+
+  setPreset("nvl");
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Normalize line endings across OSes
+* text=auto eol=lf
+*.png binary
+
+# Official Godot Engine Asset Library (godotengine.org/asset-library) rules:
+# Ignore repository root metadata when Godot downloads the archive, keeping ONLY addons/ and LICENSE.
+/* export-ignore
+/addons !export-ignore
+/addons/** !export-ignore
+/LICENSE !export-ignore

@@ -1,0 +1,18 @@
+COMMERCIAL ROYALTY-FREE LICENSE
+Product: Godot 4 Japanese Vertical "Tategaki" + Furigana Engine & Showa VHS / PS1 Horror Shader Suite (Pro)
+Creator / Licensor: peco (https://pecopeko.itch.io | https://github.com/pecopeko)
+
+1. GRANT OF LICENSE
+Upon purchase, the Licensee is granted a worldwide, non-exclusive, perpetual, royalty-free
+license to use, modify, and integrate all GDScript nodes (`TategakiNovelBox`, `MangaFukidashiBalloon`),
+Godot 4 `.gdshader` files, and assets in this package into unlimited commercial and non-commercial
+games, visual novels, interactive fiction, and video productions, with no attribution required.
+
+2. RESTRICTIONS
+The Licensee may NOT redistribute, resell, or repackage the standalone source scripts or shaders
+as a competing asset pack, template, or shader library on itch.io, Godot Asset Library, BOOTH,
+or any third-party marketplace. Distributing compiled/exported games containing these scripts
+and shaders is 100% permitted.
+
+3. NO WARRANTY
+Provided "AS IS" without warranty of any kind.
